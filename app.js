@@ -1161,7 +1161,677 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRoadmap();
   updateFlashcardUI();
   updateProgressMetrics();
+  initScriptureTower();
 
   // Initialize Lucide icons
   lucide.createIcons();
 });
+
+// ==========================================
+// 15. TÒA NHÀ KINH THÁNH 66 TẦNG (BẢN 2010)
+// ==========================================
+
+const BIBLE_66_BOOKS = [
+  // Cựu Ước (Tầng 1 - 39)
+  { floor: 1, name: 'Sáng Thế Ký', code: 'S', testament: 'old', chapters: 50 },
+  { floor: 2, name: 'Xuất Ai Cập Ký', code: 'X', testament: 'old', chapters: 40 },
+  { floor: 3, name: 'Lê-vi Ký', code: 'L', testament: 'old', chapters: 27 },
+  { floor: 4, name: 'Dân Số Ký', code: 'D', testament: 'old', chapters: 36 },
+  { floor: 5, name: 'Phục Truyền Luật Lệ Ký', code: 'P', testament: 'old', chapters: 34 },
+  { floor: 6, name: 'Giô-suê', code: 'GS', testament: 'old', chapters: 24 },
+  { floor: 7, name: 'Các Quan Xét', code: 'C', testament: 'old', chapters: 21 },
+  { floor: 8, name: 'Ru-tơ', code: 'R', testament: 'old', chapters: 4 },
+  { floor: 9, name: '1 Sa-mu-ên', code: '1S', testament: 'old', chapters: 31 },
+  { floor: 10, name: '2 Sa-mu-ên', code: '2S', testament: 'old', chapters: 24 },
+  { floor: 11, name: '1 Các Vua', code: '1V', testament: 'old', chapters: 22 },
+  { floor: 12, name: '2 Các Vua', code: '2V', testament: 'old', chapters: 25 },
+  { floor: 13, name: '1 Sử Ký', code: '1SK', testament: 'old', chapters: 29 },
+  { floor: 14, name: '2 Sử Ký', code: '2SK', testament: 'old', chapters: 36 },
+  { floor: 15, name: 'E-sơ-ra', code: 'E', testament: 'old', chapters: 10 },
+  { floor: 16, name: 'Nê-hê-mi', code: 'N', testament: 'old', chapters: 13 },
+  { floor: 17, name: 'Ê-xơ-tê', code: 'ET', testament: 'old', chapters: 10 },
+  { floor: 18, name: 'Gióp', code: 'GP', testament: 'old', chapters: 42 },
+  { floor: 19, name: 'Thi Thiên', code: 'TT', testament: 'old', chapters: 150 },
+  { floor: 20, name: 'Châm Ngôn', code: 'CN', testament: 'old', chapters: 31 },
+  { floor: 21, name: 'Truyền Đạo', code: 'TĐ', testament: 'old', chapters: 12 },
+  { floor: 22, name: 'Nhã Ca', code: 'NC', testament: 'old', chapters: 8 },
+  { floor: 23, name: 'Ê-sai', code: 'ÊS', testament: 'old', chapters: 66 },
+  { floor: 24, name: 'Giê-rê-mi', code: 'GR', testament: 'old', chapters: 52 },
+  { floor: 25, name: 'Ca Thương', code: 'CT', testament: 'old', chapters: 5 },
+  { floor: 26, name: 'Ê-xê-chi-ên', code: 'ÊZ', testament: 'old', chapters: 48 },
+  { floor: 27, name: 'Đa-ni-ên', code: 'ĐN', testament: 'old', chapters: 12 },
+  { floor: 28, name: 'Ô-sê', code: 'ÔS', testament: 'old', chapters: 14 },
+  { floor: 29, name: 'Giô-ên', code: 'GÊ', testament: 'old', chapters: 3 },
+  { floor: 30, name: 'A-mốt', code: 'AM', testament: 'old', chapters: 9 },
+  { floor: 31, name: 'Ô-ba-đia', code: 'ÔB', testament: 'old', chapters: 1 },
+  { floor: 32, name: 'Giô-na', code: 'GN', testament: 'old', chapters: 4 },
+  { floor: 33, name: 'Mi-chê', code: 'MC', testament: 'old', chapters: 7 },
+  { floor: 34, name: 'Na-hum', code: 'NA', testament: 'old', chapters: 3 },
+  { floor: 35, name: 'Ha-ba-cúc', code: 'HB', testament: 'old', chapters: 3 },
+  { floor: 36, name: 'Xô-phô-ni', code: 'XP', testament: 'old', chapters: 3 },
+  { floor: 37, name: 'A-ghê', code: 'AG', testament: 'old', chapters: 2 },
+  { floor: 38, name: 'Xa-cha-ri', code: 'XC', testament: 'old', chapters: 14 },
+  { floor: 39, name: 'Ma-la-chi', code: 'ML', testament: 'old', chapters: 4 },
+
+  // Tân Ước (Tầng 40 - 66)
+  { floor: 40, name: 'Ma-thi-ơ', code: 'MT', testament: 'new', chapters: 28 },
+  { floor: 41, name: 'Mác', code: 'MC', testament: 'new', chapters: 16 },
+  { floor: 42, name: 'Lu-ca', code: 'LC', testament: 'new', chapters: 24 },
+  { floor: 43, name: 'Giăng', code: 'G', testament: 'new', chapters: 21 },
+  { floor: 44, name: 'Công Vụ Các Sứ Đồ', code: 'CV', testament: 'new', chapters: 28 },
+  { floor: 45, name: 'Rô-ma', code: 'RM', testament: 'new', chapters: 16 },
+  { floor: 46, name: '1 Cô-rinh-tô', code: '1CÔ', testament: 'new', chapters: 16 },
+  { floor: 47, name: '2 Cô-rinh-tô', code: '2CÔ', testament: 'new', chapters: 13 },
+  { floor: 48, name: 'Ga-la-ti', code: 'GA', testament: 'new', chapters: 6 },
+  { floor: 49, name: 'Ê-phê-sô', code: 'ÊP', testament: 'new', chapters: 6 },
+  { floor: 50, name: 'Phi-líp', code: 'PL', testament: 'new', chapters: 4 },
+  { floor: 51, name: 'Cô-lô-se', code: 'CL', testament: 'new', chapters: 4 },
+  { floor: 52, name: '1 Tê-sa-lô-ni-ca', code: '1TÊ', testament: 'new', chapters: 5 },
+  { floor: 53, name: '2 Tê-sa-lô-ni-ca', code: '2TÊ', testament: 'new', chapters: 3 },
+  { floor: 54, name: '1 Ti-mô-thê', code: '1TI', testament: 'new', chapters: 6 },
+  { floor: 55, name: '2 Ti-mô-thê', code: '2TI', testament: 'new', chapters: 4 },
+  { floor: 56, name: 'Tít', code: 'TÍT', testament: 'new', chapters: 3 },
+  { floor: 57, name: 'Phi-lê-môn', code: 'PM', testament: 'new', chapters: 1 },
+  { floor: 58, name: 'Hê-bơ-rơ', code: 'HB', testament: 'new', chapters: 13 },
+  { floor: 59, name: 'Gia-cơ', code: 'GC', testament: 'new', chapters: 5 },
+  { floor: 60, name: '1 Phi-e-rơ', code: '1PR', testament: 'new', chapters: 5 },
+  { floor: 61, name: '2 Phi-e-rơ', code: '2PR', testament: 'new', chapters: 3 },
+  { floor: 62, name: '1 Giăng', code: '1G', testament: 'new', chapters: 5 },
+  { floor: 63, name: '2 Giăng', code: '2G', testament: 'new', chapters: 1 },
+  { floor: 64, name: '3 Giăng', code: '3G', testament: 'new', chapters: 1 },
+  { floor: 65, name: 'Giu-đe', code: 'GĐ', testament: 'new', chapters: 1 },
+  { floor: 66, name: 'Khải Huyền', code: 'KH', testament: 'new', chapters: 22 }
+];
+
+// Danh mục câu Kinh Thánh mẫu (Bản Hiệu Đính 2010 - RVV2010)
+const INITIAL_SCRIPTURE_VERSES = [
+  {
+    id: 'v_1',
+    bookFloor: 1,
+    bookCode: 'S',
+    bookName: 'Sáng Thế Ký',
+    chapter: 1,
+    verse: 1,
+    keyword: 'sáng tạo',
+    secondaryKeyword: 'sáng tạo trời đất',
+    text: 'Ban đầu Đức Chúa Trời sáng tạo trời và đất.'
+  },
+  {
+    id: 'v_2',
+    bookFloor: 1,
+    bookCode: 'S',
+    bookName: 'Sáng Thế Ký',
+    chapter: 1,
+    verse: 3,
+    keyword: 'ánh sáng',
+    secondaryKeyword: 'phải có ánh sáng',
+    text: 'Đức Chúa Trời phán: “Phải có ánh sáng”; thì có ánh sáng.'
+  },
+  {
+    id: 'v_3',
+    bookFloor: 2,
+    bookCode: 'X',
+    bookName: 'Xuất Ai Cập Ký',
+    chapter: 3,
+    verse: 14,
+    keyword: 'ĐẤNG TỰ HỮU',
+    secondaryKeyword: 'Đấng Tự Hữu Hằng Hữu',
+    text: 'Đức Chúa Trời phán với Môi-se: “TA LÀ ĐẤNG TỰ HỮU HẰNG HỮU.” Ngài lại phán: “Hãy nói với dân Y-sơ-ra-ên rằng: ‘ĐẤNG TỰ HỮU đã sai tôi đến với các anh chị em.’”'
+  },
+  {
+    id: 'v_4',
+    bookFloor: 6,
+    bookCode: 'GS',
+    bookName: 'Giô-suê',
+    chapter: 1,
+    verse: 9,
+    keyword: 'vững lòng bền chí',
+    secondaryKeyword: 'mạnh dạn can đảm',
+    text: 'Chẳng phải Ta đã truyền phán cho con sao? Hãy mạnh dạn, can đảm! Đừng sợ hãi, đừng nản lòng, vì Giê-hô-va Đức Chúa Trời của con sẽ ở với con mọi nơi con đi.'
+  },
+  {
+    id: 'v_5',
+    bookFloor: 19,
+    bookCode: 'TT',
+    bookName: 'Thi Thiên',
+    chapter: 23,
+    verse: 1,
+    keyword: 'người chăn',
+    secondaryKeyword: 'Đấng chăn giữ tôi',
+    text: 'Đức Giê-hô-va là Đấng chăn giữ tôi; tôi sẽ chẳng thiếu thốn gì.'
+  },
+  {
+    id: 'v_6',
+    bookFloor: 19,
+    bookCode: 'TT',
+    bookName: 'Thi Thiên',
+    chapter: 119,
+    verse: 105,
+    keyword: 'ngọn đèn',
+    secondaryKeyword: 'ngọn đèn cho chân tôi',
+    text: 'Lời Chúa là ngọn đèn cho chân tôi, ánh sáng cho đường lối tôi.'
+  },
+  {
+    id: 'v_7',
+    bookFloor: 20,
+    bookCode: 'CN',
+    bookName: 'Châm Ngôn',
+    chapter: 3,
+    verse: 5,
+    keyword: 'hết lòng tin cậy',
+    secondaryKeyword: 'đừng nương cậy sự thông sáng',
+    text: 'Hãy hết lòng tin cậy Đức Giê-hô-va, đừng nương cậy nơi sự thông sáng của con.'
+  },
+  {
+    id: 'v_8',
+    bookFloor: 23,
+    bookCode: 'ÊS',
+    bookName: 'Ê-sai',
+    chapter: 40,
+    verse: 31,
+    keyword: 'trông đợi',
+    secondaryKeyword: 'cất cánh bay cao như chim ưng',
+    text: 'Nhưng ai trông đợi Đức Giê-hô-va sẽ được sức mới, cất cánh bay cao như chim ưng; chạy mà không mệt nhọc, đi mà không mòn mỏi.'
+  },
+  {
+    id: 'v_9',
+    bookFloor: 24,
+    bookCode: 'GR',
+    bookName: 'Giê-rê-mi',
+    chapter: 29,
+    verse: 11,
+    keyword: 'ý tưởng bình an',
+    secondaryKeyword: 'tương lai và hy vọng',
+    text: 'Đức Giê-hô-va phán: “Vì chính Ta biết ý tưởng Ta nghĩ đối với các con, đó là ý tưởng bình an chứ không phải tai họa, để ban cho các con một tương lai và một hy vọng.”'
+  },
+  {
+    id: 'v_10',
+    bookFloor: 40,
+    bookCode: 'MT',
+    bookName: 'Ma-thi-ơ',
+    chapter: 6,
+    verse: 33,
+    keyword: 'tìm kiếm nước Đức Chúa Trời',
+    secondaryKeyword: 'vương quốc Đức Chúa Trời',
+    text: 'Nhưng trước hết, hãy tìm kiếm vương quốc Đức Chúa Trời và sự công chính của Ngài, thì Ngài sẽ cho thêm các con mọi điều ấy nữa.'
+  },
+  {
+    id: 'v_11',
+    bookFloor: 43,
+    bookCode: 'G',
+    bookName: 'Giăng',
+    chapter: 1,
+    verse: 1,
+    keyword: 'Ngôi Lời',
+    secondaryKeyword: 'ban đầu có Ngôi Lời',
+    text: 'Ban đầu có Ngôi Lời, Ngôi Lời ở với Đức Chúa Trời, và Ngôi Lời là Đức Chúa Trời.'
+  },
+  {
+    id: 'v_12',
+    bookFloor: 43,
+    bookCode: 'G',
+    bookName: 'Giăng',
+    chapter: 3,
+    verse: 16,
+    keyword: 'yêu thương thế gian',
+    secondaryKeyword: 'đã ban Con Một',
+    text: 'Vì Đức Chúa Trời yêu thương thế gian, đến nỗi đã ban Con Một của Ngài, hầu cho hễ ai tin Con ấy không bị hư mất mà được sự sống đời đời.'
+  },
+  {
+    id: 'v_13',
+    bookFloor: 45,
+    bookCode: 'RM',
+    bookName: 'Rô-ma',
+    chapter: 8,
+    verse: 28,
+    keyword: 'vạn sự hiệp lại',
+    secondaryKeyword: 'mọi sự hiệp lại làm ích',
+    text: 'Chúng ta biết rằng mọi sự hiệp lại làm ích cho những ai yêu mến Đức Chúa Trời, tức là cho những người được gọi theo mục đích của Ngài.'
+  },
+  {
+    id: 'v_14',
+    bookFloor: 50,
+    bookCode: 'PL',
+    bookName: 'Phi-líp',
+    chapter: 4,
+    verse: 13,
+    keyword: 'làm được mọi sự',
+    secondaryKeyword: 'nhờ Đấng ban năng lực',
+    text: 'Tôi làm được mọi sự nhờ Đấng ban năng lực cho tôi.'
+  },
+  {
+    id: 'v_15',
+    bookFloor: 58,
+    bookCode: 'HB',
+    bookName: 'Hê-bơ-rơ',
+    chapter: 11,
+    verse: 1,
+    keyword: 'bằng chứng thực tại',
+    secondaryKeyword: 'đức tin là thực thể',
+    text: 'Đức tin là thực thể của những điều đang hy vọng, là bằng chứng của những điều không thấy.'
+  },
+  {
+    id: 'v_16',
+    bookFloor: 66,
+    bookCode: 'KH',
+    bookName: 'Khải Huyền',
+    chapter: 21,
+    verse: 4,
+    keyword: 'lau ráo nước mắt',
+    secondaryKeyword: 'không còn sự chết đau đớn',
+    text: 'Ngài sẽ lau ráo hết nước mắt nơi mắt họ. Sẽ không còn sự chết, cũng không còn tang chế, than khóc, hay đau đớn nữa; vì những sự ban đầu đã qua rồi.'
+  }
+];
+
+// LocalStorage helpers for custom user verses
+const SCRIPTURE_STORAGE_KEY = 'supermind_scripture_custom_verses_v1';
+
+function getAllScriptureVerses() {
+  try {
+    const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    const custom = raw ? JSON.parse(raw) : [];
+    return [...INITIAL_SCRIPTURE_VERSES, ...custom];
+  } catch (e) {
+    return INITIAL_SCRIPTURE_VERSES;
+  }
+}
+
+// Generates First-Letter Prompting tokens: e.g. "Ban đầu Đức Chúa Trời..." -> "B - Đ - C - T..."
+function generateFirstLetters(text) {
+  if (!text) return '';
+  const clean = text.replace(/[“”,;.:!?()—"]/g, ' ');
+  const words = clean.trim().split(/\s+/).filter(Boolean);
+  return words.map(w => w.charAt(0).toUpperCase()).join(' - ');
+}
+
+// Current Tower State
+let currentSelectedFloor = 1;
+let currentSelectedRoom = 1;
+let currentTowerFilter = 'all';
+
+function initScriptureTower() {
+  renderTowerFloors();
+  selectFloor(1);
+  populateBookDropdown();
+}
+
+function filterTowerSection(sec) {
+  playSound('click');
+  currentTowerFilter = sec;
+  document.querySelectorAll('.tower-sec-btn').forEach(btn => {
+    if (btn.dataset.sec === sec) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  renderTowerFloors();
+}
+
+function renderTowerFloors() {
+  const container = document.getElementById('floorsElevatorList');
+  if (!container) return;
+
+  let filtered = BIBLE_66_BOOKS;
+  if (currentTowerFilter === 'old') {
+    filtered = BIBLE_66_BOOKS.filter(b => b.testament === 'old');
+  } else if (currentTowerFilter === 'new') {
+    filtered = BIBLE_66_BOOKS.filter(b => b.testament === 'new');
+  }
+
+  const badge = document.getElementById('floorCountBadge');
+  if (badge) badge.textContent = `${filtered.length} Tầng`;
+
+  container.innerHTML = filtered.map(b => {
+    const isActive = b.floor === currentSelectedFloor;
+    return `
+      <div onclick="selectFloor(${b.floor})" class="floor-item ${isActive ? 'active' : ''} p-2.5 rounded-xl border border-slate-800 hover:border-amber-500/40 cursor-pointer flex items-center justify-between transition-all group">
+        <div class="flex items-center gap-2.5">
+          <span class="font-mono text-xs font-black ${isActive ? 'text-amber-400' : 'text-slate-400 group-hover:text-amber-300'} w-8">
+            T.${b.floor}
+          </span>
+          <span class="font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${isActive ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-amber-300 border border-slate-700'}">
+            ${b.code}
+          </span>
+          <span class="text-xs font-bold text-white group-hover:text-amber-200 truncate">
+            ${b.name}
+          </span>
+        </div>
+        <span class="text-[10px] text-slate-400 font-mono">${b.chapters}p</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectFloor(floorNum) {
+  playSound('click');
+  currentSelectedFloor = floorNum;
+  currentSelectedRoom = 1;
+
+  const book = BIBLE_66_BOOKS.find(b => b.floor === floorNum);
+  if (!book) return;
+
+  // Update header badges
+  const fb = document.getElementById('activeFloorBadge');
+  const cb = document.getElementById('activeFloorCodeBadge');
+  const title = document.getElementById('activeFloorTitle');
+  const sub = document.getElementById('activeFloorSubtitle');
+
+  if (fb) fb.textContent = `TẦNG ${book.floor}`;
+  if (cb) cb.textContent = `Mã: ${book.code}`;
+  if (title) title.textContent = book.name;
+  if (sub) sub.textContent = `${book.testament === 'old' ? 'Cựu Ước' : 'Tân Ước'} • ${book.chapters} Chương (Phòng)`;
+
+  // Update active elevator item
+  renderTowerFloors();
+
+  // Render Rooms (Chapters)
+  renderRooms(book.chapters);
+
+  // Render Verses
+  renderVersesInRoom();
+}
+
+function renderRooms(chapterCount) {
+  const container = document.getElementById('roomsChipList');
+  if (!container) return;
+
+  let chipsHtml = '';
+  for (let ch = 1; ch <= chapterCount; ch++) {
+    const isActive = ch === currentSelectedRoom;
+    chipsHtml += `
+      <button onclick="selectRoom(${ch})" class="room-chip ${isActive ? 'active' : ''} px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap border transition-all ${isActive ? '' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'}">
+        Phòng ${ch}
+      </button>
+    `;
+  }
+  container.innerHTML = chipsHtml;
+}
+
+function selectRoom(roomNum) {
+  playSound('click');
+  currentSelectedRoom = roomNum;
+  const book = BIBLE_66_BOOKS.find(b => b.floor === currentSelectedFloor);
+  if (book) renderRooms(book.chapters);
+  renderVersesInRoom();
+}
+
+function renderVersesInRoom() {
+  const container = document.getElementById('versesInRoomList');
+  if (!container) return;
+
+  const allVerses = getAllScriptureVerses();
+  const filtered = allVerses.filter(v => v.bookFloor === currentSelectedFloor && v.chapter === currentSelectedRoom);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="h-full flex flex-col items-center justify-center text-center p-8 text-slate-500 border border-dashed border-slate-800 rounded-2xl">
+        <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-amber-400 mb-3">
+          <i data-lucide="bookmark" class="w-6 h-6"></i>
+        </div>
+        <div class="text-sm font-semibold text-slate-300 mb-1">Chưa có câu nào được lưu ở Phòng ${currentSelectedRoom}</div>
+        <p class="text-xs text-slate-400 max-w-sm mb-4">Bạn có thể bấm nút bên dưới để thêm câu Kinh Thánh Bản 2010 kèm từ khóa mỏ neo vào phòng này!</p>
+        <button onclick="openAddVerseForCurrentFloor()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition-all flex items-center gap-1.5">
+          <i data-lucide="plus" class="w-4 h-4"></i> Thêm Câu Vào Phòng Này
+        </button>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = filtered.map(v => {
+    const firstLetters = generateFirstLetters(v.text);
+    return `
+      <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 transition-all space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold">
+              ${v.bookCode} ${v.chapter}:${v.verse}
+            </span>
+            <span class="text-xs text-slate-400 font-medium">Câu ${v.verse}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1">
+              <i data-lucide="key" class="w-3 h-3 text-amber-400"></i> Từ khóa: "${v.keyword}"
+            </span>
+            ${v.secondaryKeyword ? `
+              <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] border border-slate-700">
+                Phân biệt: "${v.secondaryKeyword}"
+              </span>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Full Text (Bản 2010) -->
+        <blockquote class="text-sm sm:text-base font-serif italic text-slate-100 border-l-2 border-amber-400 pl-4 py-1">
+          "${v.text}"
+        </blockquote>
+
+        <!-- First-Letter Drill Bar -->
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800/80 space-y-1.5">
+          <div class="flex items-center justify-between text-[11px] text-slate-400">
+            <span class="font-bold flex items-center gap-1 text-amber-400">
+              <i data-lucide="sparkles" class="w-3 h-3"></i> Chuỗi Chữ Cái Đầu (Bí Quyết Thuộc Từng Từ):
+            </span>
+            <span class="text-[10px] text-slate-500">Đọc theo thứ tự để khóa từng chữ</span>
+          </div>
+          <div class="text-xs font-mono font-black text-amber-300 tracking-wider break-words">
+            ${firstLetters}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  lucide.createIcons();
+}
+
+// Fast Search by Anchor Keyword or Coordinate
+function handleScriptureSearch() {
+  const query = (document.getElementById('scriptureSearchInput')?.value || '').toLowerCase().trim();
+  const resultContainer = document.getElementById('scriptureSearchResults');
+  const list = document.getElementById('scriptureSearchList');
+
+  if (!query) {
+    resultContainer.classList.add('hidden');
+    return;
+  }
+
+  const allVerses = getAllScriptureVerses();
+  const matches = allVerses.filter(v => {
+    const qKw = v.keyword.toLowerCase();
+    const qSec = (v.secondaryKeyword || '').toLowerCase();
+    const qCoord = `${v.bookCode} ${v.chapter}:${v.verse}`.toLowerCase();
+    const qFullCoord = `${v.bookName} ${v.chapter}:${v.verse}`.toLowerCase();
+    const qText = v.text.toLowerCase();
+
+    return qKw.includes(query) || qSec.includes(query) || qCoord.includes(query) || qFullCoord.includes(query) || qText.includes(query);
+  });
+
+  resultContainer.classList.remove('hidden');
+
+  if (matches.length === 0) {
+    list.innerHTML = `<div class="col-span-full py-4 text-xs text-slate-500">Không tìm thấy từ khóa hoặc câu khớp với "${query}".</div>`;
+    return;
+  }
+
+  list.innerHTML = matches.slice(0, 6).map(v => `
+    <div onclick="jumpToVerse(${v.bookFloor}, ${v.chapter})" class="p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-400 cursor-pointer transition-all space-y-1">
+      <div class="flex items-center justify-between text-xs">
+        <span class="font-mono font-bold text-amber-400">${v.bookName} (${v.bookCode}) ${v.chapter}:${v.verse}</span>
+        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px]">Từ khóa: "${v.keyword}"</span>
+      </div>
+      <p class="text-xs text-slate-300 line-clamp-2">"${v.text}"</p>
+    </div>
+  `).join('');
+}
+
+function jumpToVerse(floor, chapter) {
+  playSound('click');
+  currentSelectedFloor = floor;
+  currentSelectedRoom = chapter;
+  selectFloor(floor);
+  selectRoom(chapter);
+  // Clear search
+  document.getElementById('scriptureSearchInput').value = '';
+  document.getElementById('scriptureSearchResults').classList.add('hidden');
+}
+
+// Populate Add Verse Select Dropdown
+function populateBookDropdown() {
+  const select = document.getElementById('inputVerseBook');
+  if (!select) return;
+
+  select.innerHTML = BIBLE_66_BOOKS.map(b => `
+    <option value="${b.floor}">Tầng ${b.floor}: ${b.name} (${b.code})</option>
+  `).join('');
+}
+
+function openAddVerseModal() {
+  playSound('click');
+  populateBookDropdown();
+  document.getElementById('inputVerseBook').value = currentSelectedFloor;
+  document.getElementById('inputVerseChapter').value = currentSelectedRoom;
+  document.getElementById('inputVerseNumber').value = 1;
+  document.getElementById('inputVerseKeyword').value = '';
+  document.getElementById('inputVerseSecondaryKeyword').value = '';
+  document.getElementById('inputVerseText').value = '';
+
+  const modal = document.getElementById('addVerseModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function openAddVerseForCurrentFloor() {
+  openAddVerseModal();
+}
+
+function closeAddVerseModal() {
+  playSound('click');
+  const modal = document.getElementById('addVerseModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function saveCustomVerse(e) {
+  e.preventDefault();
+  playSound('success');
+
+  const floor = parseInt(document.getElementById('inputVerseBook').value, 10);
+  const chapter = parseInt(document.getElementById('inputVerseChapter').value, 10);
+  const verse = parseInt(document.getElementById('inputVerseNumber').value, 10);
+  const keyword = document.getElementById('inputVerseKeyword').value.trim();
+  const secondaryKeyword = document.getElementById('inputVerseSecondaryKeyword').value.trim();
+  const text = document.getElementById('inputVerseText').value.trim();
+
+  const book = BIBLE_66_BOOKS.find(b => b.floor === floor);
+
+  const newVerse = {
+    id: 'user_v_' + Date.now(),
+    bookFloor: floor,
+    bookCode: book ? book.code : 'S',
+    bookName: book ? book.name : '',
+    chapter: chapter,
+    verse: verse,
+    keyword: keyword,
+    secondaryKeyword: secondaryKeyword,
+    text: text
+  };
+
+  try {
+    const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    const custom = raw ? JSON.parse(raw) : [];
+    custom.push(newVerse);
+    localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(custom));
+  } catch (err) {
+    console.error(err);
+  }
+
+  closeAddVerseModal();
+  selectFloor(floor);
+  selectRoom(chapter);
+}
+
+// SCRIPTURE REFLEX QUIZ MODAL
+let currentQuizVerse = null;
+let quizRevealed = false;
+
+function openScriptureQuizModal() {
+  playSound('click');
+  const allVerses = getAllScriptureVerses();
+  if (allVerses.length === 0) return;
+
+  currentQuizVerse = allVerses[Math.floor(Math.random() * allVerses.length)];
+  quizRevealed = false;
+
+  renderQuizCard();
+
+  const modal = document.getElementById('scriptureQuizModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeScriptureQuizModal() {
+  playSound('click');
+  const modal = document.getElementById('scriptureQuizModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function renderQuizCard() {
+  const container = document.getElementById('scriptureQuizBody');
+  if (!container || !currentQuizVerse) return;
+
+  const firstLetters = generateFirstLetters(currentQuizVerse.text);
+
+  if (!quizRevealed) {
+    container.innerHTML = `
+      <div class="text-center space-y-4 py-4">
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">TỪ KHÓA MỎ NEO KÍCH HOẠT:</span>
+        <div class="text-3xl font-black text-amber-400 bg-slate-900 border border-amber-500/30 rounded-2xl py-6 px-4 shadow-inner">
+          "${currentQuizVerse.keyword}"
+        </div>
+        <p class="text-xs text-slate-300">
+          Hãy phản xạ ngay trong đầu: <strong>Từ khóa này thuộc Tầng nào (Sách), Phòng mấy (Chương), Câu số mấy?</strong> Và đọc to toàn bộ câu theo Bản 2010!
+        </p>
+        <button onclick="revealQuizAnswer()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold text-sm shadow-md hover:from-amber-400 hover:to-yellow-300">
+          Lật Xem Tọa Độ & Toàn Văn Câu
+        </button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="space-y-4 py-2">
+        <div class="p-4 rounded-xl bg-slate-900 border border-amber-500/40 text-center space-y-1">
+          <div class="text-xs text-slate-400 font-bold uppercase">TỌA ĐỘ CHÍNH XÁC:</div>
+          <div class="text-2xl font-black text-amber-400 font-mono">
+            Tầng ${currentQuizVerse.bookFloor}: ${currentQuizVerse.bookName} (${currentQuizVerse.bookCode}) ${currentQuizVerse.chapter}:${currentQuizVerse.verse}
+          </div>
+        </div>
+
+        <blockquote class="text-sm font-serif italic text-white border-l-2 border-amber-400 pl-4 py-1">
+          "${currentQuizVerse.text}"
+        </blockquote>
+
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono text-amber-300">
+          <span class="text-slate-400 block text-[10px] mb-1">Chuỗi Chữ Cái Đầu:</span>
+          ${firstLetters}
+        </div>
+
+        <button onclick="openScriptureQuizModal()" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700">
+          Thử Thách Từ Khóa Khác
+        </button>
+      </div>
+    `;
+  }
+
+  lucide.createIcons();
+}
+
+function revealQuizAnswer() {
+  playSound('success');
+  quizRevealed = true;
+  renderQuizCard();
+}
+
