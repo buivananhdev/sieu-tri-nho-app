@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuperMind & SuperMemory - Bách Khoa Toàn Thư & Luyện Tập Siêu Trí Não</title>
+  <meta name="description" content="Ứng dụng tổng hợp toàn diện các phương pháp Siêu Trí Tuệ, Siêu Trí Nhớ, Cung Điện Ký Ức, Major System và Luyện Tập Tương Tác.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+              950: '#2e1065',
+            },
+            cyanGlow: '#06b6d4',
+            amberGlow: '#f59e0b',
+            darkBg: '#0b0f19',
+            cardBg: '#131b2e'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-darkBg/80 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('overview')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-cyanGlow flex items-center justify-center shadow-lg shadow-brand-500/20">
+            <i data-lucide="brain-circuit" class="w-6 h-6 text-white"></i>
+          </div>
+          <div>
+            <span class="text-lg font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">SUPERMIND</span>
+            <span class="text-xs block text-slate-400 font-medium -mt-1">Siêu Trí Nhớ & Trí Tuệ</span>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs (Desktop) -->
+        <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
+          <button onclick="switchTab('overview')" class="nav-tab active flex items-center gap-2 px-3 py-2 rounded-lg transition-all" data-tab="overview">
+            <i data-lucide="compass" class="w-4 h-4"></i> Tổng Quan
+          </button>
+          <button onclick="switchTab('memory')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-lg transition-all" data-tab="memory">
+            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Siêu Trí Nhớ
+          </button>
+          <button onclick="switchTab('intelligence')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-lg transition-all" data-tab="intelligence">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-cyan-400"></i> Siêu Trí Tuệ
+          </button>
+          <button onclick="switchTab('converter')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-lg transition-all" data-tab="converter">
+            <i data-lucide="binary" class="w-4 h-4 text-emerald-400"></i> Mã Số 00-99
+          </button>
+          <button onclick="switchTab('practice')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-lg transition-all" data-tab="practice">
+            <i data-lucide="swords" class="w-4 h-4 text-pink-400"></i> Phòng Luyện Tập
+          </button>
+          <button onclick="switchTab('roadmap')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-lg transition-all" data-tab="roadmap">
+            <i data-lucide="calendar-check-2" class="w-4 h-4 text-indigo-400"></i> Lộ Trình 30 Ngày
+          </button>
+        </nav>
+
+        <!-- Right action: Sound toggle & GitHub Link -->
+        <div class="flex items-center gap-2">
+          <button id="soundToggleBtn" onclick="toggleAudio()" title="Bật/Tắt âm thanh hiệu ứng" class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors">
+            <i data-lucide="volume-2" id="soundIcon" class="w-5 h-5"></i>
+          </button>
+          <a href="https://github.com/buivananhdev/sieu-tri-nho-app" target="_blank" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-all">
+            <i data-lucide="github" class="w-4 h-4"></i> buivananhdev
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Bar (Bottom pinned) -->
+    <div class="md:hidden flex items-center justify-around border-t border-slate-800 bg-darkBg/95 py-2 px-1 text-[11px] overflow-x-auto">
+      <button onclick="switchTab('overview')" class="mobile-nav-btn flex flex-col items-center gap-1 px-2 py-1 text-brand-400" data-tab="overview">
+        <i data-lucide="compass" class="w-4 h-4"></i> Tổng quan
+      </button>
+      <button onclick="switchTab('memory')" class="mobile-nav-btn flex flex-col items-center gap-1 px-2 py-1 text-slate-400" data-tab="memory">
+        <i data-lucide="zap" class="w-4 h-4"></i> Trí Nhớ
+      </button>
+      <button onclick="switchTab('intelligence')" class="mobile-nav-btn flex flex-col items-center gap-1 px-2 py-1 text-slate-400" data-tab="intelligence">
+        <i data-lucide="lightbulb" class="w-4 h-4"></i> Trí Tuệ
+      </button>
+      <button onclick="switchTab('converter')" class="mobile-nav-btn flex flex-col items-center gap-1 px-2 py-1 text-slate-400" data-tab="converter">
+        <i data-lucide="binary" class="w-4 h-4"></i> Tra Số
+      </button>
+      <button onclick="switchTab('practice')" class="mobile-nav-btn flex flex-col items-center gap-1 px-2 py-1 text-slate-400" data-tab="practice">
+        <i data-lucide="swords" class="w-4 h-4"></i> Luyện tập
+      </button>
+      <button onclick="switchTab('roadmap')" class="mobile-nav-btn flex flex-col items-center gap-1 px-2 py-1 text-slate-400" data-tab="roadmap">
+        <i data-lucide="calendar" class="w-4 h-4"></i> 30 Ngày
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- TAB 1: OVERVIEW -->
+    <section id="tab-overview" class="tab-content block space-y-12">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cardBg via-slate-900 to-brand-950 p-8 sm:p-12 border border-slate-800 shadow-2xl">
+        <div class="absolute -right-20 -top-20 w-80 h-80 bg-brand-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-cyanGlow/20 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10 max-w-3xl space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Bách Khoa Toàn Thư Não Bộ & Huấn Luyện Tương Tác
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            Khai Phá Tiềm Năng <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">Siêu Trí Tuệ</span> & <span class="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-emerald-400">Siêu Trí Nhớ</span>
+          </h1>
+          <p class="text-base sm:text-lg text-slate-300 leading-relaxed">
+            Hợp nhất toàn bộ các phương pháp ghi nhớ huyền thoại thế giới (Cung Điện Ký Ức, Major System, Spaced Repetition) cùng những mô hình tư duy đỉnh cao của các thiên tài (Feynman, First Principles, Inversion, Deep Work).
+          </p>
+          <div class="flex flex-wrap gap-4 pt-2">
+            <button onclick="switchTab('practice')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-cyan-600 hover:from-brand-500 hover:to-cyan-500 text-white font-bold shadow-lg shadow-brand-500/25 transition-all flex items-center gap-2">
+              <i data-lucide="play" class="w-5 h-5"></i> Bắt Đầu Luyện Tập Ngay
+            </button>
+            <button onclick="switchTab('roadmap')" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold border border-slate-700 transition-all flex items-center gap-2">
+              <i data-lucide="calendar" class="w-5 h-5 text-indigo-400"></i> Xem Lộ Trình 30 Ngày
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics & Status -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-brand-500/40 transition-all">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Phương Pháp Bộ Nhớ</span>
+            <i data-lucide="brain" class="w-4 h-4 text-purple-400"></i>
+          </div>
+          <div class="text-2xl font-black text-white">6 Hệ Thống</div>
+          <div class="text-xs text-slate-400 mt-1">Loci, Major, Peg, SRS, Chunking...</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-cyan-500/40 transition-all">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Mô Hình Tư Duy</span>
+            <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div class="text-2xl font-black text-white">7 Khung Tư Duy</div>
+          <div class="text-xs text-slate-400 mt-1">Feynman, First Principles, OODA...</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-amber-500/40 transition-all">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Từ Điển Số 00-99</span>
+            <i data-lucide="database" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div class="text-2xl font-black text-white">100 Hình Ảnh</div>
+          <div class="text-xs text-slate-400 mt-1">Mã hóa chuẩn cho trí nhớ kỷ lục</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-emerald-500/40 transition-all">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Tiến Độ 30 Ngày</span>
+            <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="text-2xl font-black text-emerald-400" id="overviewProgress">0%</div>
+          <div class="text-xs text-slate-400 mt-1" id="overviewProgressDays">0 / 30 ngày hoàn thành</div>
+        </div>
+      </div>
+
+      <!-- Core Pillars Overview Cards -->
+      <div class="grid md:grid-cols-2 gap-8">
+        
+        <!-- Pillar 1 -->
+        <div class="rounded-3xl bg-cardBg p-6 sm:p-8 border border-slate-800 flex flex-col justify-between hover:border-amber-500/40 transition-all">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-6">
+              <i data-lucide="zap" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">1. Kho Tàng Siêu Trí Nhớ (Mnemonic Master)</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+              Bộ não con người không sinh ra để nhớ những chuỗi số hay văn bản trừu tượng, nhưng cực kỳ mạnh mẽ trong việc ghi nhớ <strong class="text-slate-200">Không Gian, Hình Ảnh, Cảm Xúc và Sự Kịch Tính</strong>. Làm chủ các hệ thống giúp nhớ 100 chữ số số Pi, bộ bài 52 lá hay hàng trăm từ vựng mới mỗi tuần.
+            </p>
+            <ul class="space-y-3 text-sm text-slate-300 mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> <strong>Cung Điện Ký Ức (Loci):</strong> Đặt dữ kiện vào lộ trình thân thuộc.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> <strong>Hệ Thống Major System:</strong> Chuyển mọi con số thành từ ngữ & hình ảnh.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> <strong>Lặp Lại Ngắt Quãng (SRS):</strong> Khắc chế hoàn toàn đường cong quên lãng.</li>
+            </ul>
+          </div>
+          <button onclick="switchTab('memory')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-semibold text-sm transition-all flex items-center justify-center gap-2">
+            Khám Phá Các Phương Pháp Trí Nhớ <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="rounded-3xl bg-cardBg p-6 sm:p-8 border border-slate-800 flex flex-col justify-between hover:border-cyan-500/40 transition-all">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mb-6">
+              <i data-lucide="lightbulb" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">2. Kho Tàng Siêu Trí Tuệ (Mental Models)</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+              Trí nhớ là kho chứa, còn trí tuệ là khả năng phân tích, liên kết và giải quyết những vấn đề phức tạp. Trang bị những mô hình tư duy từ các bộ óc vĩ đại như Richard Feynman, Charlie Munger, Elon Musk để nhìn thấy bản chất của mọi sự việc.
+            </p>
+            <ul class="space-y-3 text-sm text-slate-300 mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> <strong>Kỹ Thuật Feynman:</strong> Giải thích đơn giản để hiểu sâu bản chất.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> <strong>Tư Duy Nguyên Lý Đầu Tiên:</strong> Đập tan định kiến, kiến tạo giải pháp đột phá.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> <strong>Bộ Não Thứ Hai (Second Brain):</strong> Tự động hóa tri thức cá nhân.</li>
+            </ul>
+          </div>
+          <button onclick="switchTab('intelligence')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-semibold text-sm transition-all flex items-center justify-center gap-2">
+            Khám Phá Các Khung Tư Duy <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Quick Practice CTA Strip -->
+      <div class="rounded-2xl bg-gradient-to-r from-brand-900/60 to-purple-900/60 border border-brand-700/50 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-brand-500 rounded-xl text-white">
+            <i data-lucide="flame" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="font-bold text-white">Thử Thách Thần Kinh Hôm Nay</div>
+            <div class="text-slate-300 text-xs">Luyện nhớ 5 con số hoặc 10 đồ vật để kích hoạt liên kết neuron!</div>
+          </div>
+        </div>
+        <button onclick="switchTab('practice')" class="px-5 py-2.5 rounded-xl bg-white text-brand-900 font-bold text-sm hover:bg-slate-100 transition-all shadow-md">
+          Vào Đấu Trường Ngay
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 2: SUPER MEMORY METHODS -->
+    <section id="tab-memory" class="tab-content hidden space-y-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+          <i data-lucide="zap" class="w-7 h-7 text-amber-400"></i> Các Phương Pháp Siêu Trí Nhớ
+        </h2>
+        <p class="text-slate-400 text-sm mt-1">Các quy tắc nền tảng từ những đại kiện tướng vô địch trí nhớ thế giới (WMC).</p>
+      </div>
+
+      <!-- Memory Methods Container -->
+      <div id="memoryMethodsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamically rendered via app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 3: SUPER INTELLIGENCE & THINKING MODELS -->
+    <section id="tab-intelligence" class="tab-content hidden space-y-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+          <i data-lucide="lightbulb" class="w-7 h-7 text-cyan-400"></i> Các Mô Hình Siêu Trí Tuệ & Tư Duy Đỉnh Cao
+        </h2>
+        <p class="text-slate-400 text-sm mt-1">Bộ công cụ tư duy sắc bén giúp giải quyết vấn đề, tự học siêu tốc và ra quyết định chuẩn xác.</p>
+      </div>
+
+      <!-- Intelligence Models Container -->
+      <div id="intelligenceList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamically rendered via app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 4: NUMBER 00-99 MAJOR SYSTEM CONVERTER -->
+    <section id="tab-converter" class="tab-content hidden space-y-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+          <i data-lucide="binary" class="w-7 h-7 text-emerald-400"></i> Bảng Tra Cứu & Mã Hóa Số 00 - 99 (Major System)
+        </h2>
+        <p class="text-slate-400 text-sm mt-1">Hệ thống mã hóa số thành hình ảnh trực quan sinh động — Bí quyết để nhớ ngày tháng, mật mã, số điện thoại và dãy số vô tận.</p>
+      </div>
+
+      <!-- Quick Interactive Search & Tester -->
+      <div class="rounded-2xl bg-cardBg p-6 border border-slate-800 space-y-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+          <div class="relative flex-grow w-full">
+            <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" id="majorSearchInput" placeholder="Nhập số (vd: 07, 25, 99) hoặc từ khóa (súng, mèo, nến)..." oninput="filterMajorNumbers()" class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button onclick="filterMajorCategory('all')" class="major-filter-btn active px-4 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-white border border-slate-700 hover:bg-slate-700">Tất Cả (100)</button>
+            <button onclick="filterMajorCategory('0-24')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">00 - 24</button>
+            <button onclick="filterMajorCategory('25-49')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">25 - 49</button>
+            <button onclick="filterMajorCategory('50-74')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">50 - 74</button>
+            <button onclick="filterMajorCategory('75-99')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">75 - 99</button>
+          </div>
+        </div>
+
+        <!-- Major System Phonetic Guide Banner -->
+        <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-xs text-emerald-300 grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div><strong class="text-white">0:</strong> S / X / Trứng</div>
+          <div><strong class="text-white">1:</strong> T / Đ / Cây dù</div>
+          <div><strong class="text-white">2:</strong> N / Con vịt</div>
+          <div><strong class="text-white">3:</strong> M / Quả tim</div>
+          <div><strong class="text-white">4:</strong> R / Cái ghế</div>
+          <div><strong class="text-white">5:</strong> L / Bàn tay</div>
+          <div><strong class="text-white">6:</strong> Ch / J / Vỏ ốc</div>
+          <div><strong class="text-white">7:</strong> K / G / Cái rìu</div>
+          <div><strong class="text-white">8:</strong> V / F / Người tuyết</div>
+          <div><strong class="text-white">9:</strong> P / B / Quả bóng</div>
+        </div>
+      </div>
+
+      <!-- Numbers Grid -->
+      <div id="majorNumberGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- TAB 5: PRACTICE ARENA -->
+    <section id="tab-practice" class="tab-content hidden space-y-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+          <i data-lucide="swords" class="w-7 h-7 text-pink-400"></i> Phòng Luyện Tập & Đấu Trường Trí Não
+        </h2>
+        <p class="text-slate-400 text-sm mt-1">Luyện tập trực tiếp để biến kỹ thuật lý thuyết thành phản xạ thần kinh của bạn.</p>
+      </div>
+
+      <!-- Game Mode Selectors -->
+      <div class="flex flex-wrap gap-3 border-b border-slate-800 pb-4">
+        <button onclick="switchGameMode('number')" id="btnGameNumber" class="game-mode-btn active px-4 py-2 rounded-xl bg-brand-600 text-white font-bold text-sm flex items-center gap-2">
+          <i data-lucide="hash" class="w-4 h-4"></i> Luyện Nhớ Số Ngẫu Nhiên
+        </button>
+        <button onclick="switchGameMode('words')" id="btnGameWords" class="game-mode-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium text-sm flex items-center gap-2">
+          <i data-lucide="list-ordered" class="w-4 h-4"></i> Luyện Cung Điện Ký Ức (Từ Ngữ)
+        </button>
+        <button onclick="switchGameMode('flashcards')" id="btnGameFlashcards" class="game-mode-btn px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium text-sm flex items-center gap-2">
+          <i data-lucide="layers" class="w-4 h-4"></i> Thẻ Ghi Nhớ Ngắt Quãng (SRS)
+        </button>
+      </div>
+
+      <!-- GAME 1: NUMBER RECALL ARENA -->
+      <div id="game-number-panel" class="space-y-6">
+        <div class="bg-cardBg rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6 max-w-2xl mx-auto">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+              <i data-lucide="calculator" class="w-5 h-5 text-emerald-400"></i> Thử Thách Nhớ Dãy Số
+            </h3>
+            <span class="text-xs text-slate-400">Thời gian nhớ: <strong id="numberTimerVal" class="text-emerald-400">10s</strong></span>
+          </div>
+
+          <!-- Difficulty & Settings -->
+          <div id="numberGameSetup" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-2">Chọn số lượng chữ số:</label>
+              <div class="grid grid-cols-4 gap-2">
+                <button onclick="setNumberLength(4)" class="num-len-btn py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-bold text-slate-300 border border-slate-700 active" data-len="4">4 số</button>
+                <button onclick="setNumberLength(8)" class="num-len-btn py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-bold text-slate-300 border border-slate-700" data-len="8">8 số</button>
+                <button onclick="setNumberLength(12)" class="num-len-btn py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-bold text-slate-300 border border-slate-700" data-len="12">12 số</button>
+                <button onclick="setNumberLength(20)" class="num-len-btn py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-bold text-slate-300 border border-slate-700" data-len="20">20 số (Master)</button>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400">
+              💡 <strong>Mẹo Đại Kiện Tướng:</strong> Chia nhỏ dãy số thành từng cặp 2 số (vd: 07 24 99). Chuyển từng cặp thành hình ảnh trong Major System rồi tạo thành một câu chuyện hành động kịch tính!
+            </div>
+
+            <button onclick="startNumberGame()" class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 font-bold text-white shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-5 h-5"></i> Bắt Đầu Nhớ
+            </button>
+          </div>
+
+          <!-- Playing: Memorize phase -->
+          <div id="numberGameMemorize" class="hidden text-center space-y-6">
+            <div class="text-xs uppercase tracking-widest text-slate-400 font-bold">Hãy ghi nhớ dãy số sau:</div>
+            <div id="displayNumberSequence" class="text-3xl sm:text-5xl font-mono font-black text-amber-300 tracking-wider py-6 px-4 bg-slate-900/90 rounded-2xl border border-amber-500/30">
+              --
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="numberTimeProgress" class="bg-amber-400 h-full w-full transition-all duration-1000 ease-linear"></div>
+            </div>
+            <button onclick="finishMemorizeEarly()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700">
+              Tôi Đã Nhớ Xong (Nhập Ngay)
+            </button>
+          </div>
+
+          <!-- Playing: Recall phase -->
+          <div id="numberGameRecall" class="hidden space-y-4">
+            <div class="text-center">
+              <div class="text-sm font-bold text-white mb-1">Nhập lại dãy số bạn vừa nhớ:</div>
+              <p class="text-xs text-slate-400">Nhập chính xác theo thứ tự</p>
+            </div>
+            <input type="text" id="numberRecallInput" placeholder="Nhập các con số vào đây..." class="w-full text-center text-2xl font-mono font-bold bg-slate-900 border-2 border-brand-500 rounded-xl py-3 text-white focus:outline-none">
+            <button onclick="submitNumberRecall()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold transition-all">
+              Kiểm Tra Kết Quả
+            </button>
+          </div>
+
+          <!-- Game Result -->
+          <div id="numberGameResult" class="hidden text-center space-y-4">
+            <div id="numberResultIcon" class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl">🎉</div>
+            <h4 id="numberResultTitle" class="text-xl font-bold text-white">Chính xác 100%!</h4>
+            <div id="numberResultDetails" class="text-sm text-slate-300 bg-slate-900 p-4 rounded-xl border border-slate-800"></div>
+            <button onclick="resetNumberGame()" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold transition-all">
+              Chơi Lại Lần Nữa
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GAME 2: WORD CHAIN / MEMORY PALACE ARENA -->
+      <div id="game-words-panel" class="hidden space-y-6">
+        <div class="bg-cardBg rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6 max-w-2xl mx-auto">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+              <i data-lucide="building" class="w-5 h-5 text-purple-400"></i> Thử Thách Cung Điện Ký Ức (10 Từ Ngẫu Nhiên)
+            </h3>
+          </div>
+
+          <!-- Setup -->
+          <div id="wordsGameSetup" class="space-y-4">
+            <p class="text-slate-300 text-sm">
+              Bạn sẽ nhận được 10 đồ vật/từ ngữ ngẫu nhiên. Hãy lần lượt đặt từng từ vào 10 vị trí trong ngôi nhà quen thuộc của bạn (vd: 1. Cửa chính, 2. Tủ giày, 3. Ghế sofa, 4. Bàn trà, 5. TV...).
+            </p>
+            <div class="p-4 rounded-xl bg-purple-950/30 border border-purple-800/40 text-xs text-purple-300">
+              💡 <strong>Quy tắc vàng:</strong> Hình dung hình ảnh cực kỳ phóng đại, kỳ dị hoặc có âm thanh/mùi vị mạnh (Ví dụ: quả chuối khổng lồ phát sáng đè bẹp cánh cửa).
+            </div>
+            <button onclick="startWordGame()" class="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-bold text-white shadow-lg shadow-purple-500/20 transition-all flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-5 h-5"></i> Bắt Đầu Thử Thách 10 Từ
+            </button>
+          </div>
+
+          <!-- Memorize list -->
+          <div id="wordsGameMemorize" class="hidden space-y-6">
+            <div class="text-xs uppercase tracking-widest text-slate-400 font-bold text-center">Gắn 10 từ này vào Cung Điện Ký Ức của bạn:</div>
+            <div id="wordsGridList" class="grid grid-cols-2 sm:grid-cols-2 gap-3">
+              <!-- Rendered via JS -->
+            </div>
+            <button onclick="finishWordsMemorize()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all">
+              Đã Gắn Xong Vào Cung Điện (Bắt Đầu Kiểm Tra)
+            </button>
+          </div>
+
+          <!-- Recall words -->
+          <div id="wordsGameRecall" class="hidden space-y-4">
+            <div class="text-center">
+              <div class="text-sm font-bold text-white mb-1">Điền lại 10 từ theo đúng thứ tự 1 đến 10:</div>
+              <p class="text-xs text-slate-400">Đi bộ lại trong cung điện ký ức của bạn để nhặt từng món đồ ra!</p>
+            </div>
+            <div id="wordsRecallInputs" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- 10 inputs rendered via JS -->
+            </div>
+            <button onclick="submitWordsRecall()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold transition-all">
+              Nộp Bài Kiểm Tra
+            </button>
+          </div>
+
+          <!-- Result -->
+          <div id="wordsGameResult" class="hidden text-center space-y-4">
+            <div id="wordsResultIcon" class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl">🏆</div>
+            <h4 id="wordsResultTitle" class="text-xl font-bold text-white">Kết quả</h4>
+            <div id="wordsResultDetails" class="text-sm text-slate-300 bg-slate-900 p-4 rounded-xl border border-slate-800 text-left space-y-2"></div>
+            <button onclick="resetWordsGame()" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold transition-all">
+              Luyện Danh Sách Khác
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GAME 3: SRS FLASHCARDS ARENA -->
+      <div id="game-flashcards-panel" class="hidden space-y-6">
+        <div class="bg-cardBg rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6 max-w-2xl mx-auto">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="layers" class="w-5 h-5 text-indigo-400"></i> Thẻ Ghi Nhớ Ngắt Quãng (SRS Cards)
+              </h3>
+              <p class="text-xs text-slate-400">Ôn tập đúng lúc trước khi quên để biến kiến thức thành vĩnh cửu.</p>
+            </div>
+            <span id="flashcardCounter" class="text-xs px-3 py-1 bg-slate-800 rounded-full text-indigo-300 font-bold border border-slate-700">1 / 15</span>
+          </div>
+
+          <!-- Flashcard Flip Board -->
+          <div id="flashcardContainer" class="flashcard-scene cursor-pointer" onclick="flipFlashcard()">
+            <div id="flashcardElement" class="flashcard-card relative w-full min-h-[220px] rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-950/60 border border-indigo-500/30 p-8 flex flex-col justify-between items-center text-center shadow-xl">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-400" id="cardCategory">SIÊU TRÍ NHỚ</span>
+              <div id="cardContentText" class="text-lg sm:text-xl font-semibold text-white my-auto">
+                Cung điện ký ức (Method of Loci) hoạt động dựa trên cơ chế sinh học nào của não bộ?
+              </div>
+              <div class="text-xs text-slate-400 flex items-center gap-1">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Nhấp để lật xem đáp án
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Rating Buttons -->
+          <div class="grid grid-cols-3 gap-3">
+            <button onclick="rateFlashcard('hard')" class="py-3 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 text-rose-300 text-xs font-bold transition-all flex flex-col items-center gap-1">
+              <span>Chưa Nhớ</span>
+              <span class="text-[10px] text-rose-400 font-normal">Ôn lại sớm</span>
+            </button>
+            <button onclick="rateFlashcard('good')" class="py-3 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-800/50 text-amber-300 text-xs font-bold transition-all flex flex-col items-center gap-1">
+              <span>Tạm Ổn</span>
+              <span class="text-[10px] text-amber-400 font-normal">Nhớ mất chút công</span>
+            </button>
+            <button onclick="rateFlashcard('easy')" class="py-3 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 text-xs font-bold transition-all flex flex-col items-center gap-1">
+              <span>Rất Dễ</span>
+              <span class="text-[10px] text-emerald-400 font-normal">Đã thành phản xạ</span>
+            </button>
+          </div>
+
+          <!-- Card navigation -->
+          <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
+            <button onclick="prevFlashcard()" class="hover:text-white flex items-center gap-1">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i> Thẻ trước
+            </button>
+            <button onclick="nextFlashcard()" class="hover:text-white flex items-center gap-1">
+              Thẻ kế tiếp <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: 30-DAY MASTER CHALLENGE -->
+    <section id="tab-roadmap" class="tab-content hidden space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+            <i data-lucide="calendar-check-2" class="w-7 h-7 text-indigo-400"></i> Lộ Trình 30 Ngày Rèn Luyện Siêu Não Bộ
+          </h2>
+          <p class="text-slate-400 text-sm mt-1">Mỗi ngày một thói quen nhỏ. Sau 30 ngày, bạn sở hữu tư duy sắc bén và trí nhớ siêu đẳng.</p>
+        </div>
+        <!-- Reset button -->
+        <button onclick="resetRoadmapProgress()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-900/50 text-slate-400 hover:text-rose-300 border border-slate-700 transition-colors self-start sm:self-auto">
+          Đặt lại tiến trình
+        </button>
+      </div>
+
+      <!-- Overall Progress Bar Card -->
+      <div class="p-6 rounded-2xl bg-cardBg border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between text-sm">
+          <span class="font-bold text-white">Tiến độ hoàn thành của bạn:</span>
+          <span id="roadmapPercentText" class="font-bold text-emerald-400">0%</span>
+        </div>
+        <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800">
+          <div id="roadmapProgressBar" class="bg-gradient-to-r from-brand-600 via-cyan-500 to-emerald-400 h-full w-0 transition-all duration-500"></div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-400">
+          <span id="roadmapDaysDoneText">0 / 30 ngày hoàn thành</span>
+          <span>Dữ liệu lưu tự động trên máy bạn</span>
+        </div>
+      </div>
+
+      <!-- 30 Days Grid -->
+      <div id="roadmapDaysGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL FOR DETAILED ARTICLE / METHOD POPUP -->
+  <div id="detailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-cardBg border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+        <div class="flex items-center gap-3">
+          <div id="modalIconContainer" class="w-10 h-10 rounded-xl flex items-center justify-center text-white"></div>
+          <div>
+            <h3 id="modalTitle" class="text-lg font-bold text-white">Tiêu đề bài viết</h3>
+            <span id="modalCategory" class="text-xs text-slate-400">Chuyên mục</span>
+          </div>
+        </div>
+        <button onclick="closeModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div id="modalBody" class="p-6 overflow-y-auto space-y-4 text-slate-300 text-sm leading-relaxed">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/50 flex justify-end">
+        <button onclick="closeModal()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm">
+          Đã Hiểu & Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800/80 bg-darkBg/90 py-8 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 space-y-2">
+      <div class="flex items-center justify-center gap-2 text-slate-400">
+        <span>Xây dựng cho kho lưu trữ</span>
+        <a href="https://github.com/buivananhdev/sieu-tri-nho-app" target="_blank" class="text-brand-400 hover:underline font-semibold flex items-center gap-1">
+          <i data-lucide="github" class="w-3.5 h-3.5"></i> buivananhdev/sieu-tri-nho-app
+        </a>
+      </div>
+      <p>Ứng dụng hoàn toàn chạy trên trình duyệt (Client-Side), không thu thập dữ liệu cá nhân, tối ưu hóa cho GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
