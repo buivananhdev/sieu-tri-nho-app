@@ -576,13 +576,13 @@
       </div>
     </section>
 
-    <!-- TAB 4: NUMBER 00-99 MAJOR SYSTEM CONVERTER -->
+    <!-- TAB 4: NUMBER 00-99 CONVERTER (10 THEMATIC DOMAINS) -->
     <section id="tab-converter" class="tab-content hidden space-y-8">
       <div>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
-          <i data-lucide="binary" class="w-7 h-7 text-emerald-400"></i> Bảng Tra Cứu & Mã Hóa Số 00 - 99 (Major System)
+          <i data-lucide="binary" class="w-7 h-7 text-emerald-400"></i> Bảng Mã Hóa Số 00 - 99 (Hệ Thống 10 Chủ Đề Khoa Học & Tự Nhiên)
         </h2>
-        <p class="text-slate-400 text-sm mt-1">Hệ thống mã hóa số thành hình ảnh trực quan sinh động — Bí quyết để nhớ ngày tháng, mật mã, số điện thoại và dãy số vô tận.</p>
+        <p class="text-slate-400 text-sm mt-1">100 biểu tượng cố định phân thành 10 cụm chủ đề khoa học giúp liên kết trí nhớ cực nhanh và có hệ thống logic.</p>
       </div>
 
       <!-- Quick Interactive Search & Tester -->
@@ -590,29 +590,37 @@
         <div class="flex flex-col sm:flex-row items-center gap-4">
           <div class="relative flex-grow w-full">
             <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-            <input type="text" id="majorSearchInput" placeholder="Nhập số (vd: 07, 25, 99) hoặc từ khóa (súng, mèo, nến)..." oninput="filterMajorNumbers()" class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
-          </div>
-          <div class="flex gap-2 w-full sm:w-auto">
-            <button onclick="filterMajorCategory('all')" class="major-filter-btn active px-4 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-white border border-slate-700 hover:bg-slate-700">Tất Cả (100)</button>
-            <button onclick="filterMajorCategory('0-24')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">00 - 24</button>
-            <button onclick="filterMajorCategory('25-49')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">25 - 49</button>
-            <button onclick="filterMajorCategory('50-74')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">50 - 74</button>
-            <button onclick="filterMajorCategory('75-99')" class="major-filter-btn px-3 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">75 - 99</button>
+            <input type="text" id="majorSearchInput" placeholder="Nhập số (vd: 00, 15, 30, 80) hoặc từ khóa (Mặt Trời, DNA, Robot, Cầu vồng)..." oninput="filterMajorNumbers()" class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
           </div>
         </div>
 
-        <!-- Major System Phonetic Guide Banner -->
-        <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-xs text-emerald-300 grid grid-cols-2 sm:grid-cols-5 gap-2">
-          <div><strong class="text-white">0:</strong> S / X / Trứng</div>
-          <div><strong class="text-white">1:</strong> T / Đ / Cây dù</div>
-          <div><strong class="text-white">2:</strong> N / Con vịt</div>
-          <div><strong class="text-white">3:</strong> M / Quả tim</div>
-          <div><strong class="text-white">4:</strong> R / Cái ghế</div>
-          <div><strong class="text-white">5:</strong> L / Bàn tay</div>
-          <div><strong class="text-white">6:</strong> Ch / J / Vỏ ốc</div>
-          <div><strong class="text-white">7:</strong> K / G / Cái rìu</div>
-          <div><strong class="text-white">8:</strong> V / F / Người tuyết</div>
-          <div><strong class="text-white">9:</strong> P / B / Quả bóng</div>
+        <!-- 10 Domain Filter Buttons -->
+        <div class="flex flex-wrap gap-1.5 overflow-x-auto pb-1">
+          <button onclick="filterMajorCategory('all')" class="major-filter-btn active px-3.5 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-white border border-slate-700 hover:bg-slate-700">Tất Cả (100)</button>
+          <button onclick="filterMajorCategory('0-9')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">00–09: Vũ trụ 🌌</button>
+          <button onclick="filterMajorCategory('10-19')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">10–19: Vật lý ⚛️</button>
+          <button onclick="filterMajorCategory('20-29')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">20–29: Hóa học 🧪</button>
+          <button onclick="filterMajorCategory('30-39')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">30–39: Sinh học 🧬</button>
+          <button onclick="filterMajorCategory('40-49')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">40–49: Trái Đất 🌍</button>
+          <button onclick="filterMajorCategory('50-59')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">50–59: Toán học 🔢</button>
+          <button onclick="filterMajorCategory('60-69')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">60–69: Công nghệ 💻</button>
+          <button onclick="filterMajorCategory('70-79')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">70–79: Năng lượng ⚡</button>
+          <button onclick="filterMajorCategory('80-89')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">80–89: Không gian 🚀</button>
+          <button onclick="filterMajorCategory('90-99')" class="major-filter-btn px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-700">90–99: Tự nhiên 🌿</button>
+        </div>
+
+        <!-- 10 Domains Overview Bar -->
+        <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-800/40 text-xs text-emerald-300 grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+          <div><strong class="text-white">00–09:</strong> Vũ trụ (Mặt Trời, Trái Đất...)</div>
+          <div><strong class="text-white">10–19:</strong> Vật lý (Nguyên tử, Điện, Sóng...)</div>
+          <div><strong class="text-white">20–29:</strong> Hóa học (Ống nghiệm, Nước...)</div>
+          <div><strong class="text-white">30–39:</strong> Sinh học (DNA, Tế bào, Não...)</div>
+          <div><strong class="text-white">40–49:</strong> Trái Đất (Núi lửa, Biển, Sa mạc...)</div>
+          <div><strong class="text-white">50–59:</strong> Toán học (Con số, Dấu cộng...)</div>
+          <div><strong class="text-white">60–69:</strong> Công nghệ (Máy tính, Robot...)</div>
+          <div><strong class="text-white">70–79:</strong> Năng lượng (Ngọn lửa, Tia sét...)</div>
+          <div><strong class="text-white">80–89:</strong> Không gian (Phi hành gia, Đĩa bay...)</div>
+          <div><strong class="text-white">90–99:</strong> Quy luật (Cầu vồng, Sóng thần...)</div>
         </div>
       </div>
 
