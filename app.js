@@ -1162,6 +1162,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateFlashcardUI();
   updateProgressMetrics();
   initScriptureTower();
+  renderSubjectsGrid();
 
   // Initialize Lucide icons
   lucide.createIcons();
@@ -1835,3 +1836,233 @@ function revealQuizAnswer() {
   renderQuizCard();
 }
 
+
+// ==========================================
+// 16. KHO CÁC MÔN HỌC CÁ NHÂN (SUBJECTS HUB)
+// ==========================================
+
+const DEFAULT_SUBJECTS = [
+  {
+    id: 'bibletower',
+    name: 'Kinh Thánh (Tòa Nhà 66 Tầng)',
+    badge: 'Bản 2010 • 66 Tầng',
+    desc: 'Mã hóa 66 sách thành 66 tầng, chương là phòng, câu là nội dung trong phòng, kích hoạt bằng Từ Khóa Mỏ Neo.',
+    icon: 'building-2',
+    color: 'from-amber-600 to-yellow-600',
+    type: 'bible'
+  },
+  {
+    id: 'english',
+    name: 'Tiếng Anh Siêu Tốc',
+    badge: 'Ngoại Ngữ',
+    desc: 'Cung điện 1000 từ vựng cốt lõi theo phương pháp Âm Thanh Tương Tự (Sound-alike) & liên tưởng cảm xúc cao.',
+    icon: 'languages',
+    color: 'from-blue-600 to-cyan-600',
+    type: 'custom',
+    topics: [
+      { title: 'Chủ đề 1: Giao Tiếp & Ẩm Thực (20 từ)', notes: 'Neo vào Cung điện Phòng bếp của bạn' },
+      { title: 'Chủ đề 2: Du Lịch & Sân Bay (30 từ)', notes: 'Neo vào Sảnh sân bay Nội Bài / Tân Sơn Nhất' }
+    ]
+  },
+  {
+    id: 'law',
+    name: 'Pháp Luật & Điều Khoản Cốt Lõi',
+    badge: 'Hệ Thống Luật',
+    desc: 'Mã hóa số điều luật theo Major System và gắn các tình huống thực tiễn vào Cung Điện Tòa Án.',
+    icon: 'scale',
+    color: 'from-emerald-600 to-teal-600',
+    type: 'custom',
+    topics: [
+      { title: 'Chương 1: Các Nguyên Tắc Cơ Bản', notes: 'Gắn Điều 1 đến Điều 15 vào Cổng vào và Hành lang' }
+    ]
+  }
+];
+
+const SUBJECTS_STORAGE_KEY = 'supermind_custom_user_subjects_v1';
+let currentActiveSubjectId = 'bibletower';
+
+function getStoredSubjects() {
+  try {
+    const raw = localStorage.getItem(SUBJECTS_STORAGE_KEY);
+    const custom = raw ? JSON.parse(raw) : [];
+    return [...DEFAULT_SUBJECTS, ...custom];
+  } catch (e) {
+    return DEFAULT_SUBJECTS;
+  }
+}
+
+function renderSubjectsGrid() {
+  const container = document.getElementById('subjectsCardsContainer');
+  if (!container) return;
+
+  const subjects = getStoredSubjects();
+
+  let html = subjects.map(s => {
+    const isSelected = s.id === currentActiveSubjectId;
+    return `
+      <div onclick="selectSubject('${s.id}')" class="p-5 rounded-2xl bg-cardBg border ${isSelected ? 'border-amber-500 shadow-lg shadow-amber-500/10' : 'border-slate-800 hover:border-slate-700'} cursor-pointer flex flex-col justify-between transition-all group">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${s.color || 'from-purple-600 to-indigo-600'} text-white flex items-center justify-center text-sm shadow">
+              <i data-lucide="${s.icon || 'book-open'}" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isSelected ? 'bg-amber-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300 border border-slate-700'}">
+              ${s.badge || 'Môn học'}
+            </span>
+          </div>
+          <h4 class="text-sm font-bold text-white group-hover:text-amber-300 transition-colors mb-1.5">${s.name}</h4>
+          <p class="text-xs text-slate-400 leading-relaxed line-clamp-2">${s.desc}</p>
+        </div>
+        <div class="pt-3 mt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold ${isSelected ? 'text-amber-400' : 'text-slate-500 group-hover:text-slate-300'}">
+          <span>${isSelected ? '● Đang xem nội dung bên dưới' : 'Bấm để học môn này'}</span>
+          <i data-lucide="arrow-down" class="w-3.5 h-3.5 ${isSelected ? 'block text-amber-400' : 'hidden'}"></i>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Add "+" card to prompt adding custom subjects
+  html += `
+    <div onclick="openAddSubjectModal()" class="p-5 rounded-2xl border border-dashed border-slate-700 hover:border-amber-400/60 bg-slate-900/40 hover:bg-slate-900 cursor-pointer flex flex-col items-center justify-center text-center transition-all group min-h-[160px]">
+      <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-amber-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+        <i data-lucide="plus" class="w-5 h-5"></i>
+      </div>
+      <div class="text-xs font-bold text-white group-hover:text-amber-300 mb-1">+ Thêm Môn Học Mới Của Bạn</div>
+      <p class="text-[11px] text-slate-400">Tạo Cung điện / Tòa nhà riêng cho bất kỳ môn học nào</p>
+    </div>
+  `;
+
+  container.innerHTML = html;
+  lucide.createIcons();
+}
+
+function selectSubject(subjectId) {
+  playSound('click');
+  currentActiveSubjectId = subjectId;
+  renderSubjectsGrid();
+
+  const subjects = getStoredSubjects();
+  const subj = subjects.find(s => s.id === subjectId) || subjects[0];
+
+  const titleEl = document.getElementById('activeSubjectName');
+  const badgeEl = document.getElementById('activeSubjectBadge');
+  const bibleView = document.getElementById('subjectBibleView');
+  const customView = document.getElementById('subjectCustomView');
+
+  if (titleEl) {
+    titleEl.innerHTML = `<i data-lucide="${subj.icon || 'book-open'}" class="w-4 h-4 text-amber-400"></i> ${subj.name}`;
+  }
+  if (badgeEl) {
+    badgeEl.textContent = subj.badge || 'Cung Điện Ghi Nhớ';
+  }
+
+  if (subj.type === 'bible' || subj.id === 'bibletower') {
+    if (bibleView) bibleView.classList.remove('hidden');
+    if (customView) customView.classList.add('hidden');
+  } else {
+    if (bibleView) bibleView.classList.add('hidden');
+    if (customView) customView.classList.remove('hidden');
+
+    document.getElementById('customSubjectTitle').textContent = subj.name;
+    document.getElementById('customSubjectDesc').textContent = subj.desc;
+
+    // Render topics if any
+    const topicsContainer = document.getElementById('customSubjectTopicsList');
+    if (topicsContainer) {
+      const topics = subj.topics || [];
+      if (topics.length === 0) {
+        topicsContainer.innerHTML = `
+          <div class="col-span-full py-6 text-center text-xs text-slate-500">
+            Chưa có bài học nào trong môn này. Hãy bấm nút "+ Thêm Bài Học / Chủ Đề Mới" ở trên để bắt đầu!
+          </div>
+        `;
+      } else {
+        topicsContainer.innerHTML = topics.map((t, idx) => `
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+            <div class="text-xs font-bold text-amber-400">${idx + 1}. ${t.title}</div>
+            <p class="text-xs text-slate-300">${t.notes}</p>
+          </div>
+        `).join('');
+      }
+    }
+  }
+
+  lucide.createIcons();
+}
+
+function openAddSubjectModal() {
+  playSound('click');
+  const modal = document.getElementById('addSubjectModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function closeAddSubjectModal() {
+  playSound('click');
+  const modal = document.getElementById('addSubjectModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function saveCustomSubject(e) {
+  e.preventDefault();
+  playSound('success');
+
+  const name = document.getElementById('inputSubjectName').value.trim();
+  const model = document.getElementById('inputSubjectModel').value.trim();
+  const desc = document.getElementById('inputSubjectDesc').value.trim();
+
+  const newSubj = {
+    id: 'subj_' + Date.now(),
+    name: name,
+    badge: model || 'Cung Điện Riêng',
+    desc: desc || `Ứng dụng phương pháp ${model} để ghi nhớ môn ${name}.`,
+    icon: 'book-open',
+    color: 'from-purple-600 to-indigo-600',
+    type: 'custom',
+    topics: []
+  };
+
+  try {
+    const raw = localStorage.getItem(SUBJECTS_STORAGE_KEY);
+    const custom = raw ? JSON.parse(raw) : [];
+    custom.push(newSubj);
+    localStorage.setItem(SUBJECTS_STORAGE_KEY, JSON.stringify(custom));
+  } catch (err) {
+    console.error(err);
+  }
+
+  closeAddSubjectModal();
+  renderSubjectsGrid();
+  selectSubject(newSubj.id);
+}
+
+function openAddTopicToCustomSubject() {
+  const title = prompt('Nhập tên Chủ đề / Bài học mới:');
+  if (!title) return;
+  const notes = prompt('Nhập ghi chú Cung điện / Mốc vị trí / Từ khóa cần nhớ:') || '';
+
+  const subjects = getStoredSubjects();
+  const subj = subjects.find(s => s.id === currentActiveSubjectId);
+  if (subj) {
+    if (!subj.topics) subj.topics = [];
+    subj.topics.push({ title, notes });
+
+    try {
+      const raw = localStorage.getItem(SUBJECTS_STORAGE_KEY);
+      const custom = raw ? JSON.parse(raw) : [];
+      const target = custom.find(s => s.id === currentActiveSubjectId);
+      if (target) {
+        if (!target.topics) target.topics = [];
+        target.topics.push({ title, notes });
+        localStorage.setItem(SUBJECTS_STORAGE_KEY, JSON.stringify(custom));
+      }
+    } catch (e) {}
+
+    selectSubject(currentActiveSubjectId);
+  }
+}
