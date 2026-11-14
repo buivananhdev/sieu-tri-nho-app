@@ -261,40 +261,45 @@
     <!-- TAB: SUBJECTS HUB & SCRIPTURE TOWER (AS A SUBJECT) -->
     <section id="tab-subjects" class="tab-content hidden space-y-8">
       
-      <!-- Subjects Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2">
-            <i data-lucide="folder-kanban" class="w-3.5 h-3.5"></i> Không Gian Học Tập Cá Nhân 100% Của Bạn
+      <!-- SCREEN 1: DANH SÁCH CÁC MÔN HỌC (GỌN GÀNG, KHÔNG LỘN XỘN) -->
+      <div id="subjectsListScreen" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2">
+              <i data-lucide="folder-kanban" class="w-3.5 h-3.5"></i> Không Gian Học Tập Cá Nhân 100% Của Bạn
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+              <i data-lucide="graduation-cap" class="w-7 h-7 text-amber-400"></i> Kho Các Môn Học Của Bạn
+            </h2>
+            <p class="text-slate-400 text-sm mt-1">Chọn một môn học bên dưới để mở toàn bộ không gian ghi nhớ chuyên sâu của môn đó.</p>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-            <i data-lucide="graduation-cap" class="w-7 h-7 text-amber-400"></i> Kho Các Môn Học Của Bạn
-          </h2>
-          <p class="text-slate-400 text-sm mt-1">Mỗi môn là một Tòa Nhà / Cung Điện Ký Ức riêng. Tự do mở rộng, thêm môn mới và tùy chỉnh theo ý bạn.</p>
+          <button onclick="openAddSubjectModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-bold text-xs shadow-md flex items-center gap-2 transition-all self-start sm:self-auto">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> + Thêm Môn Học Mới
+          </button>
         </div>
-        <button onclick="openAddSubjectModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-bold text-xs shadow-md flex items-center gap-2 transition-all self-start sm:self-auto">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> + Thêm Môn Học Mới
-        </button>
+
+        <!-- Subject Selection Cards Grid -->
+        <div id="subjectsCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Rendered via JS -->
+        </div>
       </div>
 
-      <!-- Subject Selection Cards Grid (Môn 66 Tầng nằm ở đây như 1 môn học) -->
-      <div id="subjectsCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Rendered via JS -->
-      </div>
-
-      <!-- ACTIVE SUBJECT WORKSPACE (HIỂN THỊ Ở PHÍA DƯỚI) -->
-      <div id="activeSubjectWorkspace" class="pt-4 border-t border-slate-800 space-y-6">
+      <!-- SCREEN 2: KHÔNG GIAN CHI TIẾT KHI ẤN VÀO TỪNG MÔN HỌC -->
+      <div id="subjectDetailScreen" class="hidden space-y-6">
         
-        <!-- Breadcrumb & Subject Title Bar -->
+        <!-- Nút quay lại danh mục môn học -->
         <div class="flex items-center justify-between p-4 rounded-2xl bg-cardBg border border-slate-800">
+          <button onclick="backToSubjectsList()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-500/40 text-xs font-bold flex items-center gap-2 transition-all">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Quay Lại Danh Mục Môn Học
+          </button>
           <div class="flex items-center gap-2.5">
             <span class="text-xs text-slate-400 font-medium">Đang học môn:</span>
             <span id="activeSubjectName" class="text-sm font-bold text-amber-300 flex items-center gap-1.5">
               <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Kinh Thánh (Tòa Nhà 66 Tầng)
             </span>
-          </div>
-          <div class="text-xs text-slate-400 font-mono" id="activeSubjectBadge">
-            Bản Hiệu Đính 2010 • 66 Tầng
+            <span class="text-xs text-slate-400 font-mono hidden sm:inline" id="activeSubjectBadge">
+              • Bản Hiệu Đính 2010 • 66 Tầng
+            </span>
           </div>
         </div>
 
@@ -470,52 +475,6 @@
         </form>
       </div>
     </div>
-            <span id="floorCountBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">66 Tầng</span>
-          </div>
-          <!-- Scrollable floors -->
-          <div id="floorsElevatorList" class="overflow-y-auto space-y-1.5 flex-grow pr-1">
-            <!-- Rendered via JS -->
-          </div>
-        </div>
-
-        <!-- Room & Verses Detail View (Cols 5-12) -->
-        <div class="lg:col-span-8 bg-cardBg rounded-2xl border border-slate-800 p-6 flex flex-col h-[650px]">
-          <!-- Active Floor Header -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800 mb-4">
-            <div>
-              <div class="flex items-center gap-2">
-                <span id="activeFloorBadge" class="px-2.5 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-black font-mono">TẦNG 1</span>
-                <span id="activeFloorCodeBadge" class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 font-mono font-bold text-xs border border-slate-700">Mã: S</span>
-                <h3 id="activeFloorTitle" class="text-lg font-bold text-white">Sáng Thế Ký</h3>
-              </div>
-              <p id="activeFloorSubtitle" class="text-xs text-slate-400 mt-1">Cựu Ước • 50 Chương (Phòng)</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="openAddVerseForCurrentFloor()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold border border-slate-700 flex items-center gap-1">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Thêm câu vào tầng này
-              </button>
-            </div>
-          </div>
-
-          <!-- Room (Chapter) Selector Tabs -->
-          <div class="mb-4">
-            <div class="text-xs font-bold text-slate-400 mb-2 flex items-center gap-1">
-              <i data-lucide="door-open" class="w-3.5 h-3.5 text-cyan-400"></i> Chọn Phòng (Chương):
-            </div>
-            <div id="roomsChipList" class="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
-              <!-- Rendered via JS -->
-            </div>
-          </div>
-
-          <!-- Verses in Current Room -->
-          <div class="flex-grow overflow-y-auto space-y-4 pr-1" id="versesInRoomList">
-            <!-- Rendered via JS -->
-          </div>
-        </div>
-
-      </div>
-
-    </section>
 
     <!-- MODAL: ADD / EDIT SCRIPTURE VERSE -->
     <div id="addVerseModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">

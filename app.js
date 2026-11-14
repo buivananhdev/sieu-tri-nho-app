@@ -581,6 +581,10 @@ function switchTab(tabId) {
     target.classList.add('block');
   }
 
+  if (tabId === 'subjects') {
+    renderSubjectsGrid();
+  }
+
   // Update desktop navigation active states
   document.querySelectorAll('.nav-tab').forEach(btn => {
     if (btn.dataset.tab === tabId) {
@@ -1898,24 +1902,23 @@ function renderSubjectsGrid() {
   const subjects = getStoredSubjects();
 
   let html = subjects.map(s => {
-    const isSelected = s.id === currentActiveSubjectId;
     return `
-      <div onclick="selectSubject('${s.id}')" class="p-5 rounded-2xl bg-cardBg border ${isSelected ? 'border-amber-500 shadow-lg shadow-amber-500/10' : 'border-slate-800 hover:border-slate-700'} cursor-pointer flex flex-col justify-between transition-all group">
+      <div onclick="openSubjectDetail('${s.id}')" class="p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-amber-500/60 hover:bg-slate-900/60 cursor-pointer flex flex-col justify-between transition-all group shadow-md">
         <div>
           <div class="flex items-center justify-between mb-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${s.color || 'from-purple-600 to-indigo-600'} text-white flex items-center justify-center text-sm shadow">
               <i data-lucide="${s.icon || 'book-open'}" class="w-5 h-5"></i>
             </div>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isSelected ? 'bg-amber-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300 border border-slate-700'}">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-amber-300 border border-slate-700">
               ${s.badge || 'Môn học'}
             </span>
           </div>
           <h4 class="text-sm font-bold text-white group-hover:text-amber-300 transition-colors mb-1.5">${s.name}</h4>
           <p class="text-xs text-slate-400 leading-relaxed line-clamp-2">${s.desc}</p>
         </div>
-        <div class="pt-3 mt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold ${isSelected ? 'text-amber-400' : 'text-slate-500 group-hover:text-slate-300'}">
-          <span>${isSelected ? '● Đang xem nội dung bên dưới' : 'Bấm để học môn này'}</span>
-          <i data-lucide="arrow-down" class="w-3.5 h-3.5 ${isSelected ? 'block text-amber-400' : 'hidden'}"></i>
+        <div class="pt-3 mt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300">
+          <span>Vào học môn này</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
         </div>
       </div>
     `;
@@ -1936,10 +1939,36 @@ function renderSubjectsGrid() {
   lucide.createIcons();
 }
 
-function selectSubject(subjectId) {
+// Khi bấm vào 1 môn học -> Mới mở toàn bộ không gian của môn đó ra!
+function openSubjectDetail(subjectId) {
   playSound('click');
   currentActiveSubjectId = subjectId;
+
+  const listScreen = document.getElementById('subjectsListScreen');
+  const detailScreen = document.getElementById('subjectDetailScreen');
+
+  if (listScreen) listScreen.classList.add('hidden');
+  if (detailScreen) detailScreen.classList.remove('hidden');
+
+  selectSubject(subjectId);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Khi bấm nút "Quay Lại Danh Mục Môn Học"
+function backToSubjectsList() {
+  playSound('click');
+  const listScreen = document.getElementById('subjectsListScreen');
+  const detailScreen = document.getElementById('subjectDetailScreen');
+
+  if (detailScreen) detailScreen.classList.add('hidden');
+  if (listScreen) listScreen.classList.remove('hidden');
+
   renderSubjectsGrid();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectSubject(subjectId) {
+  currentActiveSubjectId = subjectId;
 
   const subjects = getStoredSubjects();
   const subj = subjects.find(s => s.id === subjectId) || subjects[0];
@@ -1953,12 +1982,13 @@ function selectSubject(subjectId) {
     titleEl.innerHTML = `<i data-lucide="${subj.icon || 'book-open'}" class="w-4 h-4 text-amber-400"></i> ${subj.name}`;
   }
   if (badgeEl) {
-    badgeEl.textContent = subj.badge || 'Cung Điện Ghi Nhớ';
+    badgeEl.textContent = `• ${subj.badge || 'Cung Điện Ghi Nhớ'}`;
   }
 
   if (subj.type === 'bible' || subj.id === 'bibletower') {
     if (bibleView) bibleView.classList.remove('hidden');
     if (customView) customView.classList.add('hidden');
+    initScriptureTower();
   } else {
     if (bibleView) bibleView.classList.add('hidden');
     if (customView) customView.classList.remove('hidden');
