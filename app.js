@@ -2231,6 +2231,16 @@ function openAddTopicToCustomSubject() {
 // 17. TRIẾT HỌC TOÀN THƯ (BỘ KHUNG 5 CHIỀU ĐẠI TƯ DUY - CHUẨN GIÁO SƯ)
 // ==========================================
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const PHILOSOPHY_STORAGE_KEY = 'supermind_custom_philosophy_v1';
 let currentPhiloEraFilter = 'all';
 let currentPhiloSearchQuery = '';
