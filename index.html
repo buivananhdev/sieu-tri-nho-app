@@ -405,7 +405,88 @@
 
         </div>
 
-        <!-- VIEW 2: GENERIC CUSTOM SUBJECT VIEW (Cho các môn khác bạn thêm vào) -->
+        <!-- VIEW 2: TRIẾT HỌC TOÀN THƯ (BỘ KHUNG 5 CHIỀU ĐẠI TƯ DUY - CHUẨN GIÁO SƯ) -->
+        <div id="subjectPhilosophyView" class="hidden space-y-6">
+          
+          <!-- Banner Hero Triết Học -->
+          <div class="rounded-3xl bg-gradient-to-r from-indigo-950/70 via-cardBg to-slate-900 p-6 sm:p-8 border border-indigo-500/30 shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+              <div class="space-y-2.5 max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+                  <span>Khởi Đầu Từ Sự Kinh Ngạc (Thaumazein) • Ma Trận 5 Chiều Chuẩn Giáo Sư</span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                  <span>Triết Học Toàn Thư: Gốc Rễ Đến Đỉnh Cao</span>
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Bắt đầu từ <strong class="text-amber-400">Cột Mốc Số 0: Thales xứ Miletus (624 TCN)</strong> — thời điểm con người lần đầu tiên thay thế thần thoại bằng lý trí. Mỗi triết gia được giải phẫu trọn vẹn theo 5 chiều: <em>Cú sốc kinh ngạc $\rightarrow$ Rã máy nguyên lý gốc $\rightarrow$ Đấu trường phản biện $\rightarrow$ Khóa trí nhớ 00-99 $\rightarrow$ Công tắc đời thực</em>.
+                </p>
+                <!-- Quick Metric Badges -->
+                <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400">
+                  <span class="px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 font-medium">
+                    🏛️ 5 Kỷ Nguyên Tư Tưởng
+                  </span>
+                  <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold">
+                    ⭐ Cột Mốc Số 0 Vững Chắc
+                  </span>
+                  <span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-medium">
+                    🧠 Tích Hợp Bảng Số 00-99 & Cung Điện
+                  </span>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-2.5">
+                <button onclick="openAddPhilosophyModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold text-xs shadow-lg transition-all flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>+ Thêm Triết Gia / Bài Mới</span>
+                </button>
+                <button onclick="openPhilosophyQuizModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-2">
+                  <i data-lucide="brain-circuit" class="w-4 h-4 text-indigo-400"></i>
+                  <span>Đố Phản Xạ 5 Chiều</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thanh Bộ Lọc Kỷ Nguyên & Ô Tìm Kiếm Nhanh -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-cardBg border border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            <!-- Era filter buttons -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none" id="philoEraButtonGroup">
+              <button onclick="filterPhilosophyEra('all')" class="philo-era-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-indigo-600 text-white shadow transition-all" data-era="all">
+                Tất Cả (Toàn Thư)
+              </button>
+              <button onclick="filterPhilosophyEra('ancient')" class="philo-era-btn px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" data-era="ancient">
+                🏛️ Cổ Đại (624 TCN - 500)
+              </button>
+              <button onclick="filterPhilosophyEra('medieval')" class="philo-era-btn px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" data-era="medieval">
+                ⛪ Trung Cổ (500 - 1500)
+              </button>
+              <button onclick="filterPhilosophyEra('enlightenment')" class="philo-era-btn px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" data-era="enlightenment">
+                💡 Cận Đại & Khai Sáng
+              </button>
+              <button onclick="filterPhilosophyEra('nineteenth')" class="philo-era-btn px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" data-era="nineteenth">
+                ⚙️ Thế Kỷ 19
+              </button>
+              <button onclick="filterPhilosophyEra('modern')" class="philo-era-btn px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" data-era="modern">
+                🌐 TK 20 & Hiện Đại
+              </button>
+            </div>
+
+            <!-- Search input -->
+            <div class="relative min-w-[260px]">
+              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input type="text" id="philosophySearchInput" oninput="searchPhilosophy(this.value)" placeholder="Tìm triết gia, mỏ neo, khái niệm..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <!-- Danh Sách Các Thẻ Triết Gia (Ma Trận 5 Chiều) -->
+          <div id="philosophyCardsContainer" class="space-y-6">
+            <!-- Rendered by app.js -->
+          </div>
+
+        </div>
+
+        <!-- VIEW 3: GENERIC CUSTOM SUBJECT VIEW (Cho các môn khác bạn thêm vào) -->
         <div id="subjectCustomView" class="hidden space-y-6">
           <div class="p-8 rounded-2xl bg-cardBg border border-slate-800 text-center space-y-4">
             <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-400 text-2xl">
@@ -542,6 +623,114 @@
         </div>
 
         <div id="scriptureQuizBody" class="space-y-4">
+          <!-- Quiz step rendered via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT PHILOSOPHY LESSON (MA TRẬN 5 CHIỀU) -->
+    <div id="addPhilosophyModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+      <div class="bg-cardBg border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col p-6 shadow-2xl space-y-4 overflow-hidden">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <h3 id="philoModalTitle" class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i> Thêm Triết Gia (Ma Trận 5 Chiều Chuẩn Giáo Sư)
+          </h3>
+          <button onclick="closeAddPhilosophyModal()" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <form id="addPhilosophyForm" onsubmit="savePhilosophyLesson(event)" class="space-y-4 text-xs overflow-y-auto pr-1">
+          <input type="hidden" id="philoEditId" value="">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-white mb-1">Tên Triết Gia / Khái Niệm (*):</label>
+              <input type="text" id="philoInputName" placeholder="Ví dụ: Thales xứ Miletus, Socrates..." required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-indigo-400">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Kỷ Nguyên Tư Tưởng:</label>
+              <select id="philoInputEra" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-indigo-400">
+                <option value="ancient">🏛️ Cổ Đại (624 TCN - 500)</option>
+                <option value="medieval">⛪ Trung Cổ (500 - 1500)</option>
+                <option value="enlightenment">💡 Cận Đại & Khai Sáng (1500 - 1800)</option>
+                <option value="nineteenth">⚙️ Thế Kỷ 19 (1800 - 1900)</option>
+                <option value="modern">🌐 TK 20 & Đương Đại (1900 - Nay)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Niên Đại / Thời Gian:</label>
+              <input type="text" id="philoInputLifespan" placeholder="Ví dụ: 624 – 546 TCN" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-indigo-400">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-semibold text-slate-300 mb-1">Danh Hiệu / Vị Trí Cốt Lõi:</label>
+              <input type="text" id="philoInputRole" placeholder="Ví dụ: Cột mốc số 0 • Cha đẻ Triết học phương Tây" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-indigo-400">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div>
+              <label class="block font-bold text-amber-300 mb-1">🔑 Từ Khóa Mỏ Neo (Kích hoạt nhanh):</label>
+              <input type="text" id="philoInputAnchor" placeholder="Ví dụ: NƯỚC (ARCHE), HỎI VẶN, HANG ĐÁ..." required class="w-full bg-slate-900 border border-amber-500/40 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-amber-400">
+            </div>
+            <div>
+              <label class="block font-bold text-indigo-300 mb-1">🧠 Mã Số 00-99 & Cung Điện Ký Ức:</label>
+              <input type="text" id="philoInputPeg" placeholder="Ví dụ: 62 Robot + 04 Ngôi sao ngắm giếng" class="w-full bg-slate-900 border border-indigo-500/40 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-indigo-400">
+            </div>
+          </div>
+
+          <!-- 5 CHIỀU ĐẠI TƯ DUY -->
+          <div class="space-y-3 pt-1">
+            <div>
+              <label class="block font-semibold text-yellow-300 mb-1">⚡ Chiều 1: Cú Sốc Kinh Ngạc (Wonder Question):</label>
+              <textarea id="philoInputD1" rows="2" placeholder="Câu hỏi hoặc nhận thức bàng hoàng phá vỡ định kiến thần thoại / thông thường..." required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-yellow-400"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-cyan-300 mb-1">🔬 Chiều 2: Rã Máy Nguyên Lý Gốc (Công thức / Tiên đề):</label>
+              <textarea id="philoInputD2" rows="2" placeholder="Bóc tách lớp vỏ, đưa về 1 công thức tối giản: [Đa dạng = 1 Chất liệu gốc]..." required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-400"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-rose-300 mb-1">⚔️ Chiều 3: Đấu Trường Phản Biện (Luận điểm vs Phản bác):</label>
+              <textarea id="philoInputD3" rows="2" placeholder="Luận điểm của triết gia >< Phản biện của đối thủ hoặc học trò..." required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-rose-400"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-purple-300 mb-1">🧠 Chiều 4: Khóa Trí Nhớ Vĩnh Cửu (Hình ảnh liên tưởng & Cung điện):</label>
+              <textarea id="philoInputD4" rows="2" placeholder="Câu chuyện liên tưởng cảm xúc mạnh gắn với mã số 00-99 và cung điện ký ức..." required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-purple-400"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-emerald-300 mb-1">🕹️ Chiều 5: Công Tắc Đời Thực (Năng lực tư duy & Ứng dụng ra quyết định):</label>
+              <textarea id="philoInputD5" rows="2" placeholder="Ứng dụng cụ thể vào kinh doanh, đàm phán, tự chủ cuộc sống ngày nay..." required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-400"></textarea>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+            <button type="button" onclick="closeAddPhilosophyModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700">Hủy</button>
+            <button type="submit" id="philoSubmitBtn" class="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold">Lưu Bài Học 5 Chiều</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: PHILOSOPHY 5D REFLEX QUIZ -->
+    <div id="philosophyQuizModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+      <div class="bg-cardBg border border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="brain-circuit" class="w-5 h-5 text-indigo-400"></i> Đấu Trường Phản Xạ Triết Học 5 Chiều
+          </h3>
+          <button onclick="closePhilosophyQuizModal()" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div id="philosophyQuizBody" class="space-y-4">
           <!-- Quiz step rendered via JS -->
         </div>
       </div>
