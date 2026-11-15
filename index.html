@@ -480,7 +480,7 @@
     <div id="addVerseModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
       <div class="bg-cardBg border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <h3 id="addVerseModalTitle" class="text-base font-bold text-white flex items-center gap-2">
             <i data-lucide="bookmark-plus" class="w-5 h-5 text-amber-400"></i> Thêm Câu Kinh Thánh (Tòa Nhà 66 Tầng)
           </h3>
           <button onclick="closeAddVerseModal()" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
@@ -489,6 +489,7 @@
         </div>
 
         <form id="addVerseForm" onsubmit="saveCustomVerse(event)" class="space-y-3 text-xs">
+          <input type="hidden" id="inputEditingVerseId" value="">
           <div class="grid grid-cols-3 gap-2">
             <div>
               <label class="block font-semibold text-slate-300 mb-1">Chọn Tầng (Sách):</label>
@@ -522,7 +523,7 @@
 
           <div class="pt-2 flex justify-end gap-2">
             <button type="button" onclick="closeAddVerseModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700">Hủy</button>
-            <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold hover:from-amber-400 hover:to-yellow-300">Lưu Vào Tòa Nhà</button>
+            <button type="submit" id="addVerseSubmitBtn" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold hover:from-amber-400 hover:to-yellow-300">Lưu Vào Tòa Nhà</button>
           </div>
         </form>
       </div>

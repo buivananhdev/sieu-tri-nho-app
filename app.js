@@ -1449,12 +1449,25 @@ const INITIAL_SCRIPTURE_VERSES = [
 
 // LocalStorage helpers for custom user verses
 const SCRIPTURE_STORAGE_KEY = 'supermind_scripture_custom_verses_v1';
+const SCRIPTURE_DELETED_KEY = 'supermind_scripture_deleted_verses_v1';
 
 function getAllScriptureVerses() {
   try {
+    const rawDeleted = localStorage.getItem(SCRIPTURE_DELETED_KEY);
+    const deletedIds = rawDeleted ? JSON.parse(rawDeleted) : [];
+
     const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
     const custom = raw ? JSON.parse(raw) : [];
-    return [...INITIAL_SCRIPTURE_VERSES, ...custom];
+
+    const customMap = new Map(custom.map(v => [v.id, v]));
+
+    const activeInitials = INITIAL_SCRIPTURE_VERSES
+      .filter(v => !deletedIds.includes(v.id))
+      .map(v => customMap.has(v.id) ? customMap.get(v.id) : v);
+
+    const userAdded = custom.filter(v => !INITIAL_SCRIPTURE_VERSES.some(iv => iv.id === v.id));
+
+    return [...activeInitials, ...userAdded];
   } catch (e) {
     return INITIAL_SCRIPTURE_VERSES;
   }
@@ -1624,6 +1637,14 @@ function renderVersesInRoom() {
                 Phân biệt: "${v.secondaryKeyword}"
               </span>
             ` : ''}
+            <div class="flex items-center gap-1.5 ml-2">
+              <button onclick="editScriptureVerse('${v.id}')" title="Sửa câu này" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-300 border border-slate-700 hover:border-amber-400 text-xs font-bold flex items-center gap-1 transition-all shadow-sm">
+                <i data-lucide="edit-3" class="w-3 h-3"></i> Sửa
+              </button>
+              <button onclick="deleteScriptureVerse('${v.id}')" title="Xóa câu này" class="p-1 rounded-lg bg-slate-800 hover:bg-rose-900/60 hover:text-rose-300 text-slate-400 border border-slate-700 text-xs transition-all">
+                <i data-lucide="trash-2" class="w-3 h-3"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1715,6 +1736,8 @@ function populateBookDropdown() {
 function openAddVerseModal() {
   playSound('click');
   populateBookDropdown();
+  const idInput = document.getElementById('inputEditingVerseId');
+  if (idInput) idInput.value = '';
   document.getElementById('inputVerseBook').value = currentSelectedFloor;
   document.getElementById('inputVerseChapter').value = currentSelectedRoom;
   document.getElementById('inputVerseNumber').value = 1;
@@ -1722,9 +1745,70 @@ function openAddVerseModal() {
   document.getElementById('inputVerseSecondaryKeyword').value = '';
   document.getElementById('inputVerseText').value = '';
 
+  const title = document.getElementById('addVerseModalTitle');
+  if (title) title.innerHTML = `<i data-lucide="bookmark-plus" class="w-5 h-5 text-amber-400"></i> Thêm Câu Kinh Thánh (Tòa Nhà 66 Tầng)`;
+  const submitBtn = document.getElementById('addVerseSubmitBtn');
+  if (submitBtn) submitBtn.textContent = 'Lưu Vào Tòa Nhà';
+
   const modal = document.getElementById('addVerseModal');
   modal.classList.remove('hidden');
   modal.classList.add('flex');
+  lucide.createIcons();
+}
+
+function editScriptureVerse(verseId) {
+  playSound('click');
+  const all = getAllScriptureVerses();
+  const v = all.find(item => item.id === verseId);
+  if (!v) return;
+
+  populateBookDropdown();
+  const idInput = document.getElementById('inputEditingVerseId');
+  if (idInput) idInput.value = v.id;
+
+  document.getElementById('inputVerseBook').value = v.bookFloor;
+  document.getElementById('inputVerseChapter').value = v.chapter;
+  document.getElementById('inputVerseNumber').value = v.verse;
+  document.getElementById('inputVerseKeyword').value = v.keyword;
+  document.getElementById('inputVerseSecondaryKeyword').value = v.secondaryKeyword || '';
+  document.getElementById('inputVerseText').value = v.text;
+
+  const title = document.getElementById('addVerseModalTitle');
+  if (title) title.innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i> Sửa Câu: ${v.bookCode} ${v.chapter}:${v.verse}`;
+  const submitBtn = document.getElementById('addVerseSubmitBtn');
+  if (submitBtn) submitBtn.textContent = 'Cập Nhật Câu Này';
+
+  const modal = document.getElementById('addVerseModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  lucide.createIcons();
+}
+
+function deleteScriptureVerse(verseId) {
+  playSound('click');
+  const all = getAllScriptureVerses();
+  const v = all.find(item => item.id === verseId);
+  const coord = v ? `${v.bookName} (${v.bookCode}) ${v.chapter}:${v.verse}` : 'câu này';
+  if (!confirm(`Bạn có chắc chắn muốn xóa ${coord} không?`)) return;
+
+  try {
+    const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    let custom = raw ? JSON.parse(raw) : [];
+    custom = custom.filter(item => item.id !== verseId);
+    localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(custom));
+
+    if (INITIAL_SCRIPTURE_VERSES.some(iv => iv.id === verseId)) {
+      const rawDel = localStorage.getItem(SCRIPTURE_DELETED_KEY);
+      let deleted = rawDel ? JSON.parse(rawDel) : [];
+      if (!deleted.includes(verseId)) deleted.push(verseId);
+      localStorage.setItem(SCRIPTURE_DELETED_KEY, JSON.stringify(deleted));
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  playSound('success');
+  renderVersesInRoom();
 }
 
 function openAddVerseForCurrentFloor() {
@@ -1742,6 +1826,7 @@ function saveCustomVerse(e) {
   e.preventDefault();
   playSound('success');
 
+  const editingId = document.getElementById('inputEditingVerseId')?.value || '';
   const floor = parseInt(document.getElementById('inputVerseBook').value, 10);
   const chapter = parseInt(document.getElementById('inputVerseChapter').value, 10);
   const verse = parseInt(document.getElementById('inputVerseNumber').value, 10);
@@ -1751,8 +1836,8 @@ function saveCustomVerse(e) {
 
   const book = BIBLE_66_BOOKS.find(b => b.floor === floor);
 
-  const newVerse = {
-    id: 'user_v_' + Date.now(),
+  const targetVerse = {
+    id: editingId || ('user_v_' + Date.now()),
     bookFloor: floor,
     bookCode: book ? book.code : 'S',
     bookName: book ? book.name : '',
@@ -1765,8 +1850,17 @@ function saveCustomVerse(e) {
 
   try {
     const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
-    const custom = raw ? JSON.parse(raw) : [];
-    custom.push(newVerse);
+    let custom = raw ? JSON.parse(raw) : [];
+    if (editingId) {
+      const idx = custom.findIndex(item => item.id === editingId);
+      if (idx >= 0) {
+        custom[idx] = targetVerse;
+      } else {
+        custom.push(targetVerse);
+      }
+    } else {
+      custom.push(targetVerse);
+    }
     localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(custom));
   } catch (err) {
     console.error(err);
