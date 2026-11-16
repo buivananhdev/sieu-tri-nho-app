@@ -2242,139 +2242,39 @@ function escapeHtml(str) {
 }
 
 const PHILOSOPHY_STORAGE_KEY = 'supermind_custom_philosophy_v1';
+let currentPhiloCivFilter = 'all';
 let currentPhiloEraFilter = 'all';
+let currentPhiloBranchFilter = 'all';
 let currentPhiloSearchQuery = '';
 
-const DEFAULT_PHILOSOPHY_LESSONS = [
-  {
-    id: 'thales',
-    name: 'Thales xứ Miletus',
-    era: 'ancient',
-    eraLabel: '🏛️ Cổ Đại',
-    lifespan: 'khoảng 624 – 546 TCN',
-    role: 'Cha Đẻ Triết Học Phương Tây • Cột Mốc Số 0 Của Sự Kinh Ngạc (Thaumazein)',
-    anchorKeyword: 'NƯỚC (ARCHE)',
-    pegCode: '62 Robot + 04 Ngôi sao',
-    isMilestoneZero: true,
-    d1_shock: 'CÚ SỐC TỪ THẦN THOẠI (MYTHOS) SANG LÝ TÍNH (LOGOS): Hàng vạn năm trước đó, con người tin rằng động đất do Poseidon rung bờ, sấm sét do Zeus nổi giận. Thales là người đầu tiên trong lịch sử nhân loại đứng lên kinh ngạc tự vấn: "Không! Đằng sau mọi biến thiên hỗn mang của vũ trụ, phải có một QUY LUẬT TỰ NHIÊN (Logos) mà trí óc con người giải mã được!". Tiếng nổ này khai sinh ra triết học và khoa học toàn cầu.',
-    d2_principle: 'CÔNG THỨC GỐC: [ĐA DẠNG = 1 CHẤT LIỆU BẢN NGUYÊN (ARCHE)]. Chất liệu tối hậu đó là NƯỚC (Hydor). Nước ở thể lỏng chảy nuôi sống vạn vật, bốc hơi thành khí, ngưng tụ thành băng rắn. Mọi hạt mầm sự sống đều ẩm ướt; Trái Đất trôi trên đại dương như khúc gỗ. Đây là lần đầu tiên tư duy Quy giản (Reductionism) xuất hiện: Tìm sự thống nhất tuyệt đối trong cái đa tạp bề ngoài.',
-    d3_combat: '⚔️ ĐẤU TRƯỜNG PHẢN BIỆN (THALES >< ANAXIMANDER):\n• Luận điểm Thales: Nước là khởi thủy và kết thúc của muôn loài.\n• Phản biện búa tạ (Anaximander - học trò phản pháo): "Nếu nước là bản nguyên duy nhất, tại sao LỬA lại tồn tại mà không bị tiêu diệt hoàn toàn? Bản nguyên tối hậu không thể là một nguyên tố vật chất hữu hạn cụ thể, mà phải là cái VÔ ĐỊNH HÌNH & BẤT TẬN (Apeiron) - cái nôi sinh thành và dung nạp mọi cặp đối lập nóng/lạnh, ướt/khô!"',
-    d4_memory: '🧠 KHÓA TRÍ NHỚ VĨNH CỬU:\n• Mã số 00-99 (Năm 624 TCN): 62 (🤖 Robot) + 04 (⭐ Ngôi sao).\n• Cung điện ký ức: Cửa vòm bến cảng Miletus hướng ra biển. Một chú ROBOT (62) mải ngửa cổ ngắm NGÔI SAO (04) lấp lánh thì trượt chân ngã ùm xuống một GIẾNG NƯỚC sâu ngập tràn Nước (Arche). Cô tỳ nữ xứ Thrace cười giòn giã. Nhưng sau đó chú Robot dùng thiên văn thuê bao toàn bộ máy ép dầu olive ở đảo, trúng mùa đại thắng, chứng minh triết gia không hề nghèo khó!\n🔑 Từ Khóa Mỏ Neo: NƯỚC (ARCHE).',
-    d5_switch: '🕹️ CÔNG TẮC ĐỜI THỰC: [TƯ DUY TRUY TÌM BẢN CHẤT GỐC (ROOT-CAUSE / FIRST PRINCIPLES)].\nKhi doanh nghiệp hoặc cuộc sống gặp khủng hoảng hỗn loạn hàng trăm triệu chứng bề mặt: Đừng vội dập lửa vụn vặt! Hãy hít một hơi sâu và bật công tắc Thales: "Arche (chất liệu/nguyên nhân gốc rễ duy nhất) chi phối toàn bộ hệ thống này là gì?". Khi nắm trúng Arche, mọi biến số xung quanh tự động rơi vào trật tự.'
-  },
-  {
-    id: 'socrates',
-    name: 'Socrates',
-    era: 'ancient',
-    eraLabel: '🏛️ Cổ Đại',
-    lifespan: '469 – 399 TCN',
-    role: 'Bậc Thầy Khai Phóng • Kẻ Đỡ Đẻ Của Tư Tưởng (Maieutics)',
-    anchorKeyword: 'HỎI VẶN (SẢN NHI)',
-    pegCode: '46 Trái Đất + 09 Sao Diêm Vương',
-    isMilestoneZero: false,
-    d1_shock: 'CÚ SỐC THỨC TỈNH: "Tôi chỉ biết một điều duy nhất: là tôi không biết gì cả!" (Scio me nihil scire). Đền Delphi phán ông là kẻ thông thái nhất Hy Lạp. Socrates ngỡ ngàng đi phỏng vấn các chính trị gia, nhà thơ, tướng lĩnh xuất chúng nhất và phát hiện: Họ chỉ TƯỞNG mình biết, còn ông ít nhất nhận biết được giới hạn vô minh của chính mình.',
-    d2_principle: 'CÔNG THỨC: [TRI THỨC = SINH RA TỪ PHẢN TỈNH NỘI TẠI (KHÔNG PHẢI NHỒI NHÉT NGOẠI LAI)]. Phương pháp Sản Nhi: Socrates coi mình như bà đỡ đẻ (mẹ ông là bà đỡ Phaenarete), không nhét tư tưởng vào đầu người khác mà dùng chuỗi câu hỏi lật ngửa giả định sai lầm, giúp người đối thoại tự sinh nở ra chân lý.',
-    d3_combat: '⚔️ ĐẤU TRƯỜNG PHẢN BIỆN (SOCRATES >< PHÁI NGỤY BIỆN SOPHIST):\n• Luận điểm Socrates: Có chân lý đạo đức khách quan vĩnh cửu. Tri thức chính là đức hạnh (làm điều ác chỉ vì vô minh).\n• Phản biện búa tạ (Protagoras & Thrasymachus): "Không có chân lý khách quan nào cả! Con người là thước đo vạn vật. Kẻ mạnh tạo ra công lý; công lý chỉ là ý chí của kẻ cầm quyền!"',
-    d4_memory: '🧠 KHÓA TRÍ NHỚ VĨNH CỬU:\n• Mã số 00-99 (Năm 469 TCN): 46 (🌍 Quả Đất) + 09 (🪐 Sao Diêm Vương).\n• Cung điện ký ức: Giữa chợ Agora Athens, Socrates cầm QUẢ ĐẤT (46) đối diện SAO DIÊM VƯƠNG (09 - biểu tượng cõi chết), bình thản uống cạn chén độc cần (hemlock) trước mặt học trò, khẳng định: "Một cuộc đời không được xem xét, tra vấn thì không đáng sống!".\n🔑 Từ Khóa Mỏ Neo: HỎI VẶN (SẢN NHI).',
-    d5_switch: '🕹️ CÔNG TẮC ĐỜI THỰC: [KỸ THUẬT HỎI TRUY SÂU TRONG ĐÀM PHÁN & GIẢI QUYẾT BẤT ĐỒNG].\nKhi ai đó khẳng định chắc nịch một định kiến ("Khách hàng không bao giờ mua", "Phương án này bất khả thi"): Không phản bác thô bạo! Bật công tắc Socrates: "Anh dựa trên tiền đề nào để khẳng định điều đó? Nếu giả định ngược lại xảy ra thì sao? Điều gì sẽ chứng minh giả định của anh là sai?". Giúp họ tự nhận ra lỗ hổng của mình mà không mất mặt.'
-  },
-  {
-    id: 'plato',
-    name: 'Plato',
-    era: 'ancient',
-    eraLabel: '🏛️ Cổ Đại',
-    lifespan: '427 – 347 TCN',
-    role: 'Kiến Trúc Sư Thế Giới Ý Niệm (Theory of Forms) • Học Viện Academy',
-    anchorKeyword: 'HANG ĐÁ Ý NIỆM',
-    pegCode: '42 Đại Dương + 27 Phản Ứng Hóa Học',
-    isMilestoneZero: false,
-    d1_shock: 'CÚ SỐC ẨN DỤ HANG ĐÁ (ALLEGORY OF THE CAVE): Con người từ nhỏ bị xích cổ trong hang tối, chỉ nhìn vào vách đá trước mặt. Phía sau có đốm lửa và những con rối. Họ nhìn chiếc bóng nhảy múa trên vách đá và đinh ninh rằng: Chiếc bóng đó là toàn bộ sự thật của thế giới!',
-    d2_principle: 'CÔNG THỨC: [THẾ GIỚI CẢM TÍNH = BẢN SAO KHIẾM KHUYẾT CỦA THẾ GIỚI Ý NIỆM (FORMS)]. Mọi vật thể trần gian (cái bàn, con ngựa, con người) đều sẽ hư hao tàn hoại. Chỉ có Bản mẫu hoàn hảo vĩnh cửu (Idea/Form) trong cảnh giới thuần khiết của lý trí mới là thực tại đích thực.',
-    d3_combat: '⚔️ ĐẤU TRƯỜNG PHẢN BIỆN (PLATO >< ARISTOTLE):\n• Luận điểm Plato: Chân lý tối hậu ngự trị ở thế giới Ý niệm siêu hình tách biệt thế giới vật chất.\n• Phản biện búa tạ (Aristotle - học trò 20 năm): "Amicus Plato, sed magis amica veritas (Yêu thầy Plato, nhưng yêu Chân lý hơn). Ý niệm không thể bay lơ lửng ngoài vũ trụ! Bản chất của quả táo nằm ngay bên trong cấu trúc của quả táo, không thể tách rời vật chất!"',
-    d4_memory: '🧠 KHÓA TRÍ NHỚ VĨNH CỬU:\n• Mã số 00-99 (Năm 427 TCN): 42 (🌊 Đại Dương) + 27 (🧪 Phản Ứng Hóa Học).\n• Cung điện ký ức: Đáy ĐẠI DƯƠNG (42) sâu thẳm như lòng hang, một PHẢN ỨNG HÓA HỌC (27) bốc cháy tạo ra bóng đổ lung linh. Plato giật đứt dây xích, kéo nhân loại bơi ngược lên mặt nước ngắm vầng mặt trời rực rỡ của Ý Niệm Thiện (Form of the Good).\n🔑 Từ Khóa Mỏ Neo: HANG ĐÁ Ý NIỆM.',
-    d5_switch: '🕹️ CÔNG TẮC ĐỜI THỰC: [BÓC TÁCH CÁI BÓNG TRUYỀN THÔNG & TÌM MÔ THỨC GỐC (ARCHETYPE)].\nTrong thời đại mạng xã hội và thông tin ảo: Đừng để những "cái bóng trên vách đá" (lượt like, phông bạt, tin đồn giật gân) dắt mũi. Hãy tự hỏi: "Bản chất ý niệm lõi của dự án/sản phẩm này là gì? Đâu là giá trị nguyên bản bất biến không thể bị lỗi thời?".'
-  },
-  {
-    id: 'aristotle',
-    name: 'Aristotle',
-    era: 'ancient',
-    eraLabel: '🏛️ Cổ Đại',
-    lifespan: '384 – 322 TCN',
-    role: 'Nhà Đa Trí Tuệ Vĩ Đại Nhất Thời Cổ • Cha Đẻ Của Logic & Khoa Học Thực Nghiệm',
-    anchorKeyword: 'TỨ NHÂN (CỨU CÁNH)',
-    pegCode: '38 Rừng Sinh Thái + 84 Năng Lượng Hạt Nhân',
-    isMilestoneZero: false,
-    d1_shock: 'CÚ SỐC MỤC ĐÍCH LUẬN (TELEOLOGY): "Tự nhiên không làm điều gì thừa thãi!". Mọi vật thể sinh ra đều có một CỨU CÁNH TỐI HẬU (Telos) đang chờ nó hiện thực hóa. Hạt sồi có thôi thúc thành cây sồi đại thụ; con người sinh ra có thôi thúc đạt tới Eudaimonia (Hạnh phúc thăng hoa đạo đức).',
-    d2_principle: 'CÔNG THỨC TỨ NHÂN (4 CAUSES): Để giải mã bất kỳ sự vật nào, phải trả lời 4 câu hỏi:\n1. Nhân chất liệu (Material): Nó làm bằng gì?\n2. Nhân hình thức (Formal): Cấu trúc, thiết kế của nó là gì?\n3. Nhân động lực (Efficient): Lực nào tạo ra nó?\n4. Nhân cứu cánh (Final / Telos): Nó tồn tại nhằm mục đích tối hậu gì?',
-    d3_combat: '⚔️ ĐẤU TRƯỜNG PHẢN BIỆN (ARISTOTLE >< KHOA HỌC HIỆN ĐẠI):\n• Luận điểm Aristotle: Vũ trụ có mục đích tối thượng và chuyển động nhờ Động Cơ Bất Động (Unmoved Mover).\n• Phản biện búa tạ (Galileo, Newton & Darwin): Vũ trụ tự nhiên vận hành theo quy luật cơ học mù quáng (nhân quả cơ giới), sinh vật biến đổi do chọn lọc tự nhiên và đột biến gen chứ không hề có một "ý chí cứu cánh" nào xếp đặt trước!',
-    d4_memory: '🧠 KHÓA TRÍ NHỚ VĨNH CỬU:\n• Mã số 00-99 (Năm 384 TCN): 38 (🌲 Rừng Sinh Thái) + 84 (⚡ Năng Lượng Hạt Nhân).\n• Cung điện ký ức: Giữa RỪNG SINH THÁI (38), Aristotle cầm quả cầu NĂNG LƯỢNG HẠT NHÂN (84) mổ xẻ từng loài cây cỏ, chia thành 4 ngăn rõ rệt đại diện cho Tứ Nhân (Chất liệu, Hình thức, Động lực, Cứu cánh).\n🔑 Từ Khóa Mỏ Neo: TỨ NHÂN (CỨU CÁNH).',
-    d5_switch: '🕹️ CÔNG TẮC ĐỜI THỰC: [ĐỊNH VỊ TELOS (MỤC ĐÍCH TỐI THƯỢNG) TRƯỚC KHI BẮT ĐẦU MỌI HÀNH ĐỘNG].\nKhi khởi động một công việc, tự vấn theo 4 nguyên nhân: Tôi có nguyên liệu gì (Chất liệu)? Kế hoạch bài bản ra sao (Hình thức)? Ai/cái gì thúc đẩy (Động lực)? Và quan trọng nhất: Cứu cánh tối hậu của hành động này là gì (Telos)? Tránh rơi vào bẫy bận rộn mù quáng không đích đến.'
-  },
-  {
-    id: 'descartes',
-    name: 'René Descartes',
-    era: 'enlightenment',
-    eraLabel: '💡 Cận Đại',
-    lifespan: '1596 – 1650',
-    role: 'Khai Mở Triết Học Cận Đại • Phụ Thân Chủ Nghĩa Duy Lý (Rationalism)',
-    anchorKeyword: 'TÔI TƯ DUY (COGITO)',
-    pegCode: '15 Kính Hiển Vi + 96 Không Thời Gian',
-    isMilestoneZero: false,
-    d1_shock: 'CÚ SỐC CON QUỶ GIAN ÁC (MALICIOUS DEMON): Giác quan con người cực kỳ dễ bị đánh lừa (nhìn chiếc đũa cắm trong nước tưởng bị gãy). Descartes kinh hoàng tự hỏi: "Nếu tồn tại một con quỷ quyền năng tối thượng liên tục cấy vào tâm trí tôi những ảo giác về thế giới, thì có điều gì trên đời này là chắc chắn 100% không?"',
-    d2_principle: 'CÔNG THỨC: [HOÀI NGHI PHƯƠNG PHÁP LUẬN $\rightarrow$ ĐIỂM TỰA ARCHIMEDES TƯ DUY]. Ta có thể hoài nghi thể xác, vũ trụ, thậm chí toán học. Nhưng ta KHÔNG THỂ HOÀI NGHI SỰ THỰC RẰNG TA ĐANG HOÀI NGHI. Mà hoài nghi chính là tư duy! $\rightarrow$ "Cogito, ergo sum" (Tôi tư duy, nên tôi tồn tại).',
-    d3_combat: '⚔️ ĐẤU TRƯỜNG PHẢN BIỆN (DESCARTES >< SPINOZA & KHOA HỌC THẦN KINH):\n• Luận điểm Descartes: Thuyết Nhị Nguyên (Dualism) - Tâm trí phi vật chất (Res cogitans) hoàn toàn độc lập với Thể xác vật chất (Res extensa), gặp nhau ở tuyến tùng não bộ.\n• Phản biện búa tạ (Spinoza & Khoa học hiện đại): Tâm trí và thể xác chỉ là hai mặt biểu hiện của MỘT THỰC THỂ DUY NHẤT. Làm sao một linh hồn phi vật thể lại có thể tác động lực vật lý học đẩy dịch các nơ-ron não bộ?',
-    d4_memory: '🧠 KHÓA TRÍ NHỚ VĨNH CỬU:\n• Mã số 00-99 (Năm 1596): 15 (🔍 Kính Hiển Vi) + 96 (🌌 Không Thời Gian).\n• Cung điện ký ức: Trong căn phòng kín có lò sưởi, Descartes ghé mắt vào KÍNH HIỂN VI (15) nhìn xuyên qua toàn bộ KHÔNG THỜI GIAN (96) xóa sạch mọi định kiến, chỉ còn lại ngọn lửa tư duy đang bừng cháy trong tâm trí.\n🔑 Từ Khóa Mỏ Neo: TÔI TƯ DUY (COGITO).',
-    d5_switch: '🕹️ CÔNG TẮC ĐỜI THỰC: [XÓA SẠCH GIẢ ĐỊNH & XÂY DỰNG TỪ ĐIỂM TỰA CỨNG (FIRST PRINCIPLES)].\nBật công tắc Descartes khi đối mặt với một vấn đề bế tắc: Tạm thời gạt bỏ toàn bộ ý kiến số đông, thói quen cũ ("xưa nay người ta vẫn làm thế"). Tìm ra một sự thật duy nhất không thể bác bỏ, rồi từ chân lý đó suy luận bắc cầu từng bước để tạo ra giải pháp đột phá mới.'
-  },
-  {
-    id: 'kant',
-    name: 'Immanuel Kant',
-    era: 'enlightenment',
-    eraLabel: '💡 Khai Sáng',
-    lifespan: '1724 – 1804',
-    role: 'Đỉnh Cao Khai Sáng Đức • Cuộc Cách Mạng Copernicus Triết Học',
-    anchorKeyword: 'MỆNH LỆNH TUYỆT ĐỐI',
-    pegCode: '17 Trọng Lực + 24 Axit Phản Ứng',
-    isMilestoneZero: false,
-    d1_shock: 'CÚ SỐC THỨC TỈNH: "David Hume đã đánh thức tôi khỏi giấc ngủ giáo điều!". Nếu mọi tri thức chỉ đến từ kinh nghiệm giác quan (Hume), thì luật nhân quả chỉ là thói quen liên tưởng của bộ não, nền móng khoa học sụp đổ! Kant tạo ra cú sốc đảo chiều: Không phải tâm trí con người thụ động xoay quanh thế giới, mà chính THẾ GIỚI HIỆN TƯỢNG PHẢI ĐIỀU CHỈNH THEO KHUNG TRÍ TUỆ CỦA CON NGƯỜI.',
-    d2_principle: 'CÔNG THỨC: [NHẬN THỨC = DỮ LIỆU CẢM GIÁC + KHUNG TIÊN NGHIỆM (A PRIORI: Không Gian, Thời Gian, 12 Phạm Trù)]. Ta chỉ biết thế giới hiện tượng (Phenomena), không bao giờ chạm được "Vật tự thân" (Noumena / Ding an sich).\nVề Đạo Đức: [MỆNH LỆNH TUYỆT ĐỐI (Categorical Imperative)]: Hãy hành động sao cho quy tắc hành vi của bạn có thể trở thành quy luật phổ quát cho toàn nhân loại!',
-    d3_combat: '⚔️ ĐẤU TRƯỜNG PHẢN BIỆN (KANT >< THUYẾT VỊ LỢI UTILITARIANISM):\n• Luận điểm Kant: Đạo đức nghĩa vụ luận tuyệt đối (Deontology) - Không bao giờ được nói dối trong bất kỳ hoàn cảnh nào, kể cả kẻ sát nhân hỏi bạn người bạn của bạn đang trốn ở đâu.\n• Phản biện búa tạ (Bentham & John Stuart Mill): Đạo đức phi nhân bản và giáo điều! Hành động đạo đức phải đo bằng HỆ QUẢ THỰC TẾ (tổng lượng hạnh phúc hay khổ đau mang lại cho muôn người). Nói thật để kẻ sát nhân giết bạn mình là hành vi tàn nhẫn gián tiếp!',
-    d4_memory: '🧠 KHÓA TRÍ NHỚ VĨNH CỬU:\n• Mã số 00-99 (Năm 1724): 17 (🧲 Từ Trường) + 24 (🧪 Axit Phản Ứng).\n• Cung điện ký ức: Kant đi dạo ở Königsberg chuẩn giờ như kim đồng hồ. TỪ TRƯỜNG (17) gắn một chiếc kính lọc đa chiều lên mắt ông, đổ AXIT PHẢN ỨNG (24) rã rời mọi định kiến cảm tính để giữ lại Mệnh Lệnh Tuyệt Đối bất hoại.\n🔑 Từ Khóa Mỏ Neo: MỆNH LỆNH TUYỆT ĐỐI.',
-    d5_switch: '🕹️ CÔNG TẮC ĐỜI THỰC: [NGUYÊN TẮC: CON NGƯỜI LUÔN LÀ CỨU CÁNH, KHÔNG BAO GIỜ LÀ PHƯƠNG TIỆN].\nTrong lãnh đạo, kinh doanh và ứng xử gia đình: Tuyệt đối không bao giờ coi con người khác chỉ là một CÔNG CỤ / PHƯƠNG TIỆN để ta kiếm tiền hay giải tỏa cảm xúc. Hãy tôn trọng nhân phẩm và quyền tự quyết của họ như một mục đích tự thân tối thượng.'
-  },
-  {
-    id: 'nietzsche',
-    name: 'Friedrich Nietzsche',
-    era: 'nineteenth',
-    eraLabel: '⚙️ Thế Kỷ 19',
-    lifespan: '1844 – 1900',
-    role: 'Nhà Khảo Cổ Giá Trị • Triết Gia Triết Lý Bằng Cây Búa',
-    anchorKeyword: 'AMOR FATI (SIÊU NHÂN)',
-    pegCode: '18 Lượng Tử + 44 Núi Lửa',
-    isMilestoneZero: false,
-    d1_shock: 'CÚ SỐC VỰC THẲM HƯ VÔ (NIHILISM): "Gott ist tot (Thượng đế đã chết)! Và chính chúng ta đã giết chết Ngài!". Khi khoa học phá vỡ các thần tượng tôn giáo cũ, nhân loại bỗng rơi tự do vào khoảng không vô nghĩa: Không còn thiên đường, không còn điểm tựa tuyệt đối, con người sống vì điều gì?',
-    d2_principle: 'CÔNG THỨC: [Ý CHÍ QUYỀN LỰC (WILL TO POWER) $\rightarrow$ SIÊU NHÂN (ÜBERMENSCH) $\rightarrow$ AMOR FATI]. Hãy vứt bỏ đạo đức nô lệ (than thân trách phận, đố kỵ người mạnh). Con người Siêu nhân tự đứng trên đôi chân mình, tự kiến tạo bảng giá trị riêng và can đảm đón nhận Vòng Lặp Vĩnh Cửu (Eternal Recurrence) — yêu trọn vẹn số phận (Amor Fati) cả nỗi đau lẫn vinh quang!',
-    d3_combat: '⚔️ ĐẤU TRƯỜNG PHẢN BIỆN (NIETZSCHE >< CHỦ NGHĨA NHÂN ĐẠO & BÌNH ĐẲNG BẦY ĐÀN):\n• Luận điểm Nietzsche: Xã hội bình quân chủ nghĩa làm suy đồi nhân loại, triệt tiêu những cá nhân kiệt xuất và tinh hoa sáng tạo.\n• Phản biện búa tạ: Tư tưởng nguy hiểm có nguy cơ bị bóp méo thành chủ nghĩa phát-xít, phân biệt đẳng cấp tàn bạo, chối bỏ lòng trắc ẩn và sự bao bọc người yếu thế - sợi dây gắn kết hòa bình của nền văn minh loài người.',
-    d4_memory: '🧠 KHÓA TRÍ NHỚ VĨNH CỬU:\n• Mã số 00-99 (Năm 1844): 18 (🔬 Lượng Tử) + 44 (🌋 Núi Lửa).\n• Cung điện ký ức: Đứng trên miệng NÚI LỬA (44) phun trào dòng nham thạch rực sáng của hạt LƯỢNG TỬ (18), Nietzsche vung búa đập vỡ mọi tượng thần giáo điều mục nát, cất tiếng gầm hào sảng: "Amor Fati - Hãy yêu định mệnh của ngươi!".\n🔑 Từ Khóa Mỏ Neo: AMOR FATI (SIÊU NHÂN).',
-    d5_switch: '🕹️ CÔNG TẮC ĐỜI THỰC: [TÍNH BẤT KHẢ DỄ VỠ (ANTI-FRAGILE) & BIẾN NGHỊCH CẢNH THÀNH ĐÒN BẨY].\n"Cái gì không giết chết được tôi sẽ làm tôi mạnh mẽ hơn!". Khi gặp khủng hoảng, mất mát hay thất bại: Tuyệt đối không đóng vai nạn nhân than khóc! Bật công tắc Nietzsche: Coi cơn bão này là lò luyện kim để trui rèn bản lĩnh vô song và nâng cấp nhận thức lên một tầm cao mới.'
-  }
-];
+const DEFAULT_PHILOSOPHY_LESSONS = [];
 
 function getStoredPhilosophyLessons() {
+  const defaultList = (typeof window !== 'undefined' && window.GLOBAL_PHILOSOPHY_DATA && window.GLOBAL_PHILOSOPHY_DATA.length > 0)
+    ? window.GLOBAL_PHILOSOPHY_DATA
+    : [];
+
   try {
     const raw = localStorage.getItem(PHILOSOPHY_STORAGE_KEY);
-    if (!raw) return DEFAULT_PHILOSOPHY_LESSONS;
+    if (!raw) return defaultList;
     const custom = JSON.parse(raw);
-    if (!Array.isArray(custom) || custom.length === 0) return DEFAULT_PHILOSOPHY_LESSONS;
+    if (!Array.isArray(custom) || custom.length === 0) return defaultList;
 
     // Merge default with custom/updated
     const lessonMap = new Map();
-    DEFAULT_PHILOSOPHY_LESSONS.forEach(l => lessonMap.set(l.id, l));
-    custom.forEach(l => lessonMap.set(l.id, l));
+    defaultList.forEach(l => lessonMap.set(l.id, l));
+    custom.forEach(l => {
+      if (l.isCustom) {
+        lessonMap.set(l.id, l);
+      } else if (lessonMap.has(l.id)) {
+        // Overlay user modifications without wiping new fields
+        lessonMap.set(l.id, { ...lessonMap.get(l.id), ...l });
+      }
+    });
     return Array.from(lessonMap.values());
   } catch (e) {
     console.error('Error loading philosophy lessons:', e);
-    return DEFAULT_PHILOSOPHY_LESSONS;
+    return defaultList;
   }
 }
 
@@ -2386,18 +2286,51 @@ function saveStoredPhilosophyLessons(lessons) {
   }
 }
 
+function filterPhilosophyCivilization(civ) {
+  playSound('click');
+  currentPhiloCivFilter = civ;
+
+  const buttons = document.querySelectorAll('.philo-civ-btn');
+  buttons.forEach(btn => {
+    const bCiv = btn.getAttribute('data-civ');
+    if (bCiv === civ) {
+      btn.className = 'philo-civ-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow';
+    } else {
+      btn.className = 'philo-civ-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all';
+    }
+  });
+
+  renderPhilosophyView();
+}
+
 function filterPhilosophyEra(era) {
   playSound('click');
   currentPhiloEraFilter = era;
 
-  // Update button active states
   const buttons = document.querySelectorAll('.philo-era-btn');
   buttons.forEach(btn => {
     const bEra = btn.getAttribute('data-era');
     if (bEra === era) {
-      btn.className = 'philo-era-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-indigo-600 text-white shadow transition-all';
+      btn.className = 'philo-era-btn px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap bg-indigo-600 text-white shadow transition-all';
     } else {
-      btn.className = 'philo-era-btn px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all';
+      btn.className = 'philo-era-btn px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all';
+    }
+  });
+
+  renderPhilosophyView();
+}
+
+function filterPhilosophyBranch(branch) {
+  playSound('click');
+  currentPhiloBranchFilter = branch;
+
+  const buttons = document.querySelectorAll('.philo-branch-btn');
+  buttons.forEach(btn => {
+    const bBranch = btn.getAttribute('data-branch');
+    if (bBranch === branch) {
+      btn.className = 'philo-branch-btn px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap bg-slate-700 text-white transition-all';
+    } else {
+      btn.className = 'philo-branch-btn px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition-all';
     }
   });
 
@@ -2416,8 +2349,16 @@ function renderPhilosophyView() {
   const allLessons = getStoredPhilosophyLessons();
 
   const filtered = allLessons.filter(lesson => {
+    // Civilization filter (all | west | east)
+    if (currentPhiloCivFilter !== 'all' && lesson.civilization !== currentPhiloCivFilter) {
+      return false;
+    }
     // Era filter
     if (currentPhiloEraFilter !== 'all' && lesson.era !== currentPhiloEraFilter) {
+      return false;
+    }
+    // Branch filter
+    if (currentPhiloBranchFilter !== 'all' && lesson.branch !== currentPhiloBranchFilter) {
       return false;
     }
     // Search query
@@ -2428,6 +2369,9 @@ function renderPhilosophyView() {
         lesson.role,
         lesson.anchorKeyword,
         lesson.pegCode,
+        lesson.civilizationLabel || '',
+        lesson.branchLabel || '',
+        lesson.majorWorks || '',
         lesson.d1_shock,
         lesson.d2_principle,
         lesson.d3_combat,
@@ -2439,14 +2383,20 @@ function renderPhilosophyView() {
     return true;
   });
 
+  // Dynamic counter badge
+  const badgeEl = document.getElementById('philoCountBadge');
+  if (badgeEl) {
+    badgeEl.textContent = `${filtered.length} / ${allLessons.length} Cột Trụ`;
+  }
+
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="p-12 text-center rounded-2xl bg-cardBg border border-slate-800 space-y-3">
         <div class="text-3xl text-indigo-400">🔍</div>
         <h4 class="text-sm font-bold text-white">Không tìm thấy triết gia hoặc nội dung phù hợp</h4>
-        <p class="text-xs text-slate-400">Hãy thử đổi từ khóa tìm kiếm hoặc chọn kỷ nguyên "Tất Cả (Toàn Thư)".</p>
-        <button onclick="filterPhilosophyEra('all'); document.getElementById('philosophySearchInput').value=''; currentPhiloSearchQuery='';" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 text-xs font-semibold">
-          Xóa Bộ Lọc
+        <p class="text-xs text-slate-400">Hãy thử đổi từ khóa tìm kiếm hoặc bấm nút dưới đây để hiện toàn bộ 68 cột trụ.</p>
+        <button onclick="currentPhiloCivFilter='all'; currentPhiloEraFilter='all'; currentPhiloBranchFilter='all'; currentPhiloSearchQuery=''; if(document.getElementById('philosophySearchInput')) document.getElementById('philosophySearchInput').value=''; filterPhilosophyCivilization('all'); filterPhilosophyEra('all'); filterPhilosophyBranch('all');" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 text-xs font-semibold">
+          Xóa Bộ Lọc (Hiện Toàn Bộ 68 Cột Trụ)
         </button>
       </div>
     `;
@@ -2455,9 +2405,20 @@ function renderPhilosophyView() {
 
   container.innerHTML = filtered.map(lesson => {
     const isZero = !!lesson.isMilestoneZero;
+    const isEast = lesson.civilization === 'east';
     const cardBorder = isZero
       ? 'border-2 border-amber-500/70 shadow-[0_0_30px_rgba(245,158,11,0.2)] bg-gradient-to-b from-amber-950/20 via-cardBg to-slate-900/90'
-      : 'border border-slate-800 hover:border-indigo-500/40 bg-cardBg';
+      : (isEast
+          ? 'border border-amber-500/30 hover:border-amber-400/60 bg-cardBg'
+          : 'border border-slate-800 hover:border-indigo-500/40 bg-cardBg');
+
+    const civBadge = isEast
+      ? `<span class="px-2.5 py-0.5 rounded-full bg-amber-950/60 text-amber-300 border border-amber-500/40 text-[10px] font-semibold">☯️ ${escapeHtml(lesson.civilizationLabel || 'Phương Đông')}</span>`
+      : `<span class="px-2.5 py-0.5 rounded-full bg-blue-950/60 text-blue-300 border border-blue-500/40 text-[10px] font-semibold">🏛️ ${escapeHtml(lesson.civilizationLabel || 'Phương Tây')}</span>`;
+
+    const branchBadge = lesson.branchLabel
+      ? `<span class="px-2.5 py-0.5 rounded-full bg-purple-950/60 text-purple-300 border border-purple-500/40 text-[10px] font-medium">${escapeHtml(lesson.branchLabel)}</span>`
+      : '';
 
     return `
       <div id="philo-card-${lesson.id}" class="rounded-3xl ${cardBorder} p-6 sm:p-7 space-y-6 transition-all duration-300">
@@ -2471,18 +2432,25 @@ function renderPhilosophyView() {
                   ⭐ CỘT MỐC SỐ 0: CỘI NGUỒN SỰ KINH NGẠC (THAUMAZEIN)
                 </span>
               ` : `
+                ${civBadge}
                 <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-indigo-300 border border-slate-700 text-[10px] font-semibold">
-                  ${lesson.eraLabel || 'Kỷ Nguyên'}
+                  ${escapeHtml(lesson.eraLabel || 'Kỷ Nguyên')}
                 </span>
+                ${branchBadge}
               `}
               <span class="px-2.5 py-0.5 rounded-full bg-slate-900 text-slate-300 border border-slate-800 text-[10px] font-mono">
-                📅 ${lesson.lifespan}
+                📅 ${escapeHtml(lesson.lifespan || '')}
               </span>
             </div>
             <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-              <span>${lesson.name}</span>
+              <span>${escapeHtml(lesson.name)}</span>
             </h3>
-            <p class="text-xs text-slate-400 font-medium">${lesson.role || ''}</p>
+            <p class="text-xs text-slate-400 font-medium">${escapeHtml(lesson.role || '')}</p>
+            ${lesson.majorWorks ? `
+              <p class="text-xs text-slate-300/90 font-serif italic pt-0.5">
+                <span class="not-italic font-sans text-[10px] font-bold text-amber-400 uppercase tracking-wider">Tác phẩm / Luận điển gốc:</span> ${escapeHtml(lesson.majorWorks)}
+              </p>
+            ` : ''}
           </div>
 
           <!-- Mỏ neo & Nút bấm quản lý -->
@@ -2490,7 +2458,7 @@ function renderPhilosophyView() {
             <div class="flex items-center gap-2">
               <span class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs font-black shadow-inner flex items-center gap-1.5">
                 <i data-lucide="key" class="w-3.5 h-3.5 text-amber-400"></i>
-                <span>${lesson.anchorKeyword}</span>
+                <span>${escapeHtml(lesson.anchorKeyword || '')}</span>
               </span>
               <button onclick="editPhilosophyLesson('${lesson.id}')" title="Chỉnh sửa bài học này" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 border border-slate-700 text-xs transition-colors">
                 <i data-lucide="edit-3" class="w-4 h-4"></i>
@@ -2502,7 +2470,7 @@ function renderPhilosophyView() {
             ${lesson.pegCode ? `
               <div class="text-[11px] font-mono text-indigo-300 flex items-center gap-1.5">
                 <i data-lucide="cpu" class="w-3.5 h-3.5 text-indigo-400"></i>
-                <span>Mã 00-99: <strong>${lesson.pegCode}</strong></span>
+                <span>Mã 00-99: <strong>${escapeHtml(lesson.pegCode)}</strong></span>
               </div>
             ` : ''}
           </div>
@@ -2514,9 +2482,9 @@ function renderPhilosophyView() {
           <!-- CHIỀU 1: CÚ SỐC KINH NGẠC -->
           <div class="p-4 rounded-2xl bg-yellow-950/20 border border-yellow-600/30 space-y-1.5">
             <div class="flex items-center gap-2 text-xs font-black text-amber-300 uppercase tracking-wide">
-              <span>⚡ Chiều 1: Cú Sốc Kinh Ngạc (The Epistemic Shock / Wonder Question)</span>
+              <span>⚡ Chiều 1: Cú Sốc Kinh Ngạc (Epistemic Wonder Shock & Khởi Thủy Câu Hỏi)</span>
             </div>
-            <p class="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
+            <p class="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans whitespace-pre-line">
               ${escapeHtml(lesson.d1_shock)}
             </p>
           </div>
@@ -2524,9 +2492,9 @@ function renderPhilosophyView() {
           <!-- CHIỀU 2: RÃ MÁY NGUYÊN LÝ GỐC -->
           <div class="p-4 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 space-y-1.5">
             <div class="flex items-center gap-2 text-xs font-black text-cyan-300 uppercase tracking-wide">
-              <span>🔬 Chiều 2: Rã Máy Nguyên Lý Gốc (First Principles Formula)</span>
+              <span>🔬 Chiều 2: Rã Máy Nguyên Lý Gốc (First Principles Formula & Bản Đồ Khái Niệm)</span>
             </div>
-            <p class="text-xs sm:text-sm text-cyan-100/90 leading-relaxed font-sans">
+            <p class="text-xs sm:text-sm text-cyan-100/90 leading-relaxed font-sans whitespace-pre-line">
               ${escapeHtml(lesson.d2_principle)}
             </p>
           </div>
@@ -2534,7 +2502,7 @@ function renderPhilosophyView() {
           <!-- CHIỀU 3: ĐẤU TRƯỜNG PHẢN BIỆN -->
           <div class="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-1.5">
             <div class="flex items-center gap-2 text-xs font-black text-rose-300 uppercase tracking-wide">
-              <span>⚔️ Chiều 3: Đấu Trường Phản Biện (Socratic Combat: Luận Điểm vs Phản Bác)</span>
+              <span>⚔️ Chiều 3: Đấu Trường Phản Biện (Biện Chứng Luận Chiến: Luận Điểm vs Phản Đề)</span>
             </div>
             <p class="text-xs sm:text-sm text-rose-100/90 leading-relaxed font-sans whitespace-pre-line">
               ${escapeHtml(lesson.d3_combat)}
@@ -2544,7 +2512,7 @@ function renderPhilosophyView() {
           <!-- CHIỀU 4: KHÓA TRÍ NHỚ VĨNH CỬU -->
           <div class="p-4 rounded-2xl bg-purple-950/20 border border-purple-500/30 space-y-1.5">
             <div class="flex items-center gap-2 text-xs font-black text-purple-300 uppercase tracking-wide">
-              <span>🧠 Chiều 4: Khóa Trí Nhớ Vĩnh Cửu (Memory Peg 00-99 & Cung Điện Ký Ức)</span>
+              <span>🧠 Chiều 4: Khóa Trí Nhớ Vĩnh Cửu (Hình Tượng Dị Thường + Móc Mốc Cung Điện Ký Ức)</span>
             </div>
             <p class="text-xs sm:text-sm text-purple-100/90 leading-relaxed font-sans whitespace-pre-line">
               ${escapeHtml(lesson.d4_memory)}
@@ -2570,7 +2538,7 @@ function renderPhilosophyView() {
             <span id="drill-toggle-label-${lesson.id}">Chế Độ Thử Thách Trí Nhớ (Ẩn/Hiện Đáp Án)</span>
           </button>
           <span class="text-[11px] text-slate-500 italic hidden sm:inline">
-            Khóa não: Nhìn từ khóa "<strong>${lesson.anchorKeyword}</strong>" $\rightarrow$ Tự tái hiện đủ 5 chiều
+            Khóa não: Nhìn từ khóa "<strong>${escapeHtml(lesson.anchorKeyword)}</strong>" $\rightarrow$ Tự tái hiện đủ 5 chiều
           </span>
         </div>
 
