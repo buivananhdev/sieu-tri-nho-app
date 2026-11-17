@@ -4,298 +4,40 @@
  */
 
 // ==========================================
-// 1. DATA REPOSITORY: MEMORY METHODS
+// 1. DATA REPOSITORY: MEMORY METHODS (MASTERCLASS TOÀN THƯ)
 // ==========================================
-const MEMORY_METHODS = [
-  {
-    id: 'loci',
-    title: 'Cung Điện Ký Ức (Method of Loci)',
-    subtitle: 'Nền tảng của các kỷ lục gia thế giới',
-    category: 'Không Gian & Liên Tưởng',
-    color: 'from-purple-600 to-indigo-600',
-    icon: 'building-2',
-    desc: 'Biến không gian quen thuộc thành một ổ cứng sinh học khổng lồ để lưu trữ hàng nghìn dữ kiện không giới hạn.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">1. Nguyên lý thần kinh:</h4>
-      <p class="mb-3">Bộ não tiến hóa để ghi nhớ vị trí địa lý, tìm đường và không gian sinh tồn (vùng hồi hải mã - Hippocampus). Khi bạn gắn dữ kiện trừu tượng vào một vị trí vật lý cụ thể, bộ não tự động lưu trữ dữ kiện đó vào trí nhớ dài hạn.</p>
-      
-      <h4 class="font-bold text-white text-base mb-2">2. Quy tắc 4 bước kiến tạo Cung Điện:</h4>
-      <ol class="list-decimal pl-5 space-y-2 mb-4">
-        <li><strong>Chọn địa điểm quen thuộc:</strong> Ngôi nhà bạn ở, lớp học, văn phòng hoặc con đường đi làm hàng ngày.</li>
-        <li><strong>Xác định các trạm mốc (Loci):</strong> Đi theo một chiều duy nhất (từ trái qua phải, theo chiều kim đồng hồ) để tránh bỏ sót. Ví dụ: Cổng -> Sân -> Cửa chính -> Tủ giày -> Ghế sofa -> Tivi...</li>
-        <li><strong>Neo giữ dữ kiện:</strong> Đặt thông tin cần nhớ vào từng trạm mốc.</li>
-        <li><strong>Quy tắc V.E.E.A (Vivid - Exaggerated - Emotional - Action):</strong> Biến hình ảnh thành khổng lồ, chuyển động kịch tính, khôi hài hoặc có mùi vị/âm thanh mạnh mẽ.</li>
-      </ol>
-
-      <h4 class="font-bold text-white text-base mb-2">3. Ví dụ thực hành nhớ 5 việc cần làm:</h4>
-      <ul class="list-disc pl-5 space-y-1 mb-2">
-        <li><em>Cổng nhà:</em> Một con gà tây khổng lồ đang mổ chuông cửa (Nhớ mua gà nấu tối).</li>
-        <li><em>Tủ giày:</em> Đôi giày đang bốc khói dữ dội vì cắm sạc laptop vào (Nhớ sạc pin máy tính).</li>
-        <li><em>Sofa:</em> Một chồng hóa đơn điện biết nhảy múa trên ghế (Nhớ đóng tiền điện).</li>
-      </ul>
-    `
-  },
-  {
-    id: 'major',
-    title: 'Hệ Thống Major System (Mã Hóa Số)',
-    subtitle: 'Chuyển đổi số khô khan thành hình ảnh',
-    category: 'Kỹ Thuật Mã Hóa',
-    color: 'from-amber-600 to-orange-600',
-    icon: 'binary',
-    desc: 'Quy chuẩn quốc tế chuyển đổi các con số từ 0 đến 9 thành phụ âm, từ đó ghép thành các từ ngữ và hình ảnh trực quan.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">1. Bản chất của Major System:</h4>
-      <p class="mb-3">Não người rất khó nhớ chuỗi số vô nghĩa như <strong>894215</strong>, nhưng lại nhớ như in hình ảnh <strong>"Người phao - Rắn - Tên lửa"</strong>. Major System chính là cây cầu chuyển đổi số thành chữ.</p>
-
-      <h4 class="font-bold text-white text-base mb-2">2. Bảng quy đổi âm chuẩn (Âm ngữ):</h4>
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 my-3 p-3 bg-slate-900 rounded-xl text-xs font-mono">
-        <div><strong class="text-amber-400">0:</strong> S, X, Z (Zero)</div>
-        <div><strong class="text-amber-400">1:</strong> T, Đ (1 gạch dọc)</div>
-        <div><strong class="text-amber-400">2:</strong> N (2 nét)</div>
-        <div><strong class="text-amber-400">3:</strong> M (3 nét)</div>
-        <div><strong class="text-amber-400">4:</strong> R (Rõ rệt / 4)</div>
-        <div><strong class="text-amber-400">5:</strong> L (Chữ L trong La Mã 50)</div>
-        <div><strong class="text-amber-400">6:</strong> Ch, J, Sh (Sáu)</div>
-        <div><strong class="text-amber-400">7:</strong> K, G (Số 7 giống cái cuốc)</div>
-        <div><strong class="text-amber-400">8:</strong> V, F (Vần V-Tám)</div>
-        <div><strong class="text-amber-400">9:</strong> P, B (9 lộn ngược thành b, p)</div>
-      </div>
-
-      <h4 class="font-bold text-white text-base mb-2">3. Ứng dụng ghi nhớ:</h4>
-      <p>Số <strong>32</strong> = M + N => <em>Mỏ Neo</em>. Số <strong>14</strong> = T + R => <em>Tê Giác</em>. Xem chi tiết tab <strong>Mã Số 00-99</strong> trong ứng dụng để thuộc toàn bộ 100 hình ảnh chuẩn!</p>
-    `
-  },
-  {
-    id: 'srs',
-    title: 'Lặp Lại Ngắt Quãng (Spaced Repetition)',
-    subtitle: 'Đánh bại đường cong quên lãng Ebbinghaus',
-    category: 'Khoa Học Trí Nhớ',
-    color: 'from-emerald-600 to-teal-600',
-    icon: 'repeat',
-    desc: 'Lên lịch ôn tập chính xác vào khoảnh khắc não bộ chuẩn bị quên, giúp khắc sâu thông tin vào vỏ não vĩnh viễn.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">1. Đường cong quên lãng (Forgetting Curve):</h4>
-      <p class="mb-3">Sau 24 giờ học điều mới, não người quên mất 70% nếu không ôn lại. Tuy nhiên, nếu bạn ôn lại đúng lúc đường cong sụt giảm, độ dốc của việc quên sẽ phẳng dần.</p>
-
-      <h4 class="font-bold text-white text-base mb-2">2. Lịch trình ôn tập chuẩn khoa học:</h4>
-      <ol class="list-decimal pl-5 space-y-1.5 mb-4">
-        <li><strong>Lần 1:</strong> Ngay sau khi học 20 phút.</li>
-        <li><strong>Lần 2:</strong> Sau 24 giờ (1 ngày).</li>
-        <li><strong>Lần 3:</strong> Sau 3 ngày.</li>
-        <li><strong>Lần 4:</strong> Sau 7 ngày (1 tuần).</li>
-        <li><strong>Lần 5:</strong> Sau 30 ngày (1 tháng).</li>
-        <li><strong>Lần 6:</strong> Sau 90 ngày (Trí nhớ dài hạn vĩnh viễn).</li>
-      </ol>
-
-      <h4 class="font-bold text-white text-base mb-2">3. Ứng dụng thực tế:</h4>
-      <p>Sử dụng mục <strong>Thẻ Ghi Nhớ Ngắt Quãng (SRS Cards)</strong> ngay trong tab Luyện Tập để rèn luyện thói quen đánh giá mức độ ghi nhớ mỗi ngày.</p>
-    `
-  },
-  {
-    id: 'story',
-    title: 'Kỹ Thuật Móc Xích Câu Chuyện (Story Method)',
-    subtitle: 'Kết nối dữ liệu bằng phim ảnh cảm xúc',
-    category: 'Tưởng Tượng Đột Phá',
-    color: 'from-pink-600 to-rose-600',
-    icon: 'film',
-    desc: 'Ghép nối các dữ liệu rời rạc thành một chuỗi sự kiện liên hoàn, vô lý và hài hước để kích thích não phải.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">1. Tại sao truyện cười và phim ảnh dễ nhớ hơn công thức?</h4>
-      <p class="mb-3">Não bộ tiết ra hormone Dopamine khi trải nghiệm những điều bất ngờ, giật gân, hài hước hoặc kỳ quặc. Khi xâu chuỗi thông tin thành phim hoạt hình vui nhộn, não bộ chụp lại toàn bộ câu chuyện.</p>
-
-      <h4 class="font-bold text-white text-base mb-2">2. Ba quy tắc vàng của cốt truyện:</h4>
-      <ul class="list-disc pl-5 space-y-2 mb-3">
-        <li><strong>Sự liên kết động:</strong> Vật A phải tác động trực tiếp vào vật B (ví dụ: quả dưa hấu nổ tung bắn trúng mặt chiếc đồng hồ).</li>
-        <li><strong>Phi lý & phóng đại:</strong> Kích thước khổng lồ, màu sắc rực rỡ, âm thanh chát chúa.</li>
-        <li><strong>Cảm giác ngũ quan:</strong> Cảm nhận được độ dính, mùi thơm hoặc cảm giác ớn lạnh của câu chuyện.</li>
-      </ul>
-    `
-  },
-  {
-    id: 'peg',
-    title: 'Hệ Thống Móc Treo Trí Nhớ (Peg System)',
-    subtitle: 'Tủ hồ sơ có số thứ tự trong não bộ',
-    category: 'Móc Neo Nhận Thức',
-    color: 'from-blue-600 to-cyan-600',
-    icon: 'anchor',
-    desc: 'Tạo sẵn một danh sách các móc treo bất biến để khi cần nhớ bất kỳ mục nào theo số thứ tự, chỉ cần móc vào vật đó.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">1. Móc treo hình dạng số (Number-Shape Pegs):</h4>
-      <p class="mb-2">Gán cho mỗi con số từ 1 đến 10 một hình dạng trực quan cố định:</p>
-      <div class="grid grid-cols-2 gap-2 text-xs bg-slate-900 p-3 rounded-xl mb-3">
-        <div><strong>1:</strong> Cây nến / Cây dù</div>
-        <div><strong>2:</strong> Con thiên nga / Vịt</div>
-        <div><strong>3:</strong> Trái tim / Cánh bướm</div>
-        <div><strong>4:</strong> Cánh buồm / Cái ghế</div>
-        <div><strong>5:</strong> Móc câu áo</div>
-        <div><strong>6:</strong> Vỏ ốc sên / Ống sáo</div>
-        <div><strong>7:</strong> Cái rìu / Bờ vực</div>
-        <div><strong>8:</strong> Người tuyết / Đồng hồ cát</div>
-        <div><strong>9:</strong> Quả bóng bay có dây</div>
-        <div><strong>10:</strong> Cái nĩa và cái đĩa</div>
-      </div>
-      <p>Khi cần nhớ mục số 2 là "Ký hợp đồng", hãy tưởng tượng một con thiên nga đang ngậm chiếc bút lông vàng ký vào tập tài liệu.</p>
-    `
-  },
-  {
-    id: 'chunking',
-    title: 'Kỹ Thuật Phân Khối (Chunking)',
-    subtitle: 'Tối ưu hóa dung lượng RAM bộ não',
-    category: 'Tối Ưu Tải Nhận Thức',
-    color: 'from-teal-600 to-emerald-600',
-    icon: 'boxes',
-    desc: 'Gom các đơn vị thông tin nhỏ lẻ thành các cụm có ý nghĩa để vượt qua giới hạn 4-7 mục của bộ nhớ ngắn hạn.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">1. Giới hạn bộ nhớ ngắn hạn (Working Memory):</h4>
-      <p class="mb-3">Theo định luật Miller, bộ nhớ làm việc của con người chỉ chứa được khoảng 4 ± 1 đơn vị dữ liệu cùng một lúc. Nếu không gom cụm, dữ liệu sẽ bị tràn và mất dấu.</p>
-      <h4 class="font-bold text-white text-base mb-2">2. Ví dụ điển hình:</h4>
-      <p class="mb-2">Một số điện thoại <strong>0912345678</strong> rất khó nhớ dưới dạng 10 chữ số riêng lẻ. Nhưng khi chunking thành:</p>
-      <div class="p-3 bg-slate-900 rounded-xl text-center font-mono text-emerald-400 font-bold mb-3">
-        [0912] - [345] - [678]
-      </div>
-      <p>Não bộ chỉ cần xử lý 3 khối dữ liệu thay vì 10 khối!</p>
-    `
-  }
-];
+const MEMORY_METHODS = (typeof window !== 'undefined' && window.GLOBAL_MEMORY_METHODS && window.GLOBAL_MEMORY_METHODS.length)
+  ? window.GLOBAL_MEMORY_METHODS
+  : [
+      {
+        id: 'loci',
+        title: 'Cung Điện Ký Ức (Method of Loci)',
+        subtitle: 'Nền tảng của các kỷ lục gia thế giới',
+        category: 'Không Gian & Liên Tưởng',
+        color: 'from-purple-600 to-indigo-600',
+        icon: 'building-2',
+        desc: 'Biến không gian quen thuộc thành một ổ cứng sinh học khổng lồ để lưu trữ hàng nghìn dữ kiện không giới hạn.',
+        content: '<p>Vui lòng nạp methods-data.js để xem trọn vẹn bài giảng Masterclass.</p>'
+      }
+    ];
 
 // ==========================================
-// 2. DATA REPOSITORY: SUPER INTELLIGENCE MODELS
+// 2. DATA REPOSITORY: SUPER INTELLIGENCE MODELS (MASTERCLASS TOÀN THƯ)
 // ==========================================
-const INTELLIGENCE_MODELS = [
-  {
-    id: 'feynman',
-    title: 'Kỹ Thuật Feynman (Feynman Technique)',
-    subtitle: 'Học sâu & truyền đạt siêu đơn giản',
-    category: 'Làm Chủ Tri Thức',
-    color: 'from-cyan-600 to-blue-600',
-    icon: 'sparkles',
-    desc: 'Phương pháp tối thượng của nhà vật lý đoạt giải Nobel giúp bạn hiểu thấu đáo bất kỳ chủ đề hóc búa nào.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">Triết lý cốt lõi:</h4>
-      <blockquote class="italic border-l-2 border-cyan-400 pl-3 text-slate-300 mb-3">
-        "Nếu bạn không thể giải thích điều đó cho một đứa trẻ 10 tuổi hiểu, thì chính bạn cũng chưa thực sự hiểu nó."
-      </blockquote>
-      <h4 class="font-bold text-white text-base mb-2">Quy trình 4 bước thực hiện:</h4>
-      <ol class="list-decimal pl-5 space-y-2 mb-3">
-        <li><strong>Bước 1 - Chọn chủ đề:</strong> Viết tên khái niệm bạn muốn học lên đầu một trang giấy trắng.</li>
-        <li><strong>Bước 2 - Giảng bài cho đứa trẻ 10 tuổi:</strong> Viết lời giải thích bằng ngôn ngữ đơn giản nhất, không dùng thuật ngữ chuyên môn phức tạp (jargon). Dùng ví dụ đời thường.</li>
-        <li><strong>Bước 3 - Xác định lỗ hổng kiến thức:</strong> Khi bị nghẽn ở đoạn nào, quay lại tài liệu gốc để đọc lại cho đến khi giải thích trôi chảy.</li>
-        <li><strong>Bước 4 - Tinh gọn & Ẩn dụ hóa:</strong> Đơn giản hóa hơn nữa, tạo ra các hình ảnh ẩn dụ (Analogy) sinh động.</li>
-      </ol>
-    `
-  },
-  {
-    id: 'first-principles',
-    title: 'Tư Duy Nguyên Lý Đầu Tiên (First Principles)',
-    subtitle: 'Bí quyết đột phá của Elon Musk & Aristotle',
-    category: 'Tư Duy Sáng Tạo',
-    color: 'from-purple-600 to-pink-600',
-    icon: 'atom',
-    desc: 'Phân rã vấn đề đến những sự thật nền tảng không thể chối cãi, từ đó kiến tạo giải pháp hoàn toàn mới thay vì sao chép.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">So sánh hai cách tư duy:</h4>
-      <p class="mb-2"><strong>1. Tư duy loại suy (Analogy):</strong> Làm theo những gì người khác đã làm ("Trước giờ mọi người vẫn làm vậy"). Dẫn đến những cải tiến nhỏ giọt.</p>
-      <p class="mb-3"><strong>2. Tư duy nguyên lý đầu tiên:</strong> Hỏi "Sự thật cơ bản nhất ở đây là gì?" và xây dựng từ gốc rễ lên.</p>
-      <h4 class="font-bold text-white text-base mb-2">Câu chuyện tên lửa SpaceX:</h4>
-      <p>Khi Elon Musk muốn mua tên lửa sang sao Hỏa, các công ty hàng không chào giá 65 triệu USD. Musk đã phân tích: <em>"Tên lửa gồm những gì? Hợp kim nhôm cấp hàng không vũ trụ, titan, đồng và sợi carbon. Giá nguyên liệu thô trên sàn giao dịch là bao nhiêu?"</em> Kết quả là nguyên liệu chỉ chiếm 2% giá tên lửa! Từ đó ông tự chế tạo tên lửa với chi phí rẻ hơn 90%.</p>
-    `
-  },
-  {
-    id: 'inversion',
-    title: 'Tư Duy Đảo Ngược (Inversion Thinking)',
-    subtitle: 'Nghệ thuật tránh bẫy của Charlie Munger',
-    category: 'Giải Quyết Vấn Đề',
-    color: 'from-rose-600 to-amber-600',
-    icon: 'rotate-ccw',
-    desc: 'Thay vì tìm cách đạt thành công, hãy tự hỏi: "Làm thế nào để chắc chắn thất bại thảm hại?" rồi tránh xa những điều đó.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">Câu nói kinh điển của Charlie Munger:</h4>
-      <blockquote class="italic border-l-2 border-rose-400 pl-3 text-slate-300 mb-3">
-        "Tất cả những gì tôi muốn biết là tôi sẽ chết ở đâu, để tôi không bao giờ đến đó."
-      </blockquote>
-      <h4 class="font-bold text-white text-base mb-2">Cách áp dụng đảo ngược:</h4>
-      <ul class="list-disc pl-5 space-y-2 mb-3">
-        <li><strong>Mục tiêu:</strong> Muốn có một ngày làm việc siêu hiệu quả?</li>
-        <li><strong>Đảo ngược câu hỏi:</strong> "Điều gì chắc chắn sẽ phá hủy ngày hôm nay của tôi?"</li>
-        <li><strong>Câu trả lời:</strong> Lướt TikTok ngay khi mở mắt, ăn đồ ngọt nhiều đường gây buồn ngủ, để thông báo điện thoại bật liên tục, không có kế hoạch rõ ràng.</li>
-        <li><strong>Hành động:</strong> Chỉ cần triệt tiêu 4 điều tiêu cực trên, ngày làm việc của bạn tự động đạt hiệu suất cao!</li>
-      </ul>
-    `
-  },
-  {
-    id: 'second-brain',
-    title: 'Xây Dựng Bộ Não Thứ Hai (Second Brain)',
-    subtitle: 'Giải phóng nhận thức bằng hệ thống ghi chú liên kết',
-    category: 'Quản Trị Tri Thức',
-    color: 'from-emerald-600 to-teal-600',
-    icon: 'hard-drive-download',
-    desc: 'Phương pháp CODE & PARA của Tiago Forte giúp biến các công cụ ghi chú thành kho lưu trữ trí tuệ mở rộng.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">Bộ não sinh học dùng để tạo ý tưởng, không phải để lưu trữ:</h4>
-      <p class="mb-3">Cố gắng nhớ mọi việc trong đầu gây ra stress và quá tải nhận thức. Bạn cần một hệ thống số bên ngoài để lưu giữ tri thức.</p>
-      <h4 class="font-bold text-white text-base mb-2">Khung phương pháp C.O.D.E:</h4>
-      <ol class="list-decimal pl-5 space-y-1.5 mb-3">
-        <li><strong>Capture (Thu thập):</strong> Lưu lại những gì tạo cảm hứng cho bạn (trích dẫn, bài viết, ý tưởng bất chợt).</li>
-        <li><strong>Organize (Tổ chức - theo PARA):</strong> Xếp vào Projects (Dự án đang làm), Areas (Trách nhiệm dài hạn), Resources (Tài nguyên tham khảo), Archives (Lưu trữ cũ).</li>
-        <li><strong>Distill (Chắt lọc):</strong> Rút ra những gạch đầu dòng cốt lõi nhất.</li>
-        <li><strong>Express (Thể hiện):</strong> Tạo ra sản phẩm cụ thể từ những ghi chú đó.</li>
-      </ol>
-    `
-  },
-  {
-    id: 'ooda',
-    title: 'Vòng Lặp OODA (OODA Loop)',
-    subtitle: 'Tư duy phản xạ siêu tốc từ phi công quân sự',
-    category: 'Chiến Lược & Ra Quyết Định',
-    color: 'from-indigo-600 to-purple-600',
-    icon: 'compass',
-    desc: 'Khung ra quyết định trong điều kiện biến động và áp lực cao: Quan sát - Định hướng - Quyết định - Hành động.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">Được tạo ra bởi Đại tá không quân John Boyd:</h4>
-      <p class="mb-3">Ai xoay vòng OODA nhanh hơn và chính xác hơn sẽ là người kiểm soát cuộc chơi và giành chiến thắng.</p>
-      <div class="grid grid-cols-2 gap-2 text-xs bg-slate-900 p-3 rounded-xl mb-3">
-        <div><strong>1. Observe (Quan sát):</strong> Thu thập dữ liệu khách quan từ môi trường xung quanh mà không có định kiến.</div>
-        <div><strong>2. Orient (Định hướng):</strong> Bộ lọc quan trọng nhất! Phân tích dữ liệu dựa trên mô hình tư duy, kinh nghiệm và thực tế.</div>
-        <div><strong>3. Decide (Quyết định):</strong> Chọn phương án hành động khả thi nhất mà không do dự.</div>
-        <div><strong>4. Act (Hành động):</strong> Triển khai ngay lập tức và theo dõi kết quả để bắt đầu vòng quan sát mới.</div>
-      </div>
-    `
-  },
-  {
-    id: 'deep-work',
-    title: 'Deep Work & Trạng Thái Dòng Chảy (Flow)',
-    subtitle: 'Tập trung sâu không gián đoạn',
-    category: 'Năng Suất Đỉnh Cao',
-    color: 'from-amber-600 to-yellow-600',
-    icon: 'focus',
-    desc: 'Làm chủ sự chú ý, loại bỏ phân tâm thời đại số để tạo ra những giá trị hiếm có và khó thay thế.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">Nghiên cứu về Attention Residue (Dư lượng chú ý):</h4>
-      <p class="mb-3">Mỗi lần bạn liếc nhìn tin nhắn mạng xã hội dù chỉ 3 giây, não bộ mất từ 15 đến 23 phút mới quay trở lại được trạng thái tập trung sâu ban đầu!</p>
-      <h4 class="font-bold text-white text-base mb-2">3 Quy tắc để kích hoạt Deep Work mỗi ngày:</h4>
-      <ul class="list-disc pl-5 space-y-1.5 mb-3">
-        <li><strong>Lập nghi thức không gian:</strong> Tách biệt điện thoại sang phòng khác, đeo tai nghe chống ồn.</li>
-        <li><strong>Khối thời gian 90 phút (Ultradian Rhythm):</strong> Làm việc cật lực không xao nhãng trong 90 phút, sau đó nghỉ ngơi phục hồi 20 phút.</li>
-        <li><strong>Theo dõi bảng số liệu:</strong> Đếm số giờ Deep Work thực tế bạn đạt được mỗi ngày.</li>
-      </ul>
-    `
-  },
-  {
-    id: 'pareto',
-    title: 'Quy Tắc Pareto 80/20 & Đòn Bẩy Trí Tuệ',
-    subtitle: 'Tối ưu hóa nguồn lực cho kết quả vượt trội',
-    category: 'Tối Ưu Hóa Năng Suất',
-    color: 'from-emerald-600 to-green-600',
-    icon: 'bar-chart-3',
-    desc: 'Xác định 20% nguyên nhân tạo ra 80% kết quả để tập trung tuyệt đối vào những việc có đòn bẩy cao nhất.',
-    content: `
-      <h4 class="font-bold text-white text-base mb-2">Bản chất của đòn bẩy:</h4>
-      <p class="mb-3">Không phải mọi nỗ lực đều có giá trị ngang nhau. 80% từ vựng trong giao tiếp hàng ngày chỉ xoay quanh 20% từ phổ biến nhất. 80% doanh thu thường đến từ 20% khách hàng cốt lõi.</p>
-      <h4 class="font-bold text-white text-base mb-2">Ứng dụng vào học tập siêu tốc:</h4>
-      <p>Khi học một kỹ năng mới (lập trình, ngoại ngữ, đầu tư), hãy tìm ra 20% khái niệm cốt lõi nhất được sử dụng trong 80% tình huống thực tế để học trước. Bạn sẽ đạt 80% năng lực chỉ trong 20% thời gian thông thường!</p>
-    `
-  }
-];
+const INTELLIGENCE_MODELS = (typeof window !== 'undefined' && window.GLOBAL_INTELLIGENCE_MODELS && window.GLOBAL_INTELLIGENCE_MODELS.length)
+  ? window.GLOBAL_INTELLIGENCE_MODELS
+  : [
+      {
+        id: 'feynman',
+        title: 'Kỹ Thuật Feynman (Feynman Technique)',
+        subtitle: 'Học sâu & truyền đạt siêu đơn giản',
+        category: 'Làm Chủ Tri Thức',
+        color: 'from-cyan-600 to-blue-600',
+        icon: 'sparkles',
+        desc: 'Phương pháp tối thượng của nhà vật lý đoạt giải Nobel giúp bạn hiểu thấu đáo bất kỳ chủ đề hóc búa nào.',
+        content: '<p>Vui lòng nạp methods-data.js để xem trọn vẹn bài giảng Masterclass.</p>'
+      }
+    ];
 
 // ==========================================
 // 3. DATA REPOSITORY: 100 BIỂU TƯỢNG SỐ 00-99 (KHOA HỌC & TỰ NHIÊN)
@@ -602,6 +344,9 @@ function switchTab(tabId) {
 
   if (tabId === 'subjects') {
     renderSubjectsGrid();
+  updateProgressDashboard();
+  updateOverviewPhiloMetrics();
+  renderPhilosophyView();
   }
 
   // Update desktop navigation active states
@@ -2342,6 +2087,391 @@ function searchPhilosophy(query) {
   renderPhilosophyView();
 }
 
+
+// ==========================================
+// 16. PROGRESS TRACKING & MASTERCLASS ENGINE (100 CỘT TRỤ)
+// ==========================================
+const PROGRESS_STORAGE_KEY = 'supermind_learning_progress_v1';
+let currentPhiloProgressFilter = 'all'; // 'all' | 'read' | 'memorized' | 'mastered' | 'unread'
+let currentMasterclassLessonId = null;
+
+function getLearningProgressMap() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function getLessonProgress(lessonId) {
+  const map = getLearningProgressMap();
+  return map[lessonId] || { status: 'none', timestamp: 0 };
+}
+
+function setLessonProgress(lessonId, status) {
+  const map = getLearningProgressMap();
+  map[lessonId] = {
+    status: status, // 'none' | 'read' | 'memorized' | 'mastered'
+    timestamp: Date.now()
+  };
+  localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(map));
+  
+  if (status === 'mastered') {
+    playSound('success');
+  } else {
+    playSound('click');
+  }
+
+  updateProgressDashboard();
+  updateOverviewPhiloMetrics();
+  updateMasterclassModalStatusUI(lessonId);
+  renderPhilosophyView();
+}
+
+function getProgressStats() {
+  const allLessons = getStoredPhilosophyLessons();
+  const map = getLearningProgressMap();
+  let readCount = 0;
+  let memorizedCount = 0;
+  let masteredCount = 0;
+
+  allLessons.forEach(l => {
+    const p = map[l.id];
+    if (p) {
+      if (p.status === 'read') readCount++;
+      else if (p.status === 'memorized') memorizedCount++;
+      else if (p.status === 'mastered') masteredCount++;
+    }
+  });
+
+  const total = allLessons.length;
+  const started = readCount + memorizedCount + masteredCount;
+  const percent = total > 0 ? Math.round(((masteredCount * 1.0 + memorizedCount * 0.7 + readCount * 0.3) / total) * 100) : 0;
+
+  return { total, started, readCount, memorizedCount, masteredCount, percent };
+}
+
+function updateProgressDashboard() {
+  const stats = getProgressStats();
+  
+  const percentEl = document.getElementById('philoProgressPercentText');
+  const barEl = document.getElementById('philoProgressBar');
+  const totalEl = document.getElementById('statTotalCount');
+  const readEl = document.getElementById('statReadCount');
+  const memEl = document.getElementById('statMemorizedCount');
+  const mastEl = document.getElementById('statMasteredCount');
+
+  if (percentEl) percentEl.textContent = stats.percent + '%';
+  if (barEl) barEl.style.width = Math.min(100, Math.max(0, stats.percent)) + '%';
+  if (totalEl) totalEl.textContent = stats.total;
+  if (readEl) readEl.textContent = stats.readCount;
+  if (memEl) memEl.textContent = stats.memorizedCount;
+  if (mastEl) mastEl.textContent = stats.masteredCount;
+}
+
+function updateOverviewPhiloMetrics() {
+  const stats = getProgressStats();
+  const progEl = document.getElementById('overviewPhiloProgress');
+  const percEl = document.getElementById('overviewPhiloPercent');
+  if (progEl) progEl.textContent = (stats.masteredCount + stats.memorizedCount) + ' / ' + stats.total;
+  if (percEl) percEl.textContent = stats.percent + '% Tinh Thông';
+}
+
+function filterPhilosophyProgress(status) {
+  playSound('click');
+  currentPhiloProgressFilter = status;
+
+  const btnMap = {
+    'all': 'btnProgFilterAll',
+    'read': 'btnProgFilterRead',
+    'memorized': 'btnProgFilterMemorized',
+    'mastered': 'btnProgFilterMastered'
+  };
+
+  Object.entries(btnMap).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (k === status) {
+      el.className = 'philo-prog-btn p-2.5 rounded-xl bg-indigo-950/80 border border-indigo-400 text-left transition-all shadow-md';
+    } else {
+      el.className = 'philo-prog-btn p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-left transition-all hover:bg-slate-800';
+    }
+  });
+
+  renderPhilosophyView();
+}
+
+function openPhilosophyMasterclass(lessonId) {
+  playSound('click');
+  currentMasterclassLessonId = lessonId;
+  const allLessons = getStoredPhilosophyLessons();
+  const lesson = allLessons.find(l => l.id === lessonId);
+  if (!lesson) return;
+
+  const modal = document.getElementById('philosophyMasterclassModal');
+  if (!modal) return;
+
+  // Header tags
+  const isEast = lesson.civilization === 'east';
+  const iconBadge = document.getElementById('masterclassIconBadge');
+  if (iconBadge) {
+    iconBadge.innerHTML = isEast ? '☯️' : '🏛️';
+    iconBadge.className = isEast 
+      ? 'w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-emerald-600 flex items-center justify-center text-white shadow-lg text-xl font-bold'
+      : 'w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-600 flex items-center justify-center text-white shadow-lg text-xl font-bold';
+  }
+
+  const titleEl = document.getElementById('masterclassTitle');
+  if (titleEl) titleEl.textContent = lesson.name;
+
+  const roleEl = document.getElementById('masterclassRole');
+  if (roleEl) roleEl.textContent = (lesson.role || '') + (lesson.majorWorks ? ' • Tác phẩm: ' + lesson.majorWorks : '');
+
+  const eraTag = document.getElementById('masterclassEraTag');
+  if (eraTag) eraTag.textContent = lesson.eraLabel || 'Thời Kỳ';
+
+  const branchTag = document.getElementById('masterclassBranchTag');
+  if (branchTag) branchTag.textContent = lesson.branchLabel || 'Chuyên Ngành';
+
+  // Pagination indicator
+  const idx = allLessons.findIndex(l => l.id === lessonId);
+  const pagEl = document.getElementById('masterclassPagination');
+  if (pagEl) pagEl.textContent = 'Cột Trụ ' + (idx + 1) + ' / ' + allLessons.length;
+
+  // Update Status UI inside modal
+  updateMasterclassModalStatusUI(lessonId);
+
+  // Render 7 parts of Masterclass
+  const bodyEl = document.getElementById('masterclassContentBody');
+  if (bodyEl) {
+    bodyEl.innerHTML = generateMasterclassLessonHTML(lesson);
+  }
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  lucide.createIcons();
+}
+
+function closePhilosophyMasterclass() {
+  playSound('click');
+  const modal = document.getElementById('philosophyMasterclassModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function navigateMasterclass(delta) {
+  const allLessons = getStoredPhilosophyLessons();
+  if (allLessons.length === 0) return;
+  let idx = allLessons.findIndex(l => l.id === currentMasterclassLessonId);
+  if (idx === -1) idx = 0;
+  idx = (idx + delta + allLessons.length) % allLessons.length;
+  openPhilosophyMasterclass(allLessons[idx].id);
+}
+
+function handleSetCurrentMasterclassStatus(status) {
+  if (!currentMasterclassLessonId) return;
+  setLessonProgress(currentMasterclassLessonId, status);
+}
+
+function updateMasterclassModalStatusUI(lessonId) {
+  const p = getLessonProgress(lessonId);
+  const status = p.status || 'none';
+
+  const statusTag = document.getElementById('masterclassProgressTag');
+  if (statusTag) {
+    if (status === 'mastered') {
+      statusTag.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/50 flex items-center gap-1';
+      statusTag.innerHTML = '<span>👑</span> ĐÃ TINH THÔNG';
+    } else if (status === 'memorized') {
+      statusTag.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/50 flex items-center gap-1';
+      statusTag.innerHTML = '<span>🧠</span> ĐÃ THUỘC LOCI';
+    } else if (status === 'read') {
+      statusTag.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/50 flex items-center gap-1';
+      statusTag.innerHTML = '<span>📖</span> ĐÃ ĐỌC BÀI';
+    } else {
+      statusTag.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1';
+      statusTag.innerHTML = '<span>⚪</span> CHƯA HỌC';
+    }
+  }
+
+  // Cập nhật trạng thái active của 4 nút
+  const btnNone = document.getElementById('btnSetStatusNone');
+  const btnRead = document.getElementById('btnSetStatusRead');
+  const btnMem = document.getElementById('btnSetStatusMemorized');
+  const btnMast = document.getElementById('btnSetStatusMastered');
+
+  if (btnNone) btnNone.className = (status === 'none')
+    ? 'px-2.5 py-1 rounded-lg border border-slate-600 bg-slate-700 text-white font-bold text-[11px]'
+    : 'px-2.5 py-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-[11px]';
+
+  if (btnRead) btnRead.className = (status === 'read')
+    ? 'px-2.5 py-1 rounded-lg border border-blue-500 bg-blue-600/30 text-blue-200 font-bold text-[11px]'
+    : 'px-2.5 py-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-blue-300 text-[11px]';
+
+  if (btnMem) btnMem.className = (status === 'memorized')
+    ? 'px-2.5 py-1 rounded-lg border border-purple-500 bg-purple-600/30 text-purple-200 font-bold text-[11px]'
+    : 'px-2.5 py-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-purple-300 text-[11px]';
+
+  if (btnMast) btnMast.className = (status === 'mastered')
+    ? 'px-2.5 py-1 rounded-lg border border-amber-500 bg-amber-500/30 text-amber-200 font-bold text-[11px] shadow'
+    : 'px-2.5 py-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-amber-300 text-[11px]';
+}
+
+function practiceActiveRecallCurrentLesson() {
+  if (!currentMasterclassLessonId) return;
+  closePhilosophyMasterclass();
+  const allLessons = getStoredPhilosophyLessons();
+  const idx = allLessons.findIndex(l => l.id === currentMasterclassLessonId);
+  if (idx !== -1) {
+    currentPhiloQuizList = [allLessons[idx]];
+    currentPhiloQuizIndex = 0;
+    openPhilosophyQuizModal();
+  }
+}
+
+function generateMasterclassLessonHTML(lesson) {
+  const isEast = lesson.civilization === 'east';
+  const accentColor = isEast ? 'amber' : 'indigo';
+
+  return `
+    <div class="space-y-6 font-sans">
+
+      <!-- MỞ ĐẦU: TỔNG QUAN ĐẠI TRỤ CỘT -->
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-${accentColor}-950/40 via-cardBg to-slate-900 border border-${accentColor}-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">Tọa độ tư tưởng • Đại Toàn Thư</span>
+          <h4 class="text-lg font-black text-white mt-0.5">${escapeHtml(lesson.name)} (${escapeHtml(lesson.lifespan || 'Cổ Đại')})</h4>
+          <p class="text-xs text-slate-300 mt-1">${escapeHtml(lesson.role || '')}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs font-black shadow-inner flex items-center gap-1.5">
+            <i data-lucide="key" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Mỏ Neo: ${escapeHtml(lesson.anchorKeyword || '')}</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- PHẦN 1: BỐI CẢNH LỊCH SỬ & CÚ SỐC NHẬN THỨC -->
+      <div class="p-5 rounded-2xl bg-yellow-950/20 border border-yellow-600/30 space-y-2">
+        <div class="flex items-center gap-2 text-xs font-black text-amber-300 uppercase tracking-wide">
+          <span class="p-1 rounded-lg bg-amber-500/20 text-amber-400">⚡ PHẦN 1</span>
+          <span>Bối Cảnh Lịch Sử & Cú Sốc Nhận Thức (Epistemic Wonder)</span>
+        </div>
+        <p class="text-sm text-amber-100/90 leading-relaxed font-sans whitespace-pre-line pt-1">
+          ${escapeHtml(lesson.d1_shock)}
+        </p>
+        ${lesson.majorWorks ? `
+          <div class="mt-2 pt-2 border-t border-yellow-800/30 text-xs text-amber-300/80 italic font-serif">
+            📖 <strong>Tác phẩm & Văn bản gốc:</strong> ${escapeHtml(lesson.majorWorks)}
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- PHẦN 2: RÃ MÁY NGUYÊN LÝ GỐC (FIRST PRINCIPLES) -->
+      <div class="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">
+        <div class="flex items-center gap-2 text-xs font-black text-cyan-300 uppercase tracking-wide">
+          <span class="p-1 rounded-lg bg-cyan-500/20 text-cyan-400">🔬 PHẦN 2</span>
+          <span>Rã Máy Nguyên Lý Gốc (First Principles Formula & Bản Đồ Khái Niệm)</span>
+        </div>
+        <p class="text-sm text-cyan-100/90 leading-relaxed font-sans whitespace-pre-line pt-1">
+          ${escapeHtml(lesson.d2_principle)}
+        </p>
+      </div>
+
+      <!-- PHẦN 3: KỸ THUẬT FEYNMAN — GIẢI THÍCH CHO ĐỨA TRẺ 10 TUỔI -->
+      <div class="p-5 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 space-y-3">
+        <div class="flex items-center gap-2 text-xs font-black text-emerald-300 uppercase tracking-wide">
+          <span class="p-1 rounded-lg bg-emerald-500/20 text-emerald-400">🧸 PHẦN 3</span>
+          <span>Kỹ Thuật Feynman: Giảng Giải Cho Đứa Trẻ 10 Tuổi (Jargon-Free Analogy)</span>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/80 border border-emerald-800/40 text-xs text-slate-200 leading-relaxed space-y-2">
+          <p class="font-bold text-emerald-400">💡 Ẩn dụ cốt lõi đời thường:</p>
+          <p>
+            Tưởng tượng tư tưởng của <strong>${escapeHtml(lesson.name)}</strong> giống như một quy luật trong một trò chơi thân thuộc. 
+            Nếu bạn tước bỏ mọi thuật ngữ cổ ngữ phức tạp, điều triết gia muốn nhắn nhủ thế giới tóm gọn lại là:
+          </p>
+          <blockquote class="italic border-l-2 border-emerald-400 pl-3 text-emerald-200">
+            "Hãy nhìn vào mỏ neo '<strong>${escapeHtml(lesson.anchorKeyword)}</strong>': Cuộc sống xung quanh dẫu có hàng vạn biến chuyển hỗn loạn, nếu bạn nắm được mắt xích gốc này thì toàn bộ câu đố sẽ tự động có lời giải."
+          </blockquote>
+        </div>
+      </div>
+
+      <!-- PHẦN 4: TƯ DUY ĐẢO NGƯỢC (INVERSION) & ĐẤU TRƯỜNG PHẢN BIỆN -->
+      <div class="p-5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
+        <div class="flex items-center gap-2 text-xs font-black text-rose-300 uppercase tracking-wide">
+          <span class="p-1 rounded-lg bg-rose-500/20 text-rose-400">⚔️ PHẦN 4</span>
+          <span>Tư Duy Đảo Ngược (Inversion) & Đấu Trường Phản Biện (Combat Debate)</span>
+        </div>
+        <p class="text-sm text-rose-100/90 leading-relaxed font-sans whitespace-pre-line pt-1">
+          ${escapeHtml(lesson.d3_combat)}
+        </p>
+        <div class="mt-2 p-3 rounded-xl bg-rose-950/40 border border-rose-800/40 text-xs text-rose-200">
+          ⚠️ <strong>Cạm bẫy tư duy cần tránh (Inversion Warning):</strong> Đừng bao giờ biến tư tưởng này thành giáo điều cực đoan mù quáng! Hãy luôn lật ngược câu hỏi: "Trong tình huống nào thì nguyên lý này sẽ sụp đổ?".
+        </div>
+      </div>
+
+      <!-- PHẦN 5: KHÓA SIÊU TRÍ NHỚ VĨNH CỬU (CUNG ĐIỆN LOCI & MAJOR CODE 00-99) -->
+      <div class="p-5 rounded-2xl bg-purple-950/20 border border-purple-500/30 space-y-3">
+        <div class="flex items-center gap-2 text-xs font-black text-purple-300 uppercase tracking-wide">
+          <span class="p-1 rounded-lg bg-purple-500/20 text-purple-400">🧠 PHẦN 5</span>
+          <span>Khóa Siêu Trí Nhớ Vĩnh Cửu: Cung Điện Ký Ức (Loci) & Mã Số Major (00-99)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-purple-800/40">
+            <span class="text-purple-400 font-bold block mb-1">🔢 Mã Số Major System 00-99:</span>
+            <span class="font-mono text-white text-sm font-bold">${escapeHtml(lesson.pegCode || 'Mã chuyên biệt')}</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-purple-800/40">
+            <span class="text-purple-400 font-bold block mb-1">🔑 Từ Khóa Mỏ Neo Kích Hoạt Não:</span>
+            <span class="text-amber-300 font-bold text-sm">${escapeHtml(lesson.anchorKeyword || '')}</span>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl bg-purple-900/30 border border-purple-700/40 text-xs text-purple-100 leading-relaxed">
+          <p class="font-bold text-purple-300 mb-1">🏛️ Hoạt cảnh Cung Điện Ký Ức (V.E.E.A Rule):</p>
+          <p class="whitespace-pre-line">${escapeHtml(lesson.d4_memory)}</p>
+        </div>
+      </div>
+
+      <!-- PHẦN 6: VẤN ĐÁP BIỆN CHỨNG SOCRATIC & ACTIVE RECALL FLASHCARD -->
+      <div class="p-5 rounded-2xl bg-blue-950/20 border border-blue-500/30 space-y-3">
+        <div class="flex items-center gap-2 text-xs font-black text-blue-300 uppercase tracking-wide">
+          <span class="p-1 rounded-lg bg-blue-500/20 text-blue-400">❓ PHẦN 6</span>
+          <span>Vấn Đáp Biện Chứng Socratic & Tự Kiểm Tra Phản Xạ (Active Recall)</span>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+            <p class="font-bold text-cyan-300">1. Câu hỏi Bản Thể Luận:</p>
+            <p class="text-slate-300 mt-0.5">Theo ${escapeHtml(lesson.name)}, thực tại cốt lõi đằng sau những hiện tượng biến thiên là gì?</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+            <p class="font-bold text-cyan-300">2. Câu hỏi Phản Đề Đối Lập:</p>
+            <p class="text-slate-300 mt-0.5">Nếu một người phản bác lại quan điểm này, vũ khí lý luận mạnh nhất của họ là gì?</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+            <p class="font-bold text-cyan-300">3. Câu hỏi Ứng Dụng Đời Thực:</p>
+            <p class="text-slate-300 mt-0.5">Làm thế nào để áp dụng tư tưởng này vào giải quyết một bế tắc cá nhân trong tuần này?</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHẦN 7: CÔNG TẮC ĐỜI THỰC & ỨNG DỤNG THỰC CHIẾN -->
+      <div class="p-5 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">
+        <div class="flex items-center gap-2 text-xs font-black text-emerald-300 uppercase tracking-wide">
+          <span class="p-1 rounded-lg bg-emerald-500/20 text-emerald-400">🕹️ PHẦN 7</span>
+          <span>Công Tắc Đời Thực & Ứng Dụng Thực Chiến (Actionable Superpower)</span>
+        </div>
+        <p class="text-sm text-emerald-100/90 leading-relaxed font-sans whitespace-pre-line pt-1">
+          ${escapeHtml(lesson.d5_switch)}
+        </p>
+      </div>
+
+    </div>
+  `;
+}
+
 function renderPhilosophyView() {
   const container = document.getElementById('philosophyCardsContainer');
   if (!container) return;
@@ -2354,12 +2484,23 @@ function renderPhilosophyView() {
       return false;
     }
     // Era filter
-    if (currentPhiloEraFilter !== 'all' && lesson.era !== currentPhiloEraFilter) {
-      return false;
+    if (currentPhiloEraFilter !== 'all') {
+      if (currentPhiloEraFilter === 'vietnam') {
+        if (!lesson.civilizationLabel || !lesson.civilizationLabel.includes('Đại Việt')) return false;
+      } else if (lesson.era !== currentPhiloEraFilter) {
+        return false;
+      }
     }
     // Branch filter
     if (currentPhiloBranchFilter !== 'all' && lesson.branch !== currentPhiloBranchFilter) {
       return false;
+    }
+    // Progress filter
+    if (currentPhiloProgressFilter !== 'all') {
+      const prog = getLessonProgress(lesson.id);
+      const status = prog.status || 'none';
+      if (currentPhiloProgressFilter === 'unread' && status !== 'none') return false;
+      if (currentPhiloProgressFilter !== 'unread' && status !== currentPhiloProgressFilter) return false;
     }
     // Search query
     if (currentPhiloSearchQuery) {
@@ -2386,17 +2527,21 @@ function renderPhilosophyView() {
   // Dynamic counter badge
   const badgeEl = document.getElementById('philoCountBadge');
   if (badgeEl) {
-    badgeEl.textContent = `${filtered.length} / ${allLessons.length} Cột Trụ`;
+    badgeEl.textContent = '📚 ' + filtered.length + ' / ' + allLessons.length + ' Cột Trụ Toàn Cầu';
   }
+
+  // Update progress dashboard
+  updateProgressDashboard();
+  updateOverviewPhiloMetrics();
 
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="p-12 text-center rounded-2xl bg-cardBg border border-slate-800 space-y-3">
         <div class="text-3xl text-indigo-400">🔍</div>
-        <h4 class="text-sm font-bold text-white">Không tìm thấy triết gia hoặc nội dung phù hợp</h4>
-        <p class="text-xs text-slate-400">Hãy thử đổi từ khóa tìm kiếm hoặc bấm nút dưới đây để hiện toàn bộ 68 cột trụ.</p>
-        <button onclick="currentPhiloCivFilter='all'; currentPhiloEraFilter='all'; currentPhiloBranchFilter='all'; currentPhiloSearchQuery=''; if(document.getElementById('philosophySearchInput')) document.getElementById('philosophySearchInput').value=''; filterPhilosophyCivilization('all'); filterPhilosophyEra('all'); filterPhilosophyBranch('all');" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 text-xs font-semibold">
-          Xóa Bộ Lọc (Hiện Toàn Bộ 68 Cột Trụ)
+        <h4 class="text-sm font-bold text-white">Không tìm thấy triết gia hoặc nội dung phù hợp bộ lọc</h4>
+        <p class="text-xs text-slate-400">Hãy thử đổi từ khóa tìm kiếm hoặc bấm nút dưới đây để hiện toàn bộ 100 cột trụ.</p>
+        <button onclick="currentPhiloCivFilter='all'; currentPhiloEraFilter='all'; currentPhiloBranchFilter='all'; currentPhiloProgressFilter='all'; currentPhiloSearchQuery=''; if(document.getElementById('philosophySearchInput')) document.getElementById('philosophySearchInput').value=''; filterPhilosophyCivilization('all'); filterPhilosophyEra('all'); filterPhilosophyBranch('all'); filterPhilosophyProgress('all');" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 text-xs font-semibold">
+          Xóa Bộ Lọc (Hiện Toàn Bộ 100 Cột Trụ)
         </button>
       </div>
     `;
@@ -2406,19 +2551,39 @@ function renderPhilosophyView() {
   container.innerHTML = filtered.map(lesson => {
     const isZero = !!lesson.isMilestoneZero;
     const isEast = lesson.civilization === 'east';
+    const isVN = lesson.civilizationLabel && lesson.civilizationLabel.includes('Đại Việt');
+
     const cardBorder = isZero
       ? 'border-2 border-amber-500/70 shadow-[0_0_30px_rgba(245,158,11,0.2)] bg-gradient-to-b from-amber-950/20 via-cardBg to-slate-900/90'
-      : (isEast
-          ? 'border border-amber-500/30 hover:border-amber-400/60 bg-cardBg'
-          : 'border border-slate-800 hover:border-indigo-500/40 bg-cardBg');
+      : (isVN
+          ? 'border border-red-500/40 hover:border-amber-400/70 bg-gradient-to-b from-red-950/10 via-cardBg to-slate-900/90'
+          : (isEast
+              ? 'border border-amber-500/30 hover:border-amber-400/60 bg-cardBg'
+              : 'border border-slate-800 hover:border-indigo-500/40 bg-cardBg'));
 
-    const civBadge = isEast
-      ? `<span class="px-2.5 py-0.5 rounded-full bg-amber-950/60 text-amber-300 border border-amber-500/40 text-[10px] font-semibold">☯️ ${escapeHtml(lesson.civilizationLabel || 'Phương Đông')}</span>`
-      : `<span class="px-2.5 py-0.5 rounded-full bg-blue-950/60 text-blue-300 border border-blue-500/40 text-[10px] font-semibold">🏛️ ${escapeHtml(lesson.civilizationLabel || 'Phương Tây')}</span>`;
+    const civBadge = isVN
+      ? `<span class="px-2.5 py-0.5 rounded-full bg-red-950/60 text-amber-300 border border-red-500/40 text-[10px] font-bold">🇻🇳 Đại Việt</span>`
+      : (isEast
+          ? `<span class="px-2.5 py-0.5 rounded-full bg-amber-950/60 text-amber-300 border border-amber-500/40 text-[10px] font-semibold">☯️ ${escapeHtml(lesson.civilizationLabel || 'Phương Đông')}</span>`
+          : `<span class="px-2.5 py-0.5 rounded-full bg-blue-950/60 text-blue-300 border border-blue-500/40 text-[10px] font-semibold">🏛️ ${escapeHtml(lesson.civilizationLabel || 'Phương Tây')}</span>`);
 
     const branchBadge = lesson.branchLabel
       ? `<span class="px-2.5 py-0.5 rounded-full bg-purple-950/60 text-purple-300 border border-purple-500/40 text-[10px] font-medium">${escapeHtml(lesson.branchLabel)}</span>`
       : '';
+
+    // Trạng thái tiến độ
+    const prog = getLessonProgress(lesson.id);
+    const status = prog.status || 'none';
+    let progressBadge = '';
+    if (status === 'mastered') {
+      progressBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/50 text-[10px] font-bold flex items-center gap-1"><span>👑</span> TINH THÔNG</span>`;
+    } else if (status === 'memorized') {
+      progressBadge = `<span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/50 text-[10px] font-bold flex items-center gap-1"><span>🧠</span> ĐÃ NHỚ LOCI</span>`;
+    } else if (status === 'read') {
+      progressBadge = `<span class="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/50 text-[10px] font-bold flex items-center gap-1"><span>📖</span> ĐÃ ĐỌC BÀI</span>`;
+    } else {
+      progressBadge = `<span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 text-[10px] font-medium">⚪ CHƯA HỌC</span>`;
+    }
 
     return `
       <div id="philo-card-${lesson.id}" class="rounded-3xl ${cardBorder} p-6 sm:p-7 space-y-6 transition-all duration-300">
@@ -2441,6 +2606,7 @@ function renderPhilosophyView() {
               <span class="px-2.5 py-0.5 rounded-full bg-slate-900 text-slate-300 border border-slate-800 text-[10px] font-mono">
                 📅 ${escapeHtml(lesson.lifespan || '')}
               </span>
+              ${progressBadge}
             </div>
             <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
               <span>${escapeHtml(lesson.name)}</span>
@@ -2531,15 +2697,38 @@ function renderPhilosophyView() {
 
         </div>
 
-        <!-- QUICK ACTIVE RECALL TOGGLE BUTTON -->
-        <div class="pt-2 flex items-center justify-between border-t border-slate-800/80">
-          <button onclick="togglePhiloDrillMode('${lesson.id}')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-indigo-300 hover:text-white border border-slate-700 text-xs font-medium flex items-center gap-2 transition-all">
-            <i data-lucide="eye" class="w-3.5 h-3.5 text-indigo-400"></i>
-            <span id="drill-toggle-label-${lesson.id}">Chế Độ Thử Thách Trí Nhớ (Ẩn/Hiện Đáp Án)</span>
-          </button>
-          <span class="text-[11px] text-slate-500 italic hidden sm:inline">
-            Khóa não: Nhìn từ khóa "<strong>${escapeHtml(lesson.anchorKeyword)}</strong>" $\rightarrow$ Tự tái hiện đủ 5 chiều
-          </span>
+        <!-- CÔNG CỤ MASTERCLASS & ĐIỀU KHIỂN TIẾN ĐỘ THỰC HỌC -->
+        <div class="pt-4 border-t border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          
+          <!-- NÚT MỞ BÀI GIẢNG MASTERCLASS -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openPhilosophyMasterclass('${lesson.id}')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-brand-600 hover:from-indigo-500 hover:to-brand-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 flex items-center gap-2 transition-all hover:scale-[1.02]">
+              <i data-lucide="book-open-check" class="w-4 h-4 text-amber-300"></i>
+              <span>📖 Mở Bài Giảng Toàn Thư (Masterclass 7 Phần)</span>
+            </button>
+            <button onclick="togglePhiloDrillMode('${lesson.id}')" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition-all">
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-indigo-400"></i>
+              <span id="drill-toggle-label-${lesson.id}">Thử Thách 5D</span>
+            </button>
+          </div>
+
+          <!-- BỘ NÚT ĐÁNH DẤU TIẾN ĐỘ NHANH TRÊN CARD -->
+          <div class="flex items-center gap-1 p-1 bg-slate-950 rounded-xl border border-slate-800 text-[11px]">
+            <span class="text-slate-500 text-[10px] font-bold px-2">TIẾN ĐỘ:</span>
+            <button onclick="setLessonProgress('${lesson.id}', 'none')" title="Đánh dấu Chưa học" class="px-2 py-1 rounded-lg transition-all ${status === 'none' ? 'bg-slate-700 text-white font-bold' : 'text-slate-500 hover:text-slate-300'}">
+              ⚪
+            </button>
+            <button onclick="setLessonProgress('${lesson.id}', 'read')" title="Đánh dấu Đã đọc" class="px-2.5 py-1 rounded-lg transition-all ${status === 'read' ? 'bg-blue-600 text-white font-bold shadow' : 'text-slate-400 hover:text-blue-300'}">
+              📖 Đã đọc
+            </button>
+            <button onclick="setLessonProgress('${lesson.id}', 'memorized')" title="Đánh dấu Đã nhớ Loci/Major" class="px-2.5 py-1 rounded-lg transition-all ${status === 'memorized' ? 'bg-purple-600 text-white font-bold shadow' : 'text-slate-400 hover:text-purple-300'}">
+              🧠 Đã nhớ
+            </button>
+            <button onclick="setLessonProgress('${lesson.id}', 'mastered')" title="Đánh dấu Tinh thông" class="px-2.5 py-1 rounded-lg transition-all ${status === 'mastered' ? 'bg-amber-500 text-slate-950 font-black shadow' : 'text-slate-400 hover:text-amber-300'}">
+              👑 Tinh thông
+            </button>
+          </div>
+
         </div>
 
       </div>

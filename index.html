@@ -156,13 +156,13 @@
       </div>
 
       <!-- Quick Metrics & Status -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-brand-500/40 transition-all">
           <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
             <span>Phương Pháp Bộ Nhớ</span>
             <i data-lucide="brain" class="w-4 h-4 text-purple-400"></i>
           </div>
-          <div class="text-2xl font-black text-white">6 Hệ Thống</div>
+          <div class="text-2xl font-black text-white">6 Masterclass</div>
           <div class="text-xs text-slate-400 mt-1">Loci, Major, Peg, SRS, Chunking...</div>
         </div>
         <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-cyan-500/40 transition-all">
@@ -170,7 +170,7 @@
             <span>Mô Hình Tư Duy</span>
             <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
           </div>
-          <div class="text-2xl font-black text-white">7 Khung Tư Duy</div>
+          <div class="text-2xl font-black text-white">7 Masterclass</div>
           <div class="text-xs text-slate-400 mt-1">Feynman, First Principles, OODA...</div>
         </div>
         <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-amber-500/40 transition-all">
@@ -180,6 +180,14 @@
           </div>
           <div class="text-2xl font-black text-white">100 Hình Ảnh</div>
           <div class="text-xs text-slate-400 mt-1">Mã hóa chuẩn cho trí nhớ kỷ lục</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-indigo-500/40 transition-all cursor-pointer" onclick="switchTab('subjects'); selectSubjectTab('philosophy');">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>100 Cột Trụ Toàn Thư</span>
+            <i data-lucide="book-open" class="w-4 h-4 text-indigo-400"></i>
+          </div>
+          <div class="text-2xl font-black text-indigo-300" id="overviewPhiloProgress">0 / 100</div>
+          <div class="text-xs text-slate-400 mt-1" id="overviewPhiloPercent">0% Tinh Thông</div>
         </div>
         <div class="p-5 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-emerald-500/40 transition-all">
           <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
@@ -414,24 +422,24 @@
               <div class="space-y-2.5 max-w-2xl">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
                   <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-                  <span>Đại Toàn Thư 2.500 Năm • Đông - Tây Hợp Bích • 68 Cột Trụ Tư Tưởng Bất Tử</span>
+                  <span>Đại Toàn Thư 2.500 Năm • Đông - Tây Hợp Bích • 100 Cột Trụ Tư Tưởng Toàn Cầu</span>
                 </div>
                 <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
                   <span>Triết Học Toàn Thư: Gốc Rễ Đến Đỉnh Cao</span>
                 </h2>
                 <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Bản đồ toàn cảnh không góc khuất: Từ <strong class="text-amber-400">Thales, Socrates, Plato, Kant, Nietzsche</strong> của Phương Tây đến <strong class="text-emerald-400">Kinh Dịch, Lão Tử, Khổng Tử, Upanishad, Đức Phật</strong> của Phương Đông. Mỗi tư tưởng được rã máy chuẩn xác theo 5 chiều: <em>Cú sốc $\rightarrow$ Nguyên lý gốc $\rightarrow$ Đấu trường phản biện $\rightarrow$ Khóa trí nhớ 00-99 $\rightarrow$ Công tắc đời thực</em>.
+                  Bản đồ toàn cảnh không góc khuất: Từ <strong class="text-amber-400">Thales, Socrates, Plato, Kant, Nietzsche, Camus, Deleuze</strong> của Phương Tây đến <strong class="text-emerald-400">Kinh Dịch, Lão Tử, Khổng Tử, Upanishad, Đức Phật, Phật Hoàng Trần Nhân Tông, Nguyễn Trãi, Nguyễn Bỉnh Khiêm</strong> của Phương Đông & Đại Việt. Mỗi tư tưởng được rã máy chuẩn xác theo 5 chiều và tích hợp đủ 6 phương pháp Siêu Trí Nhớ & Siêu Trí Tuệ.
                 </p>
                 <!-- Quick Metric Badges -->
                 <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400">
                   <span class="px-2.5 py-1 rounded-lg bg-indigo-500/20 border border-indigo-500/40 text-indigo-200 font-bold" id="philoCountBadge">
-                    📚 68 / 68 Cột Trụ Toàn Cầu
+                    📚 100 / 100 Cột Trụ Toàn Cầu
                   </span>
                   <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-medium">
-                    🏛️ 48 Phương Tây
+                    🏛️ 70 Phương Tây
                   </span>
                   <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium">
-                    ☯️ 20 Phương Đông
+                    ☯️ 30 Phương Đông & Đại Việt
                   </span>
                   <span class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 font-mono">
                     🧠 Bảng Mã 00-99 & Cung Điện
@@ -451,6 +459,48 @@
             </div>
           </div>
 
+          <!-- BẢNG ĐIỀU KHIỂN TIẾN ĐỘ HỌC TẬP TOÀN THƯ (PROGRESS TRACKING DASHBOARD) -->
+          <div class="p-5 rounded-2xl bg-gradient-to-r from-cardBg via-slate-900 to-indigo-950/40 border border-indigo-500/30 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+                  <span>Tiến Độ Làm Chủ 100 Cột Trụ Tư Tưởng</span>
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Theo dõi chi tiết mức độ lĩnh hội từng bài học theo chuẩn Siêu Trí Nhớ & Siêu Trí Tuệ</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="philoProgressPercentText" class="text-lg font-black text-amber-400 font-mono">0%</span>
+                <span class="text-xs text-slate-400">Hoàn thành</span>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700/80">
+              <div id="philoProgressBar" class="h-full bg-gradient-to-r from-amber-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+
+            <!-- Thống kê 4 cấp độ & Bộ lọc nhanh -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
+              <button onclick="filterPhilosophyProgress('all')" id="btnProgFilterAll" class="philo-prog-btn p-2.5 rounded-xl bg-slate-800/80 border border-indigo-500/40 text-left transition-all hover:bg-slate-700">
+                <div class="text-[11px] text-slate-400">Tất Cả Cột Trụ</div>
+                <div id="statTotalCount" class="text-base font-bold text-white mt-0.5">100</div>
+              </button>
+              <button onclick="filterPhilosophyProgress('read')" id="btnProgFilterRead" class="philo-prog-btn p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-left transition-all hover:bg-slate-800">
+                <div class="text-[11px] text-blue-400 flex items-center gap-1"><span>📖</span> Đã Đọc</div>
+                <div id="statReadCount" class="text-base font-bold text-blue-300 mt-0.5">0</div>
+              </button>
+              <button onclick="filterPhilosophyProgress('memorized')" id="btnProgFilterMemorized" class="philo-prog-btn p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-left transition-all hover:bg-slate-800">
+                <div class="text-[11px] text-purple-400 flex items-center gap-1"><span>🧠</span> Đã Nhớ Loci</div>
+                <div id="statMemorizedCount" class="text-base font-bold text-purple-300 mt-0.5">0</div>
+              </button>
+              <button onclick="filterPhilosophyProgress('mastered')" id="btnProgFilterMastered" class="philo-prog-btn p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-left transition-all hover:bg-slate-800">
+                <div class="text-[11px] text-amber-400 flex items-center gap-1"><span>👑</span> Tinh Thông</div>
+                <div id="statMasteredCount" class="text-base font-bold text-amber-300 mt-0.5">0</div>
+              </button>
+            </div>
+          </div>
+
           <!-- BỘ ĐIỀU KHIỂN & BỘ LỌC ĐA CHIỀU (CIVILIZATION / ERA / BRANCH / SEARCH) -->
           <div class="p-5 rounded-2xl bg-cardBg border border-slate-800 space-y-4">
             
@@ -462,13 +512,13 @@
                 </span>
                 <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800">
                   <button onclick="filterPhilosophyCivilization('all')" class="philo-civ-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow" data-civ="all">
-                    🌍 Toàn Cầu (70)
+                    🌍 Toàn Cầu (100)
                   </button>
                   <button onclick="filterPhilosophyCivilization('west')" class="philo-civ-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all" data-civ="west">
-                    🏛️ Phương Tây (50)
+                    🏛️ Phương Tây (70)
                   </button>
                   <button onclick="filterPhilosophyCivilization('east')" class="philo-civ-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all" data-civ="east">
-                    ☯️ Phương Đông (20)
+                    ☯️ Đông & Đại Việt (30)
                   </button>
                 </div>
               </div>
@@ -506,6 +556,9 @@
               </button>
               <button onclick="filterPhilosophyEra('east_india')" class="philo-era-btn px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" data-era="east_india">
                 🕉️ Ấn Độ & Phật Học
+              </button>
+              <button onclick="filterPhilosophyEra('vietnam')" class="philo-era-btn px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-amber-300 transition-all" data-era="vietnam">
+                🇻🇳 Đại Việt (Trúc Lâm & Nho gia)
               </button>
             </div>
 
@@ -1122,8 +1175,8 @@
   </main>
 
   <!-- MODAL FOR DETAILED ARTICLE / METHOD POPUP -->
-  <div id="detailModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-cardBg border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+  <div id="detailModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-2 sm:p-4">
+    <div class="bg-cardBg border border-slate-700 rounded-3xl max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       <!-- Modal Header -->
       <div class="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
         <div class="flex items-center gap-3">
@@ -1152,6 +1205,78 @@
     </div>
   </div>
 
+  <!-- PHILOSOPHY MASTERCLASS DEEP LESSON READER MODAL (FULLSCREEN MASTERCLASS) -->
+  <div id="philosophyMasterclassModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden items-center justify-center p-2 sm:p-4">
+    <div class="bg-cardBg border border-slate-700 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Masterclass Header -->
+      <div class="p-5 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div id="masterclassIconBadge" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-white shadow-lg text-xl font-bold">
+            🏛️
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="masterclassEraTag" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-indigo-300 border border-slate-700">Thời Kỳ</span>
+              <span id="masterclassBranchTag" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-950/60 text-purple-300 border border-purple-500/40">Chuyên Ngành</span>
+              <span id="masterclassProgressTag" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">⚪ Chưa học</span>
+            </div>
+            <h3 id="masterclassTitle" class="text-xl sm:text-2xl font-black text-white mt-0.5">Tên Bài Giảng Toàn Thư</h3>
+            <p id="masterclassRole" class="text-xs text-amber-300/90 font-medium">Vai trò & Tác phẩm gốc</p>
+          </div>
+        </div>
+        <button onclick="closePhilosophyMasterclass()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Action / Progress Toolbar -->
+      <div class="px-5 py-3 bg-slate-950/60 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <span class="font-bold text-slate-400 mr-1 flex items-center gap-1">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-brand-400"></i> Tiến độ:
+          </span>
+          <button id="btnSetStatusNone" onclick="handleSetCurrentMasterclassStatus('none')" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold transition-all">
+            ⚪ Chưa học
+          </button>
+          <button id="btnSetStatusRead" onclick="handleSetCurrentMasterclassStatus('read')" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold transition-all">
+            📖 Đã đọc
+          </button>
+          <button id="btnSetStatusMemorized" onclick="handleSetCurrentMasterclassStatus('memorized')" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold transition-all">
+            🧠 Đã nhớ (Loci/Major)
+          </button>
+          <button id="btnSetStatusMastered" onclick="handleSetCurrentMasterclassStatus('mastered')" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold transition-all">
+            👑 Tinh thông
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="practiceActiveRecallCurrentLesson()" class="px-3 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 border border-indigo-500/40 text-xs font-bold transition-all flex items-center gap-1.5 shadow">
+            <i data-lucide="brain-circuit" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Luyện Phản Xạ 5D</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Masterclass Content Body -->
+      <div id="masterclassContentBody" class="p-6 overflow-y-auto space-y-6 text-slate-300 text-sm leading-relaxed scrollbar-thin">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Masterclass Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between">
+        <button id="btnMasterclassPrev" onclick="navigateMasterclass(-1)" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i> Cột Trụ Trước
+        </button>
+        <span id="masterclassPagination" class="text-xs font-mono text-slate-400">Bài X / 100</span>
+        <button id="btnMasterclassNext" onclick="navigateMasterclass(1)" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+          Cột Trụ Tiếp Theo <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer class="border-t border-slate-800/80 bg-darkBg/90 py-8 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 space-y-2">
@@ -1165,6 +1290,7 @@
     </div>
   </footer>
 
+  <script src="methods-data.js"></script>
   <script src="philosophy-data.js"></script>
   <script src="app.js"></script>
 </body>
