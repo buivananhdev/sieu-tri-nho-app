@@ -1187,37 +1187,51 @@
           <div class="space-y-2.5 max-w-2xl">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold">
               <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-              <span>Trung Văn Toàn Thư • Chiết Tự Logic • Siêu Trí Nhớ 214 Bộ Thủ & HSK</span>
+              <span>Trung Văn Toàn Thư • Ứng Dụng Học Tiếng Trung Toàn Diện</span>
             </div>
             <h2 class="text-xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
               <span>Học Tiếng Trung & Bàn Luyện Viết Cảm Ứng</span>
             </h2>
             <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Giải mã Hán tự bằng <strong class="text-rose-400">Chiết tự logic & Câu chuyện hình ảnh</strong> (Story Method): Mỗi chữ là một bức tranh sinh động, không cần học vẹt! Kết hợp bàn luyện viết cảm ứng trên <strong class="text-amber-400">Lưới Ô Mễ (米字格)</strong> chuẩn quy tắc bút thuận, có phát âm giọng chuẩn Bắc Kinh.
+              Giải mã Hán tự bằng <strong class="text-rose-400">Chiết tự logic & Câu chuyện hình ảnh</strong>: Mỗi chữ là một bức tranh sinh động! Kết hợp bàn luyện viết cảm ứng trên <strong class="text-amber-400">Lưới Ô Mễ (米字格)</strong>, bảng <strong class="text-cyan-400">Pinyin tương tác</strong>, trọn bộ <strong class="text-amber-300">214 Bộ Thủ</strong>, <strong class="text-emerald-400">150 Từ Vựng HSK 1</strong> và ngữ pháp thực chiến.
             </p>
             <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400">
               <span class="px-2.5 py-1 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-200 font-bold" id="chineseCountBadge">
-                🏮 20 Hán Tự & Bộ Thủ Khởi Động
+                🏮 350 Hán Tự & Bộ Thủ Khang Hy
               </span>
               <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-medium">
-                ✍️ Lưới Ô Mễ Thư Pháp
+                ✍️ Lưới Ô Mễ & 7 Quy Tắc Bút Thuận
               </span>
               <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium">
                 🔊 Audio Chuẩn Bắc Kinh
               </span>
             </div>
           </div>
-          <div class="flex flex-wrap items-center gap-2.5">
-            <button onclick="switchChineseSubTab('writer')" class="chinese-sub-nav-btn px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-2" data-sub="writer">
+
+          <!-- Sub-navigation Tabs -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full scrollbar-none w-full lg:w-auto">
+            <button onclick="switchChineseSubTab('writer')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5" data-sub="writer">
               <i data-lucide="pen-tool" class="w-4 h-4"></i>
               <span>Bàn Luyện Viết</span>
             </button>
-            <button onclick="switchChineseSubTab('dictionary')" class="chinese-sub-nav-btn px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-2" data-sub="dictionary">
-              <i data-lucide="book-open" class="w-4 h-4 text-rose-400"></i>
-              <span>Từ Điển Chiết Tự</span>
+            <button onclick="switchChineseSubTab('pinyin')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="pinyin">
+              <i data-lucide="mic" class="w-4 h-4 text-rose-400"></i>
+              <span>Ngữ Âm Pinyin</span>
             </button>
-            <button onclick="openChineseQuizModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-2">
-              <i data-lucide="brain-circuit" class="w-4 h-4 text-indigo-400"></i>
+            <button onclick="switchChineseSubTab('radicals')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="radicals">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+              <span>214 Bộ Thủ</span>
+            </button>
+            <button onclick="switchChineseSubTab('vocab')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="vocab">
+              <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+              <span>Từ Vựng HSK 1</span>
+            </button>
+            <button onclick="switchChineseSubTab('grammar')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="grammar">
+              <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+              <span>Ngữ Pháp Thực Chiến</span>
+            </button>
+            <button onclick="openChineseQuizModal()" class="whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-700/60 text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
+              <i data-lucide="brain-circuit" class="w-4 h-4 text-amber-400"></i>
               <span>Đố Phản Xạ Âm - Chữ</span>
             </button>
           </div>
@@ -1237,7 +1251,10 @@
                   <i data-lucide="pen-tool" class="w-4 h-4 text-rose-400"></i> Lưới Ô Mễ (米字格)
                 </h3>
               </div>
-              <span class="text-xs text-slate-400 font-mono" id="canvasStrokeCountInfo">Nét bút thư pháp</span>
+              <button onclick="openChineseStrokesModal()" class="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-all" title="Xem 8 Nét Cơ Bản & 7 Quy Tắc Bút Thuận">
+                <i data-lucide="help-circle" class="w-3 h-3 text-amber-400"></i>
+                <span>8 Nét & Bút Thuận</span>
+              </button>
             </div>
 
             <!-- Canvas Container có lưới ô Mễ truyền thống -->
@@ -1275,9 +1292,12 @@
             </div>
 
             <!-- Hướng dẫn viết trên điện thoại -->
-            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
-              <i data-lucide="smartphone" class="w-4 h-4 text-indigo-400 flex-shrink-0"></i>
-              <span>Trên điện thoại: Dùng ngón tay hoặc bút cảm ứng vuốt nhẹ trên ô vuông để luyện cơ tay.</span>
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i data-lucide="smartphone" class="w-4 h-4 text-indigo-400 flex-shrink-0"></i>
+                <span>Trên điện thoại: Dùng ngón tay vuốt nhẹ trên ô vuông để luyện cơ tay.</span>
+              </div>
+              <span class="text-[10px] text-slate-500 font-mono" id="canvasStrokeCountInfo">Nét bút</span>
             </div>
           </div>
 
@@ -1386,8 +1406,8 @@
             <div class="flex flex-wrap items-center gap-2">
               <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs">
                 <button onclick="filterChineseLevel('all')" class="chinese-lvl-btn px-3 py-1 rounded-lg font-bold bg-rose-600 text-white" data-lvl="all">Tất Cả</button>
-                <button onclick="filterChineseLevel('radicals')" class="chinese-lvl-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white" data-lvl="radicals">Bộ Thủ</button>
                 <button onclick="filterChineseLevel('hsk1')" class="chinese-lvl-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white" data-lvl="hsk1">HSK 1</button>
+                <button onclick="filterChineseLevel('radicals')" class="chinese-lvl-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white" data-lvl="radicals">Bộ Thủ</button>
               </div>
 
               <div class="relative w-48">
@@ -1405,10 +1425,116 @@
 
       </div>
 
-      <!-- VIEW 2: TỪ ĐIỂN BỘ THỦ & BẢNG TRA CỨU ĐẦY ĐỦ -->
-      <div id="chineseDictView" class="hidden space-y-6">
-        <div id="chineseDictList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- VIEW 2: NGỮ ÂM PINYIN TOÀN DIỆN (PINYIN MATRIX) -->
+      <div id="chinesePinyinView" class="hidden space-y-8">
+        <div id="chinesePinyinContent" class="space-y-8">
           <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- VIEW 3: 214 BỘ THỦ KHANG HY (RADICALS HUB) -->
+      <div id="chineseRadicalsView" class="hidden space-y-6">
+        <div class="p-6 rounded-3xl bg-cardBg border border-slate-800 space-y-4 shadow-xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <span>🏮 Bách Khoa Toàn Thư 214 Bộ Thủ Khang Hy</span>
+              </h3>
+              <p class="text-xs text-slate-400">Nền tảng cấu tạo của hơn 50.000 chữ Hán, xếp theo số nét từ 1 đến 17 nét</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold" id="radicalsCountBadge">
+              214 / 214 Bộ Thủ
+            </span>
+          </div>
+
+          <!-- Filter Nét & Search -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full scrollbar-none">
+              <button onclick="filterChineseRadicals('all')" class="rad-stroke-btn px-3 py-1 rounded-lg font-bold bg-amber-600 text-white shadow text-xs" data-stroke="all">Tất Cả</button>
+              <button onclick="filterChineseRadicals('1')" class="rad-stroke-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs" data-stroke="1">1 Nét</button>
+              <button onclick="filterChineseRadicals('2')" class="rad-stroke-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs" data-stroke="2">2 Nét</button>
+              <button onclick="filterChineseRadicals('3')" class="rad-stroke-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs" data-stroke="3">3 Nét</button>
+              <button onclick="filterChineseRadicals('4')" class="rad-stroke-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs" data-stroke="4">4 Nét</button>
+              <button onclick="filterChineseRadicals('5')" class="rad-stroke-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs" data-stroke="5">5 Nét</button>
+              <button onclick="filterChineseRadicals('6+')" class="rad-stroke-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white transition-all text-xs" data-stroke="6+">6+ Nét</button>
+            </div>
+
+            <div class="relative w-full md:w-64">
+              <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input type="text" oninput="searchChineseRadicals(this.value)" placeholder="Chữ, Hán Việt, Pinyin, nghĩa..." class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+            </div>
+          </div>
+
+          <!-- Radicals Cards Grid -->
+          <div id="chineseRadicalsList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-2">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 4: TỪ VỰNG HSK 1 CHUẨN QUỐC TẾ (VOCAB HUB) -->
+      <div id="chineseVocabView" class="hidden space-y-6">
+        <div class="p-6 rounded-3xl bg-cardBg border border-slate-800 space-y-4 shadow-xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <span>📚 150 Từ Vựng Cốt Lõi HSK 1 Theo 10 Chủ Đề</span>
+              </h3>
+              <p class="text-xs text-slate-400">Phát âm chuẩn giọng Bắc Kinh kèm câu ví dụ thực tế và chuyển nhanh sang luyện viết</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold" id="vocabCountBadge">
+              150 Từ HSK 1
+            </span>
+          </div>
+
+          <!-- Filter Topic & Search -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full scrollbar-none">
+              <button onclick="filterChineseVocabTopic('all')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl font-bold bg-emerald-600 text-white shadow text-xs" data-topic="all">Tất Cả</button>
+              <button onclick="filterChineseVocabTopic('social')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="social">👋 Chào Hỏi</button>
+              <button onclick="filterChineseVocabTopic('pronoun')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="pronoun">👤 Đại Từ</button>
+              <button onclick="filterChineseVocabTopic('number')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="number">🔢 Số Đếm</button>
+              <button onclick="filterChineseVocabTopic('people')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="people">👨‍👩‍👧 Gia Đình</button>
+              <button onclick="filterChineseVocabTopic('time')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="time">⏰ Thời Gian</button>
+              <button onclick="filterChineseVocabTopic('food')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="food">🍜 Ẩm Thực</button>
+              <button onclick="filterChineseVocabTopic('place')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="place">🧭 Nơi Chốn</button>
+              <button onclick="filterChineseVocabTopic('action')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="action">🏃 Hành Động</button>
+              <button onclick="filterChineseVocabTopic('state')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="state">🧠 Cảm Xúc</button>
+              <button onclick="filterChineseVocabTopic('grammar')" class="vocab-topic-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all text-xs bg-slate-900 border border-slate-800" data-topic="grammar">⚙️ Trợ Từ</button>
+            </div>
+
+            <div class="relative w-full md:w-64">
+              <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input type="text" oninput="searchChineseVocab(this.value)" placeholder="Từ vựng, Pinyin, nghĩa..." class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <!-- Vocab Cards Grid -->
+          <div id="chineseVocabList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 5: NGỮ PHÁP CƠ BẢN THỰC CHIẾN (GRAMMAR MASTERY) -->
+      <div id="chineseGrammarView" class="hidden space-y-6">
+        <div class="p-6 rounded-3xl bg-cardBg border border-slate-800 space-y-6 shadow-xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <span>📖 12 Chủ Điểm Ngữ Pháp Thực Chiến Nền Tảng</span>
+              </h3>
+              <p class="text-xs text-slate-400">Cấu trúc câu, trật tự từ, câu chữ 是, 有/没有, đại từ nghi vấn và trợ từ ngữ khí</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold">
+              12 Bài Học
+            </span>
+          </div>
+
+          <!-- Grammar Lessons List -->
+          <div id="chineseGrammarList" class="grid grid-cols-1 gap-6">
+            <!-- Rendered by JS -->
+          </div>
         </div>
       </div>
 
@@ -1516,6 +1642,39 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- CHINESE STROKES MODAL (8 NÉT CƠ BẢN & 7 QUY TẮC BÚT THUẬN) -->
+  <div id="chineseStrokesModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-cardBg border border-amber-500/40 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg">
+            ✍️
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">8 Nét Cơ Bản & 7 Quy Tắc Bút Thuận Vàng</h3>
+            <span class="text-xs text-amber-300">Vĩnh Tự Bát Pháp (永字八法) & Chuẩn Thư Pháp Chữ Hán</span>
+          </div>
+        </div>
+        <button onclick="closeChineseStrokesModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div id="chineseStrokesBody" class="p-6 space-y-6 overflow-y-auto">
+        <!-- Rendered by chinese-engine.js -->
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/50 flex justify-end items-center">
+        <button onclick="closeChineseStrokesModal()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold">
+          Đóng
+        </button>
+      </div>
     </div>
   </div>
 
