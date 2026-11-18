@@ -1214,27 +1214,128 @@
               <i data-lucide="pen-tool" class="w-4 h-4"></i>
               <span>Bàn Luyện Viết</span>
             </button>
+            <button onclick="switchChineseSubTab('flashcard')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="flashcard">
+              <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i>
+              <span>Flashcard SRS</span>
+            </button>
+            <button onclick="switchChineseSubTab('lessons')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="lessons">
+              <i data-lucide="map" class="w-4 h-4 text-emerald-400"></i>
+              <span>Lộ Trình & Hội Thoại</span>
+            </button>
+            <button onclick="switchChineseSubTab('methods')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="methods">
+              <i data-lucide="sparkles" class="w-4 h-4 text-rose-400"></i>
+              <span>Siêu Trí Nhớ Chữ Hán</span>
+            </button>
             <button onclick="switchChineseSubTab('pinyin')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="pinyin">
-              <i data-lucide="mic" class="w-4 h-4 text-rose-400"></i>
+              <i data-lucide="mic" class="w-4 h-4 text-sky-400"></i>
               <span>Ngữ Âm Pinyin</span>
             </button>
             <button onclick="switchChineseSubTab('radicals')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="radicals">
-              <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+              <i data-lucide="grid" class="w-4 h-4 text-amber-400"></i>
               <span>214 Bộ Thủ</span>
             </button>
             <button onclick="switchChineseSubTab('vocab')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="vocab">
-              <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
-              <span>Từ Vựng HSK 1</span>
+              <i data-lucide="book-open" class="w-4 h-4 text-teal-400"></i>
+              <span>Kho Từ Vựng HSK</span>
             </button>
             <button onclick="switchChineseSubTab('grammar')" class="chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5" data-sub="grammar">
-              <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
-              <span>Ngữ Pháp Thực Chiến</span>
+              <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+              <span>Ngữ Pháp</span>
             </button>
             <button onclick="openChineseQuizModal()" class="whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-700/60 text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
               <i data-lucide="brain-circuit" class="w-4 h-4 text-amber-400"></i>
-              <span>Đố Phản Xạ Âm - Chữ</span>
+              <span>Đố Phản Xạ</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- BẢNG THỐNG KÊ TIẾN ĐỘ HỌC TẬP CÁ NHÂN (PERSONAL LEARNING ANALYTICS) -->
+      <div class="rounded-3xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-rose-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
+              📊
+            </div>
+            <div>
+              <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <span>Thống Kê Tiến Độ Học & Ghi Nhớ Từ Vựng</span>
+                <span id="chineseStreakBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono">🔥 1 Ngày Liên Tục</span>
+              </h3>
+              <p class="text-xs text-slate-400">Theo dõi thời gian thực số lượng Hán tự, Bộ thủ và Từ vựng HSK bạn đã chinh phục</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="resetChineseProgressConfirm()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-rose-300 text-[11px] transition-all flex items-center gap-1 border border-slate-700" title="Đặt lại toàn bộ tiến độ học">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Đặt Lại</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Thẻ KPI Chỉ Số -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="p-4 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-slate-700 transition-all">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>Tổng Kho Từ Vựng</span>
+              <i data-lucide="database" class="w-3.5 h-3.5 text-slate-500"></i>
+            </div>
+            <div class="text-2xl font-black text-white font-mono mt-1" id="statTotalChars">396</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">214 Bộ thủ + 182 HSK</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-cardBg border border-emerald-500/30 bg-emerald-950/10 hover:border-emerald-500/50 transition-all">
+            <div class="text-[11px] text-emerald-400 flex items-center justify-between">
+              <span>Đã Thuộc Lòng (Mastered)</span>
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+            </div>
+            <div class="text-2xl font-black text-emerald-300 font-mono mt-1 flex items-baseline gap-1.5">
+              <span id="statMasteredChars">0</span>
+              <span class="text-xs font-normal text-emerald-400/80 font-sans" id="statMasteredPercent">(0%)</span>
+            </div>
+            <div class="text-[10px] text-emerald-400/70 mt-0.5">Đã khắc sâu vào trí nhớ</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-cardBg border border-amber-500/30 bg-amber-950/10 hover:border-amber-500/50 transition-all">
+            <div class="text-[11px] text-amber-400 flex items-center justify-between">
+              <span>Đang Luyện Tập (SRS)</span>
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i>
+            </div>
+            <div class="text-2xl font-black text-amber-300 font-mono mt-1" id="statLearningChars">0</div>
+            <div class="text-[10px] text-amber-400/70 mt-0.5">Cần lặp lại ngắt quãng</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-slate-700 transition-all">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>Chưa Học (Mới)</span>
+              <i data-lucide="circle" class="w-3.5 h-3.5 text-slate-500"></i>
+            </div>
+            <div class="text-2xl font-black text-slate-300 font-mono mt-1" id="statUnlearnedChars">396</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Sẵn sàng để tiếp thu</div>
+          </div>
+        </div>
+
+        <!-- Thanh Tiến Độ Tổng Thể -->
+        <div class="space-y-1.5 pt-1">
+          <div class="flex items-center justify-between text-xs font-semibold">
+            <span class="text-slate-300 flex items-center gap-1.5">
+              <span>Mức Độ Hoàn Thành Mục Tiêu:</span>
+              <span id="statProgressBarText" class="text-emerald-400 font-mono font-bold">0%</span>
+            </span>
+            <span class="text-[11px] text-slate-400">Mục tiêu: Đạt 100% 396 Hán Tự & Từ Vựng</span>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-800 overflow-hidden p-0.5 border border-slate-700/60">
+            <div id="statProgressBarFill" class="h-full rounded-full bg-gradient-to-r from-amber-500 via-rose-500 to-emerald-500 transition-all duration-500 w-0"></div>
+          </div>
+        </div>
+
+        <!-- Bộ lọc nhanh trạng thái -->
+        <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80 text-xs">
+          <span class="text-slate-400 font-medium">Lọc danh sách học:</span>
+          <button onclick="filterChineseProgressStatus('all')" class="chinese-stat-filter-btn px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold transition-all text-xs" data-status="all">Tất Cả (396)</button>
+          <button onclick="filterChineseProgressStatus('mastered')" class="chinese-stat-filter-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs" data-status="mastered">🟢 Đã Thuộc</button>
+          <button onclick="filterChineseProgressStatus('learning')" class="chinese-stat-filter-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs" data-status="learning">🟡 Cần Ôn Tập</button>
+          <button onclick="filterChineseProgressStatus('unlearned')" class="chinese-stat-filter-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs" data-status="unlearned">⚪ Chưa Học</button>
         </div>
       </div>
 
@@ -1248,13 +1349,21 @@
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <i data-lucide="pen-tool" class="w-4 h-4 text-rose-400"></i> Lưới Ô Mễ (米字格)
+                  <i data-lucide="pen-tool" class="w-4 h-4 text-rose-400"></i> Lưới Luyện Viết
                 </h3>
               </div>
-              <button onclick="openChineseStrokesModal()" class="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-all" title="Xem 8 Nét Cơ Bản & 7 Quy Tắc Bút Thuận">
-                <i data-lucide="help-circle" class="w-3 h-3 text-amber-400"></i>
-                <span>8 Nét & Bút Thuận</span>
-              </button>
+              <div class="flex items-center gap-1.5">
+                <!-- Chọn kiểu lưới -->
+                <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl p-0.5 text-[11px]">
+                  <button onclick="setChineseGridStyle('mizi')" id="btnGridMizi" class="px-2 py-1 rounded-lg bg-rose-600 text-white font-bold transition-all" title="Lưới Ô Mễ 8 hướng">米 Mễ</button>
+                  <button onclick="setChineseGridStyle('tianzi')" id="btnGridTianzi" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all" title="Lưới Ô Điền 4 góc">田 Điền</button>
+                  <button onclick="setChineseGridStyle('none')" id="btnGridNone" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all" title="Không có đường kẻ">◻️ Trống</button>
+                </div>
+                <button onclick="openChineseStrokesModal()" class="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-all" title="Xem 8 Nét Cơ Bản & 7 Quy Tắc Bút Thuận">
+                  <i data-lucide="help-circle" class="w-3 h-3 text-amber-400"></i>
+                  <span>Bút Thuận</span>
+                </button>
+              </div>
             </div>
 
             <!-- Canvas Container có lưới ô Mễ truyền thống -->
@@ -1533,6 +1642,120 @@
 
           <!-- Grammar Lessons List -->
           <div id="chineseGrammarList" class="grid grid-cols-1 gap-6">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 6: FLASHCARD 3D SRS LẬT MẶT (SPACED REPETITION ARENA) -->
+      <div id="chineseFlashcardView" class="hidden space-y-6">
+        <div class="p-6 sm:p-8 rounded-3xl bg-cardBg border border-slate-800 space-y-6 shadow-2xl max-w-2xl mx-auto">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-300 text-lg font-bold">
+                🗂️
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-white">Flashcard 3D Siêu Trí Nhớ (SRS)</h3>
+                <span class="text-xs text-slate-400" id="flashcardCounterText">Thẻ 1 / 396</span>
+              </div>
+            </div>
+            <button onclick="speakFlashcardCurrent()" class="p-2 rounded-xl bg-slate-900 text-amber-400 hover:text-white border border-slate-800" title="Nghe phát âm">
+              <i data-lucide="volume-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Flashcard 3D Card -->
+          <div class="flex justify-center select-none py-2">
+            <div id="chineseFlashcardBox" onclick="flipChineseFlashcard()" class="relative w-full max-w-md h-72 rounded-3xl border-2 border-amber-500/40 bg-gradient-to-tr from-slate-950 via-slate-900 to-amber-950/30 p-6 flex flex-col items-center justify-center text-center cursor-pointer shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-amber-400">
+              
+              <!-- Front Face -->
+              <div id="flashcardFront" class="space-y-4 flex flex-col items-center justify-center h-full">
+                <span class="text-7xl sm:text-8xl font-serif font-black text-amber-300 drop-shadow-md" id="fcCharDisplay">好</span>
+                <span class="text-xs text-slate-400 flex items-center gap-1">
+                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-400"></i> Chạm vào thẻ để lật mặt sau
+                </span>
+              </div>
+
+              <!-- Back Face -->
+              <div id="flashcardBack" class="hidden space-y-3 flex flex-col items-center justify-center h-full">
+                <div class="flex items-center gap-2">
+                  <span class="text-3xl font-black text-white font-mono" id="fcPinyinDisplay">hǎo</span>
+                  <span class="text-xs text-amber-400 font-bold" id="fcHanvietDisplay">(HẢO)</span>
+                </div>
+                <div class="text-base font-bold text-emerald-300" id="fcMeaningDisplay">Tốt, đẹp, hay, ngon</div>
+                <p class="text-xs text-slate-300 italic font-serif px-2 line-clamp-3" id="fcStoryDisplay">
+                  "Mẹ bồng con là cảnh tượng tốt đẹp nhất trần gian."
+                </p>
+                <div class="text-[11px] text-indigo-300 font-mono" id="fcExampleDisplay">你好！(Xin chào!)</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Rating Buttons (SRS) -->
+          <div class="space-y-2 pt-2">
+            <div class="text-center text-xs text-slate-400 font-medium">Đánh giá mức độ ghi nhớ để thuật toán SRS nhắc lại:</div>
+            <div class="grid grid-cols-3 gap-2.5">
+              <button onclick="rateFlashcard('again')" class="p-3 rounded-2xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-500/40 text-rose-300 font-bold text-xs flex flex-col items-center gap-1 transition-all">
+                <span>🔴 Chưa Nhớ</span>
+                <span class="text-[10px] text-rose-400 font-normal">Ôn lại ngay</span>
+              </button>
+              <button onclick="rateFlashcard('good')" class="p-3 rounded-2xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/40 text-amber-300 font-bold text-xs flex flex-col items-center gap-1 transition-all">
+                <span>🟡 Hơi Nhớ</span>
+                <span class="text-[10px] text-amber-400 font-normal">Nhắc lại sau</span>
+              </button>
+              <button onclick="rateFlashcard('easy')" class="p-3 rounded-2xl bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex flex-col items-center gap-1 transition-all">
+                <span>🟢 Đã Thuộc Lòng</span>
+                <span class="text-[10px] text-emerald-400 font-normal">+1 Mastered</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom controls -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+            <button onclick="navigateFlashcard(-1)" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center gap-1">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i> Thẻ Trước
+            </button>
+            <button onclick="loadCurrentFlashcardToWriter()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-rose-600 text-white font-bold flex items-center gap-1">
+              <span>✍️ Luyện Viết Chữ Này</span>
+            </button>
+            <button onclick="navigateFlashcard(1)" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center gap-1">
+              Thẻ Sau <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 7: LỘ TRÌNH BÀI HỌC VƯỢT ẢI & HỘI THOẠI (LESSONS ROADMAP) -->
+      <div id="chineseLessonsView" class="hidden space-y-6">
+        <div class="p-6 rounded-3xl bg-cardBg border border-slate-800 space-y-6 shadow-xl">
+          <div class="pb-3 border-b border-slate-800">
+            <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <span>🗺️ Lộ Trình Bài Học Vượt Ải & Hội Thoại Thực Chiến</span>
+            </h3>
+            <p class="text-xs text-slate-400">Các bài học theo từng tình huống giao tiếp đời sống thực tế kèm đoạn hội thoại A & B</p>
+          </div>
+
+          <!-- Lessons Grid -->
+          <div id="chineseLessonsList" class="grid grid-cols-1 gap-6">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 8: PHƯƠNG PHÁP SIÊU TRÍ NHỚ TIẾNG TRUNG (MEMORY METHODS) -->
+      <div id="chineseMethodsView" class="hidden space-y-6">
+        <div class="p-6 rounded-3xl bg-cardBg border border-slate-800 space-y-6 shadow-xl">
+          <div class="pb-3 border-b border-slate-800">
+            <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <span>🧠 4 Trụ Cột Phương Pháp Siêu Trí Nhớ Tiếng Trung Đỉnh Cao</span>
+            </h3>
+            <p class="text-xs text-slate-400">Khắc sâu chữ Hán vào vỏ não dài hạn không cần học vẹt bằng Chiết tự, Não phải, Neo âm và SRS</p>
+          </div>
+
+          <!-- Methods Grid -->
+          <div id="chineseMethodsList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Rendered by JS -->
           </div>
         </div>

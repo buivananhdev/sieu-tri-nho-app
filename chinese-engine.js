@@ -23,6 +23,8 @@ let currentRadicalSearchQuery = '';
 let currentVocabTopicFilter = 'all';
 let currentVocabSearchQuery = '';
 let isGhostCharVisible = true;
+let currentProgressStatusFilter = 'all';
+let currentChineseGridStyle = 'mizi'; // 'mizi', 'tianzi', 'none'
 
 // Canvas Drawing State
 let chineseCanvas = null;
@@ -30,6 +32,10 @@ let chineseCtx = null;
 let isDrawingChinese = false;
 let lastPoint = null;
 let userStrokesCount = 0;
+
+// Flashcard 3D SRS State
+let currentChineseFlashcardIdx = 0;
+let isChineseFlashcardFlipped = false;
 
 // Quiz State
 let chineseQuizList = [];
@@ -48,18 +54,146 @@ function getChineseProgressMap() {
   }
 }
 
-function setChineseCharMastered(charId, isMastered) {
+function getChineseCharProgress(charId) {
   const map = getChineseProgressMap();
-  map[charId] = isMastered;
+  const val = map[charId];
+  if (!val) return { status: 'unlearned', mastered: false, reviewCount: 0 };
+  if (typeof val === 'boolean') {
+    return { status: val ? 'mastered' : 'unlearned', mastered: val, reviewCount: val ? 1 : 0 };
+  }
+  return {
+    status: val.status || (val.mastered ? 'mastered' : 'unlearned'),
+    mastered: !!val.mastered,
+    reviewCount: val.reviewCount || 0,
+    lastReviewed: val.lastReviewed || null
+  };
+}
+
+function setChineseCharStatus(charId, status) {
+  const map = getChineseProgressMap();
+  const current = getChineseCharProgress(charId);
+  const isMastered = status === 'mastered';
+  map[charId] = {
+    status: status,
+    mastered: isMastered,
+    reviewCount: (current.reviewCount || 0) + 1,
+    lastReviewed: Date.now()
+  };
   localStorage.setItem(CHINESE_PROGRESS_KEY, JSON.stringify(map));
-  if (isMastered && typeof playSound === 'function') playSound('success');
   updateChineseMasteredButtonUI(charId);
+  updateChineseStatsDashboard();
   renderChineseCharGrid();
 }
 
+function setChineseCharMastered(charId, isMastered) {
+  setChineseCharStatus(charId, isMastered ? 'mastered' : 'unlearned');
+  if (isMastered && typeof playSound === 'function') playSound('success');
+}
+
 function isChineseCharMastered(charId) {
-  const map = getChineseProgressMap();
-  return !!map[charId];
+  return getChineseCharProgress(charId).mastered;
+}
+
+function calculateChineseStreak() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const lastDate = localStorage.getItem('chinese_last_study_date');
+    let streak = parseInt(localStorage.getItem('chinese_study_streak') || '1', 10);
+    if (!lastDate) {
+      localStorage.setItem('chinese_last_study_date', today);
+      localStorage.setItem('chinese_study_streak', '1');
+      return 1;
+    }
+    if (lastDate === today) return streak;
+    const diffDays = Math.round((new Date(today) - new Date(lastDate)) / (1000 * 3600 * 24));
+    if (diffDays === 1) {
+      streak += 1;
+    } else if (diffDays > 1) {
+      streak = 1;
+    }
+    localStorage.setItem('chinese_last_study_date', today);
+    localStorage.setItem('chinese_study_streak', String(streak));
+    return streak;
+  } catch (e) {
+    return 1;
+  }
+}
+
+function updateChineseStatsDashboard() {
+  const chars = getStoredChineseChars();
+  const total = chars.length || 396;
+  let masteredCount = 0;
+  let learningCount = 0;
+
+  chars.forEach(c => {
+    const p = getChineseCharProgress(c.id);
+    if (p.mastered || p.status === 'mastered') {
+      masteredCount++;
+    } else if (p.status === 'learning' || p.reviewCount > 0) {
+      learningCount++;
+    }
+  });
+
+  const unlearnedCount = Math.max(0, total - masteredCount - learningCount);
+  const percent = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
+
+  const elTotal = document.getElementById('statTotalChars');
+  const elMastered = document.getElementById('statMasteredChars');
+  const elMasteredPct = document.getElementById('statMasteredPercent');
+  const elLearning = document.getElementById('statLearningChars');
+  const elUnlearned = document.getElementById('statUnlearnedChars');
+  const elBar = document.getElementById('statProgressBarFill');
+  const elBarText = document.getElementById('statProgressBarText');
+  const elStreak = document.getElementById('chineseStreakBadge');
+
+  if (elTotal) elTotal.textContent = total;
+  if (elMastered) elMastered.textContent = masteredCount;
+  if (elMasteredPct) elMasteredPct.textContent = `(${percent}%)`;
+  if (elLearning) elLearning.textContent = learningCount;
+  if (elUnlearned) elUnlearned.textContent = unlearnedCount;
+  if (elBar) elBar.style.width = `${percent}%`;
+  if (elBarText) elBarText.textContent = `${percent}% (${masteredCount}/${total} từ)`;
+
+  const streak = calculateChineseStreak();
+  if (elStreak) elStreak.textContent = `🔥 ${streak} Ngày Liên Tục`;
+}
+
+function filterChineseProgressStatus(status) {
+  currentProgressStatusFilter = status;
+  document.querySelectorAll('.chinese-stat-filter-btn').forEach(btn => {
+    if (btn.getAttribute('data-status') === status) {
+      btn.className = 'chinese-stat-filter-btn px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold transition-all text-xs';
+    } else {
+      btn.className = 'chinese-stat-filter-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs';
+    }
+  });
+  renderChineseCharGrid();
+}
+
+function resetChineseProgressConfirm() {
+  if (confirm('Bạn có chắc muốn đặt lại toàn bộ tiến độ ghi nhớ tiếng Trung không? Dữ liệu đã thuộc sẽ được xóa để học lại từ đầu.')) {
+    localStorage.removeItem(CHINESE_PROGRESS_KEY);
+    updateChineseStatsDashboard();
+    updateChineseMasteredButtonUI(currentChineseCharId);
+    renderChineseCharGrid();
+    if (typeof playSound === 'function') playSound('click');
+    alert('Đã đặt lại tiến độ học tiếng Trung thành công!');
+  }
+}
+
+function setChineseGridStyle(style) {
+  currentChineseGridStyle = style;
+  ['mizi', 'tianzi', 'none'].forEach(s => {
+    const btn = document.getElementById(`btnGrid${s.charAt(0).toUpperCase() + s.slice(1)}`);
+    if (btn) {
+      if (s === style) {
+        btn.className = 'px-2 py-1 rounded-lg bg-rose-600 text-white font-bold transition-all';
+      } else {
+        btn.className = 'px-2 py-1 rounded-lg text-slate-400 hover:text-white transition-all';
+      }
+    }
+  });
+  clearChineseCanvas();
 }
 
 function getStoredChineseChars() {
@@ -100,6 +234,18 @@ function getStrokesData() {
   if (typeof window !== 'undefined' && window.CHINESE_STROKES_DATA) return window.CHINESE_STROKES_DATA;
   if (typeof CHINESE_STROKES_DATA !== 'undefined') return CHINESE_STROKES_DATA;
   return { basicStrokes: [], strokeRules: [] };
+}
+
+function getMemoryMethodsData() {
+  if (typeof window !== 'undefined' && window.CHINESE_MEMORY_METHODS) return window.CHINESE_MEMORY_METHODS;
+  if (typeof CHINESE_MEMORY_METHODS !== 'undefined') return CHINESE_MEMORY_METHODS;
+  return [];
+}
+
+function getLessonsData() {
+  if (typeof window !== 'undefined' && window.CHINESE_LESSONS_DATA) return window.CHINESE_LESSONS_DATA;
+  if (typeof CHINESE_LESSONS_DATA !== 'undefined') return CHINESE_LESSONS_DATA;
+  return [];
 }
 
 // ==========================================
@@ -149,6 +295,8 @@ function drawMiZiGe() {
   const h = chineseCanvas.height;
 
   chineseCtx.clearRect(0, 0, w, h);
+  if (currentChineseGridStyle === 'none') return;
+
   chineseCtx.save();
 
   // 1. Khung viền ngoài màu đỏ son thư pháp
@@ -161,7 +309,7 @@ function drawMiZiGe() {
   chineseCtx.lineWidth = 1;
   chineseCtx.setLineDash([4, 4]);
 
-  // Đường thập ngang & dọc
+  // Đường thập ngang & dọc (Có ở cả Ô Mễ & Ô Điền)
   chineseCtx.beginPath();
   chineseCtx.moveTo(0, h / 2);
   chineseCtx.lineTo(w, h / 2);
@@ -169,13 +317,15 @@ function drawMiZiGe() {
   chineseCtx.lineTo(w / 2, h);
   chineseCtx.stroke();
 
-  // Hai đường chéo tạo thành chữ Mễ (米)
-  chineseCtx.beginPath();
-  chineseCtx.moveTo(0, 0);
-  chineseCtx.lineTo(w, h);
-  chineseCtx.moveTo(w, 0);
-  chineseCtx.lineTo(0, h);
-  chineseCtx.stroke();
+  // Hai đường chéo chỉ vẽ khi ở chế độ Ô Mễ (mizi)
+  if (currentChineseGridStyle === 'mizi') {
+    chineseCtx.beginPath();
+    chineseCtx.moveTo(0, 0);
+    chineseCtx.lineTo(w, h);
+    chineseCtx.moveTo(w, 0);
+    chineseCtx.lineTo(0, h);
+    chineseCtx.stroke();
+  }
 
   chineseCtx.restore();
 }
@@ -394,9 +544,25 @@ function renderChineseCharGrid() {
   const q = currentChineseSearchQuery;
 
   const filtered = list.filter(item => {
+    // 1. Phân loại theo Level / Cấp độ
     if (currentChineseFilterLevel === 'radicals' && item.category !== 'radicals') return false;
     if (currentChineseFilterLevel === 'hsk1' && item.category !== 'hsk1') return false;
+    if (currentChineseFilterLevel === 'hsk2' && item.category !== 'hsk2') return false;
+    if (currentChineseFilterLevel === 'hsk3' && item.category !== 'hsk3') return false;
 
+    // 2. Bộ lọc trạng thái ghi nhớ cá nhân
+    if (currentProgressStatusFilter === 'mastered') {
+      const p = getChineseCharProgress(item.id);
+      if (!p.mastered) return false;
+    } else if (currentProgressStatusFilter === 'learning') {
+      const p = getChineseCharProgress(item.id);
+      if (p.mastered || (p.status !== 'learning' && p.reviewCount === 0)) return false;
+    } else if (currentProgressStatusFilter === 'unlearned') {
+      const p = getChineseCharProgress(item.id);
+      if (p.mastered || p.reviewCount > 0) return false;
+    }
+
+    // 3. Tìm kiếm từ khóa đa năng
     if (q) {
       const match = item.char.includes(q) ||
                     item.pinyin.toLowerCase().includes(q) ||
@@ -410,14 +576,14 @@ function renderChineseCharGrid() {
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="col-span-full py-8 text-center text-slate-500 text-xs">
-        Không tìm thấy Hán tự phù hợp với từ khóa "${q}"
+        Không tìm thấy Hán tự phù hợp với bộ lọc hoặc từ khóa "${q}"
       </div>
     `;
     return;
   }
 
-  // Giới hạn hiển thị 48 ký tự đầu tiên để tải mượt mà
-  const displayList = filtered.slice(0, 48);
+  // Giới hạn hiển thị 72 ký tự đầu tiên để tải mượt mà
+  const displayList = filtered.slice(0, 72);
 
   container.innerHTML = displayList.map(item => {
     const isSelected = item.id === currentChineseCharId;
@@ -449,7 +615,7 @@ function renderChineseCharGrid() {
 }
 
 // ==========================================
-// 5. SUB-TAB SWITCHER (WRITER, PINYIN, RADICALS, VOCAB, GRAMMAR)
+// 5. SUB-TAB SWITCHER (WRITER, FLASHCARD, LESSONS, METHODS, PINYIN, RADICALS, VOCAB, GRAMMAR)
 // ==========================================
 function switchChineseSubTab(subTab) {
   if (typeof playSound === 'function') playSound('click');
@@ -457,6 +623,9 @@ function switchChineseSubTab(subTab) {
 
   const views = {
     writer: document.getElementById('chineseWriterView'),
+    flashcard: document.getElementById('chineseFlashcardView'),
+    lessons: document.getElementById('chineseLessonsView'),
+    methods: document.getElementById('chineseMethodsView'),
     pinyin: document.getElementById('chinesePinyinView'),
     radicals: document.getElementById('chineseRadicalsView'),
     vocab: document.getElementById('chineseVocabView'),
@@ -476,12 +645,15 @@ function switchChineseSubTab(subTab) {
   // Cập nhật button sub-nav
   document.querySelectorAll('.chinese-sub-nav-btn').forEach(btn => {
     if (btn.getAttribute('data-sub') === subTab) {
-      btn.className = 'chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5';
+      btn.className = 'chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5';
     } else {
-      btn.className = 'chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5';
+      btn.className = 'chinese-sub-nav-btn whitespace-nowrap px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5';
     }
   });
 
+  if (subTab === 'flashcard') renderChineseFlashcardView();
+  if (subTab === 'lessons') renderChineseLessonsView();
+  if (subTab === 'methods') renderChineseMethodsView();
   if (subTab === 'pinyin') renderChinesePinyinView();
   if (subTab === 'radicals') renderChineseRadicalsView();
   if (subTab === 'vocab') renderChineseVocabView();
@@ -1130,12 +1302,276 @@ function checkChineseQuizAnswer(chosenId, correctId, btnEl) {
 }
 
 // ==========================================
-// 13. KHỞI TẠO APP
+// 13. FLASHCARD 3D SRS ENGINE
+// ==========================================
+function renderChineseFlashcardView() {
+  const chars = getStoredChineseChars();
+  if (!chars || chars.length === 0) return;
+  if (currentChineseFlashcardIdx >= chars.length) currentChineseFlashcardIdx = 0;
+  if (currentChineseFlashcardIdx < 0) currentChineseFlashcardIdx = chars.length - 1;
+
+  const item = chars[currentChineseFlashcardIdx];
+  const progress = getChineseCharProgress(item.id);
+
+  const counterEl = document.getElementById('flashcardCounterText');
+  if (counterEl) {
+    const statusText = progress.mastered ? '🟢 Đã Thuộc' : (progress.reviewCount > 0 ? '🟡 Đang Ôn' : '⚪ Chưa Học');
+    counterEl.textContent = `Thẻ ${currentChineseFlashcardIdx + 1} / ${chars.length} • [${item.level ? item.level.toUpperCase() : 'HÁN TỰ'}] • ${statusText}`;
+  }
+
+  const fcChar = document.getElementById('fcCharDisplay');
+  const fcPinyin = document.getElementById('fcPinyinDisplay');
+  const fcHanviet = document.getElementById('fcHanvietDisplay');
+  const fcMeaning = document.getElementById('fcMeaningDisplay');
+  const fcStory = document.getElementById('fcStoryDisplay');
+  const fcExample = document.getElementById('fcExampleDisplay');
+
+  if (fcChar) fcChar.textContent = item.char;
+  if (fcPinyin) fcPinyin.textContent = item.pinyin;
+  if (fcHanviet) fcHanviet.textContent = `(${item.hanviet})`;
+  if (fcMeaning) fcMeaning.textContent = item.meaning;
+  if (fcStory) fcStory.textContent = item.story ? `"${item.story}"` : (item.radicals ? `Bộ cấu thành: ${item.radicals}` : '');
+  if (fcExample) {
+    if (item.examples && item.examples.length > 0) {
+      const ex = item.examples[0];
+      fcExample.textContent = `${ex.zh} ${ex.py} (${ex.vi})`;
+    } else if (item.example) {
+      fcExample.textContent = item.example;
+    } else {
+      fcExample.textContent = `Phần mềm Siêu Trí Nhớ • Luyện nhớ phản xạ`;
+    }
+  }
+
+  // Luôn hiển thị mặt trước khi đổi thẻ mới
+  isChineseFlashcardFlipped = false;
+  const front = document.getElementById('flashcardFront');
+  const back = document.getElementById('flashcardBack');
+  if (front && back) {
+    front.classList.remove('hidden');
+    back.classList.add('hidden');
+  }
+}
+
+function flipChineseFlashcard() {
+  isChineseFlashcardFlipped = !isChineseFlashcardFlipped;
+  const front = document.getElementById('flashcardFront');
+  const back = document.getElementById('flashcardBack');
+  const box = document.getElementById('chineseFlashcardBox');
+
+  if (front && back) {
+    if (isChineseFlashcardFlipped) {
+      front.classList.add('hidden');
+      back.classList.remove('hidden');
+    } else {
+      front.classList.remove('hidden');
+      back.classList.add('hidden');
+    }
+  }
+  if (box) {
+    box.classList.add('scale-[0.98]');
+    setTimeout(() => box.classList.remove('scale-[0.98]'), 150);
+  }
+  if (typeof playSound === 'function') playSound('card');
+}
+
+function rateFlashcard(rating) {
+  const chars = getStoredChineseChars();
+  const item = chars[currentChineseFlashcardIdx];
+  if (!item) return;
+
+  if (rating === 'easy') {
+    setChineseCharStatus(item.id, 'mastered');
+    if (typeof playSound === 'function') playSound('success');
+  } else if (rating === 'good') {
+    setChineseCharStatus(item.id, 'learning');
+    if (typeof playSound === 'function') playSound('click');
+  } else { // again
+    setChineseCharStatus(item.id, 'learning');
+    if (typeof playSound === 'function') playSound('error');
+  }
+
+  // Tự động lật sang thẻ kế tiếp
+  setTimeout(() => {
+    navigateFlashcard(1);
+  }, 250);
+}
+
+function navigateFlashcard(delta) {
+  const chars = getStoredChineseChars();
+  currentChineseFlashcardIdx = (currentChineseFlashcardIdx + delta + chars.length) % chars.length;
+  renderChineseFlashcardView();
+}
+
+function loadCurrentFlashcardToWriter() {
+  const chars = getStoredChineseChars();
+  const item = chars[currentChineseFlashcardIdx];
+  if (item) {
+    loadCharToWriter(item.id);
+  }
+}
+
+function speakFlashcardCurrent() {
+  const chars = getStoredChineseChars();
+  const item = chars[currentChineseFlashcardIdx];
+  if (item) {
+    speakChinese(item.char);
+  }
+}
+
+// ==========================================
+// 14. VIEW: LỘ TRÌNH BÀI HỌC & HỘI THOẠI THỰC CHIẾN
+// ==========================================
+function renderChineseLessonsView() {
+  const container = document.getElementById('chineseLessonsList');
+  if (!container) return;
+
+  const lessons = getLessonsData();
+  if (!lessons || lessons.length === 0) {
+    container.innerHTML = `<div class="p-8 text-center text-slate-500">Đang cập nhật danh sách bài học...</div>`;
+    return;
+  }
+
+  container.innerHTML = lessons.map(lesson => `
+    <div class="rounded-3xl bg-slate-900/80 border border-slate-800 p-6 sm:p-7 space-y-5 hover:border-slate-700 transition-all shadow-xl">
+      <!-- Lesson Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold font-mono">
+              ${lesson.level}
+            </span>
+            <span class="text-xs text-slate-400 font-medium">Tình huống thực tế đời sống</span>
+          </div>
+          <h4 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+            <span>${lesson.title}</span>
+          </h4>
+          <p class="text-xs text-slate-300 mt-1">${lesson.situation}</p>
+        </div>
+      </div>
+
+      <!-- Key Vocab -->
+      <div class="space-y-2">
+        <div class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          <span>Từ Vựng Trọng Tâm Bài Học:</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          ${lesson.keyVocab.map(v => `
+            <div class="px-3 py-1.5 rounded-xl bg-cardBg border border-slate-700/80 text-xs flex items-center gap-2 hover:border-amber-500/50 transition-all">
+              <span class="font-serif text-base font-bold text-amber-300 cursor-pointer hover:text-rose-400" onclick="speakChinese('${v.zh}')" title="Bấm nghe phát âm">${v.zh}</span>
+              <span class="font-mono text-[11px] text-cyan-300">${v.py}</span>
+              <span class="text-slate-400 text-[11px]">: ${v.vi}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Grammar Focus -->
+      <div class="p-3.5 rounded-2xl bg-indigo-950/20 border border-indigo-500/30 text-xs text-indigo-200 flex items-start gap-2">
+        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5"></i>
+        <div>
+          <strong class="text-white">Điểm Ngữ Pháp Cốt Lõi:</strong> ${lesson.grammar}
+        </div>
+      </div>
+
+      <!-- Dialogue Box -->
+      <div class="space-y-3 pt-1">
+        <div class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+          <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+          <span>Đoạn Hội Thoại Mẫu (Bấm nút loa để luyện nghe - nói):</span>
+        </div>
+        <div class="space-y-2.5">
+          ${lesson.dialogue.map(d => `
+            <div class="p-3.5 rounded-2xl ${d.speaker.includes('A') ? 'bg-slate-950/70 border-l-4 border-l-rose-500' : 'bg-slate-950/70 border-l-4 border-l-sky-500'} border border-slate-800 flex items-start justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold ${d.speaker.includes('A') ? 'text-rose-400' : 'text-sky-400'} font-mono">${d.speaker}:</span>
+                  <span class="text-base font-serif font-black text-white">${d.zh}</span>
+                </div>
+                <div class="text-xs font-mono text-amber-300 pl-6">${d.py}</div>
+                <div class="text-xs text-slate-300 pl-6 italic">${d.vi}</div>
+              </div>
+              <button onclick="speakDialogueLine('${d.zh.replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 flex-shrink-0 transition-colors" title="Nghe phát âm câu này">
+                <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  lucide.createIcons();
+}
+
+function speakDialogueLine(text) {
+  speakChinese(text);
+}
+
+// ==========================================
+// 15. VIEW: 4 TRỤ CỘT PHƯƠNG PHÁP SIÊU TRÍ NHỚ
+// ==========================================
+function renderChineseMethodsView() {
+  const container = document.getElementById('chineseMethodsList');
+  if (!container) return;
+
+  const methods = getMemoryMethodsData();
+  if (!methods || methods.length === 0) {
+    container.innerHTML = `<div class="p-8 text-center text-slate-500">Đang cập nhật phương pháp siêu trí nhớ...</div>`;
+    return;
+  }
+
+  container.innerHTML = methods.map(m => `
+    <div class="rounded-3xl bg-slate-900/90 border border-slate-800 p-6 sm:p-7 space-y-4 hover:border-slate-700 transition-all shadow-xl flex flex-col justify-between">
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
+            ${m.icon}
+          </div>
+          <div>
+            <h4 class="text-base sm:text-lg font-bold text-white">${m.title}</h4>
+            <span class="text-xs text-amber-400 font-mono font-medium">${m.subtitle}</span>
+          </div>
+        </div>
+
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${m.desc}</p>
+
+        <!-- Practical Examples -->
+        <div class="space-y-2">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ví Dụ Thực Nghiệm Ứng Dụng:</div>
+          <div class="space-y-2">
+            ${m.examples.map(ex => `
+              <div class="p-3 rounded-2xl bg-cardBg border border-slate-800/90 space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl font-serif font-black text-rose-400">${ex.char}</span>
+                  <span class="text-xs font-bold text-white">${ex.breakdown}</span>
+                </div>
+                <p class="text-xs text-slate-300 italic pl-1">👉 ${ex.story}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200 flex items-center gap-2 mt-2">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400 flex-shrink-0"></i>
+        <span><strong>Bí kíp thực hành:</strong> ${m.tips}</span>
+      </div>
+    </div>
+  `).join('');
+
+  lucide.createIcons();
+}
+
+// ==========================================
+// 16. KHỞI TẠO TOÀN DIỆN APP TIẾNG TRUNG
 // ==========================================
 function initChineseHub() {
   initChineseCanvas();
   renderChineseCharGrid();
   selectChineseChar(currentChineseCharId);
+  updateChineseStatsDashboard();
 
   const badge = document.getElementById('chineseCountBadge');
   if (badge) {
