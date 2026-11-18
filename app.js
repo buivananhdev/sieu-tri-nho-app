@@ -344,9 +344,13 @@ function switchTab(tabId) {
 
   if (tabId === 'subjects') {
     renderSubjectsGrid();
-  updateProgressDashboard();
-  updateOverviewPhiloMetrics();
-  renderPhilosophyView();
+    updateProgressDashboard();
+    updateOverviewPhiloMetrics();
+    renderPhilosophyView();
+  }
+
+  if (tabId === 'chinese' && typeof initChineseHub === 'function') {
+    initChineseHub();
   }
 
   // Update desktop navigation active states
@@ -931,6 +935,13 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProgressMetrics();
   initScriptureTower();
   renderSubjectsGrid();
+  updateProgressDashboard();
+  updateOverviewPhiloMetrics();
+  renderPhilosophyView();
+
+  if (typeof initChineseHub === 'function') {
+    initChineseHub();
+  }
 
   // Initialize Lucide icons
   lucide.createIcons();
