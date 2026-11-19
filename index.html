@@ -2142,20 +2142,90 @@
         </div>
 
         <!-- Tab Selector -->
-        <div class="flex border-b border-slate-800 bg-slate-900/50 p-2 gap-1.5 text-xs">
-          <button id="syncTabBtnQr" onclick="switchSyncTab('qr')" class="flex-1 py-2 rounded-xl font-bold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center gap-1.5">
-            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Quét Mã QR (Nhanh)
+        <div class="flex flex-wrap border-b border-slate-800 bg-slate-900/50 p-2 gap-1.5 text-xs">
+          <button id="syncTabBtnCloud" onclick="switchSyncTab('cloud')" class="flex-1 min-w-[130px] py-2 rounded-xl font-bold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center gap-1.5">
+            <i data-lucide="cloud" class="w-3.5 h-3.5"></i> ☁️ Đám Mây Trực Tiếp
           </button>
-          <button id="syncTabBtnCode" onclick="switchSyncTab('code')" class="flex-1 py-2 rounded-xl font-bold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Dán Mã / Link
+          <button id="syncTabBtnQr" onclick="switchSyncTab('qr')" class="flex-1 min-w-[110px] py-2 rounded-xl font-bold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Quét Mã QR
           </button>
-          <button id="syncTabBtnFile" onclick="switchSyncTab('file')" class="flex-1 py-2 rounded-xl font-bold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i> File Backup
+          <button id="syncTabBtnCode" onclick="switchSyncTab('code')" class="flex-1 min-w-[100px] py-2 rounded-xl font-bold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Mã Đồng Bộ
+          </button>
+          <button id="syncTabBtnFile" onclick="switchSyncTab('file')" class="flex-1 min-w-[90px] py-2 rounded-xl font-bold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> File JSON
           </button>
         </div>
 
         <!-- Body Content -->
         <div class="p-5 overflow-y-auto space-y-4">
+          <!-- TAB 0: CLOUD REALTIME AUTO-SYNC -->
+          <div id="syncTabContentCloud" class="space-y-4 text-left">
+            <div class="p-3.5 bg-gradient-to-r from-blue-950/40 to-cyan-950/30 border border-cyan-500/40 rounded-2xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-xs flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Tự Động Cập Nhật Trực Tiếp Hai Chiều (Realtime Sync)
+                </span>
+                <span id="cloudSyncStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">Chưa kết nối</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Khi tính năng này bật: Bạn học hoặc thêm câu trên <strong>Điện thoại</strong> thì <strong>Máy tính</strong> tự động nhảy số ngay lập tức, và ngược lại (hoàn toàn tự động ngầm, không cần quét mã hay gửi link nữa)!
+              </p>
+            </div>
+
+            <!-- Cloud Config Form -->
+            <div class="space-y-3 bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <i data-lucide="key" class="w-3.5 h-3.5"></i> Mã Phòng Đồng Bộ Riêng Của Bạn (Sync Room Key):
+                </label>
+                <input type="text" id="inputCloudRoomKey" value="buivananhdev" placeholder="Ví dụ: buivananhdev hoặc ma-ri-a" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono">
+                <p class="text-[10px] text-slate-500">Đặt tên phòng bất kỳ. Cả Máy tính và Điện thoại chỉ cần nhập chung tên này là 2 thiết bị sẽ tự động bắt tay nhau.</p>
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <i data-lucide="database" class="w-3.5 h-3.5 text-cyan-400"></i> Đường dẫn Cloud Database (Firebase / REST URL):
+                </label>
+                <input type="text" id="inputCloudDbUrl" placeholder="https://your-project-rtdb.firebaseio.com (Tùy chọn hoặc dùng mặc định)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono">
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                  <input type="checkbox" id="checkCloudAutoSync" checked class="w-4 h-4 rounded text-cyan-500 bg-slate-950 border-slate-700 focus:ring-0">
+                  <span>Tự động đẩy dữ liệu lên mây khi học</span>
+                </label>
+                <button onclick="saveAndConnectCloudSync()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs transition-all shadow-md flex items-center gap-1.5">
+                  <i data-lucide="save" class="w-3.5 h-3.5"></i> Lưu & Kích Hoạt
+                </button>
+              </div>
+            </div>
+
+            <!-- Manual Cloud Actions -->
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="triggerManualCloudPush()" class="py-2 px-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
+                <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i> Đẩy Lên Mây Ngay
+              </button>
+              <button onclick="triggerManualCloudPull()" class="py-2 px-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
+                <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i> Kéo Từ Mây Về Máy
+              </button>
+            </div>
+
+            <!-- Guide on Free Firebase Setup -->
+            <details class="p-3 bg-slate-950 rounded-xl border border-slate-800/80 text-xs text-slate-400">
+              <summary class="font-bold text-slate-300 cursor-pointer flex items-center gap-1.5 hover:text-cyan-300">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5 text-cyan-400"></i> Hướng Dẫn Thiết Lập Firebase Miễn Phí 100% Trọn Đời (1 Phút)
+              </summary>
+              <div class="mt-2.5 space-y-1.5 text-[11px] leading-relaxed text-slate-400 pl-2 border-l border-slate-800">
+                <p>1. Truy cập <strong>firebase.google.com</strong> và bấm <em>Go to Console</em> (đăng nhập bằng tài khoản Google của bạn).</p>
+                <p>2. Bấm <em>Add Project</em> ➔ Tạo tên dự án bất kỳ (ví dụ: <code>supermind-app</code>).</p>
+                <p>3. Chọn <em>Realtime Database</em> ➔ Bấm <em>Create Database</em> (chọn chế độ <em>Test mode</em>: cho phép đọc/ghi).</p>
+                <p>4. Sao chép đường dẫn (ví dụ: <code>https://supermind-app-default-rtdb.firebaseio.com</code>) và dán vào ô trên rồi bấm <strong>Lưu & Kích Hoạt</strong>.</p>
+                <p>👉 Sau khi cấu hình một lần duy nhất, cả điện thoại và máy tính của bạn sẽ tự động đồng bộ tức thì trọn đời!</p>
+              </div>
+            </details>
+          </div>
           <!-- TAB 1: QR CODE SYNC -->
           <div id="syncTabContentQr" class="space-y-4 text-center">
             <div class="p-3 bg-cyan-950/20 border border-cyan-500/30 rounded-2xl text-xs text-cyan-300/90 leading-relaxed text-left flex items-start gap-2.5">

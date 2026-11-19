@@ -4269,7 +4269,7 @@ function closeSyncModal() {
 
 function switchSyncTab(tab) {
   playSound('click');
-  const tabs = ['qr', 'code', 'file'];
+  const tabs = ['cloud', 'qr', 'code', 'file'];
   tabs.forEach(t => {
     const btn = document.getElementById('syncTabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
     const content = document.getElementById('syncTabContent' + t.charAt(0).toUpperCase() + t.slice(1));
@@ -4502,4 +4502,218 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(checkIncomingSyncFromUrl, 300);
   });
+}
+
+
+// ==========================================
+// 15D. HỆ THỐNG ĐỒNG BỘ ĐÁM MÂY THỜI GIAN THỰC (REALTIME CLOUD SYNC)
+// ==========================================
+const CLOUD_SYNC_CONFIG_KEY = 'supermind_cloud_sync_config_v1';
+let cloudEventSourceInstance = null;
+let cloudPollingIntervalId = null;
+
+function getCloudSyncConfig() {
+  try {
+    const raw = localStorage.getItem(CLOUD_SYNC_CONFIG_KEY);
+    return raw ? JSON.parse(raw) : {
+      enabled: false,
+      roomKey: 'buivananhdev',
+      dbUrl: ''
+    };
+  } catch (e) {
+    return { enabled: false, roomKey: 'buivananhdev', dbUrl: '' };
+  }
+}
+
+function saveCloudSyncConfig(cfg) {
+  try {
+    localStorage.setItem(CLOUD_SYNC_CONFIG_KEY, JSON.stringify(cfg));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function updateCloudSyncBadgeUI() {
+  const cfg = getCloudSyncConfig();
+  const badge = document.getElementById('cloudSyncStatusBadge');
+  if (!badge) return;
+
+  if (cfg.enabled && cfg.dbUrl) {
+    badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-bold flex items-center gap-1';
+    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Đang Kết Nối Mây';
+  } else {
+    badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono';
+    badge.textContent = 'Chưa Kết Nối Mây';
+  }
+
+  const inputRoom = document.getElementById('inputCloudRoomKey');
+  const inputUrl = document.getElementById('inputCloudDbUrl');
+  const checkAuto = document.getElementById('checkCloudAutoSync');
+  if (inputRoom && !inputRoom.value) inputRoom.value = cfg.roomKey || 'buivananhdev';
+  if (inputUrl && !inputUrl.value && cfg.dbUrl) inputUrl.value = cfg.dbUrl;
+  if (checkAuto) checkAuto.checked = !!cfg.enabled;
+}
+
+async function saveAndConnectCloudSync() {
+  playSound('click');
+  const roomKey = (document.getElementById('inputCloudRoomKey')?.value || 'buivananhdev').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  let dbUrl = (document.getElementById('inputCloudDbUrl')?.value || '').trim();
+  const enabled = document.getElementById('checkCloudAutoSync')?.checked ?? true;
+
+  if (dbUrl.endsWith('/')) dbUrl = dbUrl.slice(0, -1);
+
+  const cfg = {
+    enabled: enabled,
+    roomKey: roomKey || 'buivananhdev',
+    dbUrl: dbUrl
+  };
+
+  saveCloudSyncConfig(cfg);
+  updateCloudSyncBadgeUI();
+
+  if (cfg.enabled && cfg.dbUrl) {
+    // Thử đẩy dữ liệu hiện tại lên và kích hoạt lắng nghe
+    const ok = await pushToCloud(true);
+    if (ok) {
+      initCloudRealtimeListener();
+      alert('Kết nối Đám Mây thành công! Kể từ bây giờ, mọi câu bạn thuộc hoặc thêm mới sẽ tự động đồng bộ trực tiếp giữa máy tính và điện thoại!');
+    } else {
+      alert('Đã lưu cấu hình! Tuy nhiên kiểm tra kết nối tới Database chưa thành công, vui lòng kiểm tra lại URL Firebase hoặc quyền đọc/ghi.');
+    }
+  } else {
+    alert('Đã lưu cấu hình mã phòng!');
+  }
+}
+
+// Đẩy dữ liệu hiện tại lên Cloud
+async function pushToCloud(isInitial = false) {
+  const cfg = getCloudSyncConfig();
+  if (!cfg.enabled || !cfg.dbUrl) return false;
+
+  try {
+    const packet = generateSyncPacket();
+    const endpoint = `${cfg.dbUrl}/sync/${cfg.roomKey}.json`;
+
+    const res = await fetch(endpoint, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(packet)
+    });
+
+    if (res.ok) {
+      console.log('Push to cloud success:', cfg.roomKey);
+      return true;
+    } else {
+      console.warn('Push to cloud failed, status:', res.status);
+      return false;
+    }
+  } catch (err) {
+    console.warn('Push to cloud error:', err);
+    return false;
+  }
+}
+
+// Kéo dữ liệu từ Cloud về máy
+async function pullFromCloud(silent = false) {
+  const cfg = getCloudSyncConfig();
+  if (!cfg.enabled || !cfg.dbUrl) {
+    if (!silent) alert('Vui lòng nhập đường dẫn Cloud Database (Firebase) trước khi kéo dữ liệu!');
+    return false;
+  }
+
+  try {
+    const endpoint = `${cfg.dbUrl}/sync/${cfg.roomKey}.json`;
+    const res = await fetch(endpoint);
+    if (!res.ok) throw new Error('Không thể tải từ đám mây, mã lỗi: ' + res.status);
+
+    const packet = await res.json();
+    if (!packet || packet.app !== 'supermind') {
+      if (!silent) alert('Chưa tìm thấy dữ liệu trên mây ở phòng này.');
+      return false;
+    }
+
+    mergeSyncDataIntoLocalStorage(packet);
+    if (!silent) {
+      alert(`Kéo dữ liệu từ mây thành công! Đã cập nhật ${packet.stats?.bibleMasteredCount || 0} câu đã thuộc và ${packet.stats?.bibleCustomCount || 0} câu tự thêm!`);
+    }
+    return true;
+  } catch (err) {
+    console.warn('Pull from cloud error:', err);
+    if (!silent) alert('Lỗi kéo dữ liệu từ mây: ' + err.message);
+    return false;
+  }
+}
+
+async function triggerManualCloudPush() {
+  playSound('click');
+  const ok = await pushToCloud(false);
+  if (ok) alert('Đã đẩy toàn bộ tiến độ hiện tại lên Đám Mây thành công!');
+  else alert('Đẩy lên mây thất bại. Hãy kiểm tra URL Cloud Database trong cấu hình.');
+}
+
+async function triggerManualCloudPull() {
+  playSound('click');
+  await pullFromCloud(false);
+}
+
+// Lắng nghe dữ liệu thời gian thực từ Cloud
+function initCloudRealtimeListener() {
+  const cfg = getCloudSyncConfig();
+  if (!cfg.enabled || !cfg.dbUrl) return;
+
+  // 1. Thử EventSource (Firebase Server-Sent Events - Realtime Streaming)
+  try {
+    if (cloudEventSourceInstance) {
+      cloudEventSourceInstance.close();
+      cloudEventSourceInstance = null;
+    }
+
+    const sseUrl = `${cfg.dbUrl}/sync/${cfg.roomKey}.json`;
+    cloudEventSourceInstance = new EventSource(sseUrl);
+
+    cloudEventSourceInstance.addEventListener('put', (e) => {
+      try {
+        const payload = JSON.parse(e.data);
+        if (payload && payload.data && payload.data.app === 'supermind') {
+          // Bỏ qua nếu dữ liệu vừa được đẩy từ chính tab này trong vòng 2 giây
+          const diff = Date.now() - (payload.data.timestamp || 0);
+          if (diff > 1500) {
+            mergeSyncDataIntoLocalStorage(payload.data);
+            console.log('Realtime update received from cloud!');
+          }
+        }
+      } catch (err) {
+        console.warn('SSE parse error:', err);
+      }
+    });
+
+    cloudEventSourceInstance.onerror = () => {
+      // Nếu EventSource không kết nối được, fallback sang Polling
+      setupCloudPollingFallback();
+    };
+  } catch (e) {
+    setupCloudPollingFallback();
+  }
+}
+
+function setupCloudPollingFallback() {
+  if (cloudPollingIntervalId) clearInterval(cloudPollingIntervalId);
+  // Kiểm tra định kỳ mỗi 8 giây khi tab hoạt động
+  cloudPollingIntervalId = setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      pullFromCloud(true);
+    }
+  }, 8000);
+}
+
+// Tự động đẩy lên mây sau khi có thay đổi (Debounce)
+let cloudPushDebounceTimer = null;
+function autoNotifyCloudSync() {
+  const cfg = getCloudSyncConfig();
+  if (!cfg.enabled || !cfg.dbUrl) return;
+
+  if (cloudPushDebounceTimer) clearTimeout(cloudPushDebounceTimer);
+  cloudPushDebounceTimer = setTimeout(() => {
+    pushToCloud(false);
+  }, 1000);
 }
