@@ -340,6 +340,100 @@
             </div>
           </div>
 
+          
+          <!-- BẢNG THỐNG KÊ TIẾN ĐỘ THUỘC KINH THÁNH (SCRIPTURE MEMORIZATION ANALYTICS) -->
+          <div class="rounded-3xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 shadow-xl space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center text-slate-950 text-lg font-bold shadow-lg">
+                  📊
+                </div>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                    <span>Thống Kê Tiến Độ Thuộc Lòng Kinh Thánh (Bản 2010)</span>
+                    <span id="bibleStreakBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono">🔥 1 Ngày Thuộc Lòng</span>
+                  </h3>
+                  <p class="text-xs text-slate-400">Theo dõi thời gian thực số lượng câu Kinh Thánh bạn đã thuộc lòng theo từng sách và tầng</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="openMasteredBibleVersesModal()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold transition-all flex items-center gap-1.5 border border-amber-500/40">
+                  <i data-lucide="book-marked" class="w-3.5 h-3.5"></i>
+                  <span>Sổ Tay Đã Thuộc (<span id="statBtnMasteredCount">0</span>)</span>
+                </button>
+                <button onclick="resetBibleProgressConfirm()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-rose-300 text-[11px] transition-all flex items-center gap-1 border border-slate-700" title="Đặt lại tiến độ thuộc Kinh Thánh">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  <span>Đặt Lại</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 4 Thẻ KPI Chỉ Số -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div class="p-4 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-slate-700 transition-all">
+                <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                  <span>Tổng Số Câu Trong Kho</span>
+                  <i data-lucide="book" class="w-3.5 h-3.5 text-slate-500"></i>
+                </div>
+                <div class="text-2xl font-black text-white font-mono mt-1" id="statTotalBibleVerses">58</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Mẫu RVV2010 + Câu tự thêm</div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-cardBg border border-amber-500/30 bg-amber-950/10 hover:border-amber-500/50 transition-all">
+                <div class="text-[11px] text-amber-400 flex items-center justify-between">
+                  <span>Đã Thuộc Lòng (Mastered)</span>
+                  <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400"></i>
+                </div>
+                <div class="text-2xl font-black text-amber-300 font-mono mt-1 flex items-baseline gap-1.5">
+                  <span id="statMasteredBibleVerses">0</span>
+                  <span class="text-xs font-normal text-amber-400/80 font-sans" id="statMasteredBiblePercent">(0%)</span>
+                </div>
+                <div class="text-[10px] text-amber-400/70 mt-0.5">Đã khắc sâu vào trí nhớ</div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-cardBg border border-purple-500/30 bg-purple-950/10 hover:border-purple-500/50 transition-all">
+                <div class="text-[11px] text-purple-400 flex items-center justify-between">
+                  <span>Đang Luyện Tập</span>
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-purple-400"></i>
+                </div>
+                <div class="text-2xl font-black text-purple-300 font-mono mt-1" id="statLearningBibleVerses">0</div>
+                <div class="text-[10px] text-purple-400/70 mt-0.5">Cần nhắc lại ngắt quãng</div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-cardBg border border-slate-800/80 hover:border-slate-700 transition-all">
+                <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                  <span>Sách Đã Có Câu Thuộc</span>
+                  <i data-lucide="building" class="w-3.5 h-3.5 text-slate-500"></i>
+                </div>
+                <div class="text-2xl font-black text-slate-300 font-mono mt-1" id="statMasteredBibleBooks">0 / 66</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Tầng tòa nhà đã mở</div>
+              </div>
+            </div>
+
+            <!-- Thanh Tiến Độ Tổng Thể -->
+            <div class="space-y-1.5 pt-1">
+              <div class="flex items-center justify-between text-xs font-semibold">
+                <span class="text-slate-300 flex items-center gap-1.5">
+                  <span>Mức Độ Thuộc Lòng Mục Tiêu:</span>
+                  <span id="statBibleProgressBarText" class="text-amber-400 font-mono font-bold">0%</span>
+                </span>
+                <span class="text-[11px] text-slate-400">Mục tiêu: Đạt 100% các câu trọng tâm</span>
+              </div>
+              <div class="w-full h-3 rounded-full bg-slate-800 overflow-hidden p-0.5 border border-slate-700/60">
+                <div id="statBibleProgressBarFill" class="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500 w-0"></div>
+              </div>
+            </div>
+
+            <!-- Bộ lọc trạng thái câu -->
+            <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80 text-xs">
+              <span class="text-slate-400 font-medium">Lọc câu trong phòng:</span>
+              <button onclick="filterBibleProgressStatus('all')" class="bible-stat-filter-btn px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all text-xs" data-status="all">Tất Cả</button>
+              <button onclick="filterBibleProgressStatus('mastered')" class="bible-stat-filter-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs" data-status="mastered">👑 Đã Thuộc Lòng</button>
+              <button onclick="filterBibleProgressStatus('learning')" class="bible-stat-filter-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs" data-status="learning">⏳ Đang Ôn Luyện</button>
+              <button onclick="filterBibleProgressStatus('unlearned')" class="bible-stat-filter-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs" data-status="unlearned">⚪ Chưa Học</button>
+            </div>
+          </div>
+
           <!-- Quick Fast Keyword Search & Floor Filter -->
           <div class="rounded-2xl bg-cardBg p-6 border border-slate-800 space-y-4">
             <div class="flex flex-col sm:flex-row items-center gap-3">
@@ -721,6 +815,44 @@
             <button type="submit" id="addVerseSubmitBtn" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold hover:from-amber-400 hover:to-yellow-300">Lưu Vào Tòa Nhà</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    
+    <!-- MODAL: SỔ TAY CÂU KINH THÁNH ĐÃ THUỘC LÒNG -->
+    <div id="masteredBibleVersesModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">
+      <div class="bg-cardBg border border-amber-500/40 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="p-5 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center text-slate-950 font-bold text-lg shadow-lg">
+              👑
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>Sổ Tay Câu Kinh Thánh Đã Thuộc Lòng</span>
+                <span id="masteredModalCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-bold">0 Câu</span>
+              </h3>
+              <p class="text-xs text-slate-400">Xem lại và ôn tập tất cả các câu kinh văn bạn đã ghi nhớ thành công</p>
+            </div>
+          </div>
+          <button onclick="closeMasteredBibleVersesModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Search in Mastered -->
+        <div class="p-4 border-b border-slate-800 bg-slate-900/40">
+          <div class="relative">
+            <i data-lucide="search" class="w-4 h-4 text-amber-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" id="masteredVerseSearchInput" oninput="filterMasteredVersesList(this.value)" placeholder="Tìm kiếm trong danh sách đã thuộc (Tọa độ, từ khóa, nội dung)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400">
+          </div>
+        </div>
+
+        <!-- Mastered Verses List -->
+        <div id="masteredVersesListContainer" class="p-4 space-y-3 overflow-y-auto flex-grow max-h-[60vh]">
+          <!-- Rendered by JS -->
+        </div>
       </div>
     </div>
 
