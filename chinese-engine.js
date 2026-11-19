@@ -1431,75 +1431,84 @@ function renderChineseLessonsView() {
     return;
   }
 
-  container.innerHTML = lessons.map(lesson => `
-    <div class="rounded-3xl bg-slate-900/80 border border-slate-800 p-6 sm:p-7 space-y-5 hover:border-slate-700 transition-all shadow-xl">
-      <!-- Lesson Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
-        <div>
-          <div class="flex items-center gap-2 mb-1">
-            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold font-mono">
-              ${lesson.level}
-            </span>
-            <span class="text-xs text-slate-400 font-medium">Tình huống thực tế đời sống</span>
+  const allChars = getStoredChineseChars();
+
+  container.innerHTML = lessons.map(lesson => {
+    // Tra cứu từ vựng theo vocabIds
+    const vocabItems = (lesson.vocabIds || []).map(vid => {
+      const found = allChars.find(c => c.id === vid);
+      if (found) {
+        return { id: found.id, zh: found.char, py: found.pinyin, vi: found.meaning };
+      }
+      return null;
+    }).filter(Boolean);
+
+    return `
+      <div class="rounded-3xl bg-slate-900/80 border border-slate-800 p-6 sm:p-7 space-y-5 hover:border-slate-700 transition-all shadow-xl">
+        <!-- Lesson Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold font-mono">
+                HSK ${lesson.level || 1}
+              </span>
+              <span class="text-xs text-slate-400 font-medium">Lộ Trình Thực Chiến</span>
+            </div>
+            <h4 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+              <span>${lesson.title}</span>
+            </h4>
+            <p class="text-xs text-slate-300 mt-1 flex items-center gap-1.5">
+              <i data-lucide="target" class="w-3.5 h-3.5 text-rose-400"></i>
+              <span>Mục tiêu: ${lesson.objective || 'Nắm vững ngữ cảnh giao tiếp thực tế'}</span>
+            </p>
           </div>
-          <h4 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-            <span>${lesson.title}</span>
-          </h4>
-          <p class="text-xs text-slate-300 mt-1">${lesson.situation}</p>
         </div>
-      </div>
 
-      <!-- Key Vocab -->
-      <div class="space-y-2">
-        <div class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-          <span>Từ Vựng Trọng Tâm Bài Học:</span>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          ${lesson.keyVocab.map(v => `
-            <div class="px-3 py-1.5 rounded-xl bg-cardBg border border-slate-700/80 text-xs flex items-center gap-2 hover:border-amber-500/50 transition-all">
-              <span class="font-serif text-base font-bold text-amber-300 cursor-pointer hover:text-rose-400" onclick="speakChinese('${v.zh}')" title="Bấm nghe phát âm">${v.zh}</span>
-              <span class="font-mono text-[11px] text-cyan-300">${v.py}</span>
-              <span class="text-slate-400 text-[11px]">: ${v.vi}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- Grammar Focus -->
-      <div class="p-3.5 rounded-2xl bg-indigo-950/20 border border-indigo-500/30 text-xs text-indigo-200 flex items-start gap-2">
-        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5"></i>
-        <div>
-          <strong class="text-white">Điểm Ngữ Pháp Cốt Lõi:</strong> ${lesson.grammar}
-        </div>
-      </div>
-
-      <!-- Dialogue Box -->
-      <div class="space-y-3 pt-1">
-        <div class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-          <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
-          <span>Đoạn Hội Thoại Mẫu (Bấm nút loa để luyện nghe - nói):</span>
-        </div>
-        <div class="space-y-2.5">
-          ${lesson.dialogue.map(d => `
-            <div class="p-3.5 rounded-2xl ${d.speaker.includes('A') ? 'bg-slate-950/70 border-l-4 border-l-rose-500' : 'bg-slate-950/70 border-l-4 border-l-sky-500'} border border-slate-800 flex items-start justify-between gap-3">
-              <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold ${d.speaker.includes('A') ? 'text-rose-400' : 'text-sky-400'} font-mono">${d.speaker}:</span>
-                  <span class="text-base font-serif font-black text-white">${d.zh}</span>
-                </div>
-                <div class="text-xs font-mono text-amber-300 pl-6">${d.py}</div>
-                <div class="text-xs text-slate-300 pl-6 italic">${d.vi}</div>
+        <!-- Key Vocab -->
+        <div class="space-y-2">
+          <div class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+            <span>Từ Vựng Trọng Tâm Bài Học (${vocabItems.length} từ):</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            ${vocabItems.map(v => `
+              <div class="px-3 py-1.5 rounded-xl bg-cardBg border border-slate-700/80 text-xs flex items-center gap-2 hover:border-amber-500/50 transition-all">
+                <span class="font-serif text-base font-bold text-amber-300 cursor-pointer hover:text-rose-400" onclick="speakChinese('${v.zh}')" title="Bấm nghe phát âm">${v.zh}</span>
+                <span class="font-mono text-[11px] text-cyan-300">${v.py}</span>
+                <span class="text-slate-400 text-[11px]">: ${v.vi}</span>
+                <button onclick="loadCharToWriter('${v.id}')" class="text-[10px] text-rose-400 hover:text-rose-300 ml-1" title="Luyện viết chữ này">✍️</button>
               </div>
-              <button onclick="speakDialogueLine('${d.zh.replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 flex-shrink-0 transition-colors" title="Nghe phát âm câu này">
-                <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
-              </button>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Dialogue Box -->
+        <div class="space-y-3 pt-1">
+          <div class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+            <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+            <span>Đoạn Hội Thoại Thực Tế (Bấm nút loa để luyện nghe - nói):</span>
+          </div>
+          <div class="space-y-2.5">
+            ${(lesson.dialogue || []).map(d => `
+              <div class="p-3.5 rounded-2xl ${d.speaker.includes('A') ? 'bg-slate-950/70 border-l-4 border-l-rose-500' : 'bg-slate-950/70 border-l-4 border-l-sky-500'} border border-slate-800 flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold ${d.speaker.includes('A') ? 'text-rose-400' : 'text-sky-400'} font-mono">${d.speaker}:</span>
+                    <span class="text-base font-serif font-black text-white">${d.zh}</span>
+                  </div>
+                  <div class="text-xs font-mono text-amber-300 pl-6">${d.pinyin || d.py || ''}</div>
+                  <div class="text-xs text-slate-300 pl-6 italic">${d.vi}</div>
+                </div>
+                <button onclick="speakDialogueLine('${d.zh.replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 flex-shrink-0 transition-colors" title="Nghe phát âm câu này">
+                  <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+                </button>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   lucide.createIcons();
 }
@@ -1521,45 +1530,70 @@ function renderChineseMethodsView() {
     return;
   }
 
-  container.innerHTML = methods.map(m => `
-    <div class="rounded-3xl bg-slate-900/90 border border-slate-800 p-6 sm:p-7 space-y-4 hover:border-slate-700 transition-all shadow-xl flex flex-col justify-between">
-      <div class="space-y-4">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
-            ${m.icon}
-          </div>
-          <div>
-            <h4 class="text-base sm:text-lg font-bold text-white">${m.title}</h4>
-            <span class="text-xs text-amber-400 font-mono font-medium">${m.subtitle}</span>
-          </div>
-        </div>
+  const iconMap = {
+    split: '⚡',
+    brain: '🧠',
+    link: '🔗',
+    clock: '⏳'
+  };
 
-        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${m.desc}</p>
+  container.innerHTML = methods.map(m => {
+    const iconDisplay = iconMap[m.icon] || '🏮';
 
-        <!-- Practical Examples -->
-        <div class="space-y-2">
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ví Dụ Thực Nghiệm Ứng Dụng:</div>
-          <div class="space-y-2">
-            ${m.examples.map(ex => `
-              <div class="p-3 rounded-2xl bg-cardBg border border-slate-800/90 space-y-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-xl font-serif font-black text-rose-400">${ex.char}</span>
-                  <span class="text-xs font-bold text-white">${ex.breakdown}</span>
+    return `
+      <div class="rounded-3xl bg-slate-900/90 border border-slate-800 p-6 sm:p-7 space-y-4 hover:border-slate-700 transition-all shadow-xl flex flex-col justify-between">
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
+              ${iconDisplay}
+            </div>
+            <div>
+              <h4 class="text-base sm:text-lg font-bold text-white">${m.title}</h4>
+              <span class="text-xs text-amber-400 font-mono font-medium">${m.tagline || ''}</span>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${m.desc}</p>
+
+          <!-- Principles -->
+          ${m.principles && m.principles.length > 0 ? `
+            <div class="space-y-1.5 p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
+              <div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Nguyên Lý Cốt Lõi:</div>
+              ${m.principles.map(p => `
+                <div class="text-xs text-slate-300 flex items-start gap-2">
+                  <span class="text-rose-400 font-bold">•</span>
+                  <span>${p}</span>
                 </div>
-                <p class="text-xs text-slate-300 italic pl-1">👉 ${ex.story}</p>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <!-- Practical Examples -->
+          ${m.examples && m.examples.length > 0 ? `
+            <div class="space-y-2">
+              <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ví Dụ Thực Nghiệm Ứng Dụng:</div>
+              <div class="space-y-2">
+                ${m.examples.map(ex => `
+                  <div class="p-3 rounded-2xl bg-cardBg border border-slate-800/90 space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="text-base font-serif font-black text-rose-400">${ex.char}</span>
+                      <span class="text-xs font-bold text-amber-300 font-mono">${ex.formula || ''}</span>
+                    </div>
+                    <p class="text-xs text-slate-300 italic pl-1">👉 ${ex.meaning || ex.story || ''}</p>
+                  </div>
+                `).join('')}
               </div>
-            `).join('')}
-          </div>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200 flex items-center gap-2 mt-2">
+          <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400 flex-shrink-0"></i>
+          <span><strong>Bí kíp thực hành:</strong> Áp dụng liên tục khi học chữ mới để kích hoạt tư duy liên tưởng não bộ.</span>
         </div>
       </div>
-
-      <!-- Tips -->
-      <div class="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200 flex items-center gap-2 mt-2">
-        <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400 flex-shrink-0"></i>
-        <span><strong>Bí kíp thực hành:</strong> ${m.tips}</span>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   lucide.createIcons();
 }
