@@ -30,6 +30,18 @@ const ALL_SCRIPTURE_VERSES = [
     text: 'Ban đầu Đức Chúa Trời sáng tạo trời và đất.'
   },
   {
+    id: 'v_gen_1_2',
+    bookFloor: 1,
+    bookCode: 'S',
+    bookName: 'Sáng Thế Ký',
+    chapter: 1,
+    verse: 2,
+    keyword: 'đất không có hình dạng',
+    secondaryKeyword: 'trống không và bóng tối',
+    category: 'Sáng tạo & Quyền năng',
+    text: 'Đất không có hình dạng và trống không, bóng tối bao trùm mặt vực, và Thần của Đức Chúa Trời vận hành trên mặt nước.'
+  },
+  {
     id: 'v_2',
     bookFloor: 1,
     bookCode: 'S',

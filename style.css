@@ -1,5 +1,5 @@
 /* Custom styles & animations */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap');
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -131,4 +131,16 @@ body {
   font-weight: 700;
   color: #fde68a;
   font-size: 0.75rem;
+}
+
+
+/* Trích Dẫn Kinh Thánh - Lora Font chuẩn tiếng Việt chống lỗi dấu & khoảng cách */
+.bible-quote {
+  font-family: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', serif;
+  font-style: italic;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  font-synthesis: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-rendering: optimizeLegibility;
 }

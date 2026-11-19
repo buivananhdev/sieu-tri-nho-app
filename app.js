@@ -1038,6 +1038,18 @@ const INITIAL_SCRIPTURE_VERSES = [
     "text": "Ban đầu Đức Chúa Trời sáng tạo trời và đất."
   },
   {
+    "id": "v_gen_1_2",
+    "bookFloor": 1,
+    "bookCode": "S",
+    "bookName": "Sáng Thế Ký",
+    "chapter": 1,
+    "verse": 2,
+    "keyword": "đất không có hình dạng",
+    "secondaryKeyword": "trống không và bóng tối",
+    "category": "Sáng tạo & Quyền năng",
+    "text": "Đất không có hình dạng và trống không, bóng tối bao trùm mặt vực, và Thần của Đức Chúa Trời vận hành trên mặt nước."
+  },
+  {
     "id": "v_2",
     "bookFloor": 1,
     "bookCode": "S",
@@ -1859,6 +1871,77 @@ const INITIAL_SCRIPTURE_VERSES = [
 const SCRIPTURE_STORAGE_KEY = 'supermind_scripture_custom_verses_v1';
 const SCRIPTURE_DELETED_KEY = 'supermind_scripture_deleted_verses_v1';
 
+
+// ==========================================
+// CHUẨN HÓA TIẾNG VIỆT & SẮP XẾP CÂU KINH THÁNH
+// ==========================================
+function cleanVietnameseScriptureText(str) {
+  if (!str) return '';
+  let s = String(str);
+  // Loại bỏ zero-width space, BOM
+  s = s.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  // Loại bỏ khoảng trắng xung quanh dấu thanh rời rạc (combining diacritics)
+  s = s.replace(/\s+([\u0300-\u036f])/g, '$1');
+  // Chuẩn hóa Unicode về dạng dựng sẵn (NFC - Precomposed)
+  s = s.normalize('NFC');
+  // Xử lý các âm tiết bị tách rời do bộ gõ hoặc copy-paste:
+  // Ví dụ: 'Đấ  t' -> 'Đất', 'trố  ng' -> 'trống', 'tố  i' -> 'tối', 'Thầ  n' -> 'Thần'
+  s = s.replace(/([A-Za-z\u00C0-\u1EF9]+)\s+([cntmpioy]|ng|nh|ch)(?=[\s,.;:!?\"“”)]|$)/gi, (m, p1, p2) => {
+    if (/[aeiouy\u00E0-\u1EF9]$/i.test(p1)) {
+      return p1 + p2;
+    }
+    return m;
+  });
+  // Thu gọn nhiều khoảng trắng thành 1
+  s = s.replace(/[ \t]+/g, ' ');
+  return s.trim();
+}
+
+function sanitizeVerseObject(v) {
+  if (!v) return v;
+  return {
+    ...v,
+    bookFloor: Number(v.bookFloor) || 1,
+    chapter: Number(v.chapter) || 1,
+    verse: Number(v.verse) || 1,
+    bookName: cleanVietnameseScriptureText(v.bookName || ''),
+    bookCode: (v.bookCode || '').trim(),
+    keyword: cleanVietnameseScriptureText(v.keyword || ''),
+    secondaryKeyword: cleanVietnameseScriptureText(v.secondaryKeyword || ''),
+    category: cleanVietnameseScriptureText(v.category || ''),
+    text: cleanVietnameseScriptureText(v.text || '')
+  };
+}
+
+function sortVersesAscending(a, b) {
+  const floorA = Number(a.bookFloor) || 0;
+  const floorB = Number(b.bookFloor) || 0;
+  if (floorA !== floorB) return floorA - floorB;
+
+  const chapA = Number(a.chapter) || 0;
+  const chapB = Number(b.chapter) || 0;
+  if (chapA !== chapB) return chapA - chapB;
+
+  const verseA = Number(a.verse) || 0;
+  const verseB = Number(b.verse) || 0;
+  return verseA - verseB;
+}
+
+function migrateAndSanitizeBibleStorage() {
+  try {
+    const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    if (!raw) return;
+    const custom = JSON.parse(raw);
+    if (Array.isArray(custom)) {
+      const sanitized = custom.map(v => sanitizeVerseObject(v));
+      sanitized.sort(sortVersesAscending);
+      localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(sanitized));
+    }
+  } catch (err) {
+    console.error('Error migrating bible storage:', err);
+  }
+}
+
 function getAllScriptureVerses() {
   try {
     const rawDeleted = localStorage.getItem(SCRIPTURE_DELETED_KEY);
@@ -1875,16 +1958,36 @@ function getAllScriptureVerses() {
 
     const userAdded = custom.filter(v => !INITIAL_SCRIPTURE_VERSES.some(iv => iv.id === v.id));
 
-    return [...activeInitials, ...userAdded];
+    // Khử trùng lặp theo tọa độ (bookFloor, chapter, verse)
+    const result = [];
+    const seenCoords = new Set();
+
+    // Ưu tiên các câu do người dùng tùy chỉnh/thêm
+    for (const v of userAdded) {
+      const coord = `${v.bookFloor}_${v.chapter}_${v.verse}`;
+      seenCoords.add(coord);
+      result.push(sanitizeVerseObject(v));
+    }
+
+    for (const iv of activeInitials) {
+      const coord = `${iv.bookFloor}_${iv.chapter}_${iv.verse}`;
+      if (!seenCoords.has(coord)) {
+        seenCoords.add(coord);
+        result.push(sanitizeVerseObject(iv));
+      }
+    }
+
+    // Sắp xếp tăng dần từ thấp lên cao theo Tầng -> Chương -> Câu
+    return result.sort(sortVersesAscending);
   } catch (e) {
-    return INITIAL_SCRIPTURE_VERSES;
+    return INITIAL_SCRIPTURE_VERSES.map(sanitizeVerseObject).sort(sortVersesAscending);
   }
 }
 
 // Generates First-Letter Prompting tokens: e.g. "Ban đầu Đức Chúa Trời..." -> "B - Đ - C - T..."
 function generateFirstLetters(text) {
   if (!text) return '';
-  const clean = text.replace(/[“”,;.:!?()—"]/g, ' ');
+  const clean = cleanVietnameseScriptureText(text).replace(/[“”,;.:!?()—"]/g, ' ');
   const words = clean.trim().split(/\s+/).filter(Boolean);
   return words.map(w => w.charAt(0).toUpperCase()).join(' - ');
 }
@@ -2075,11 +2178,11 @@ function renderMasteredModalList() {
   if (!container) return;
 
   const allVerses = getAllScriptureVerses();
-  const masteredVerses = allVerses.filter(v => isBibleVerseMastered(v.id));
+  const masteredVerses = allVerses.filter(v => isBibleVerseMastered(v.id)).sort(sortVersesAscending);
 
   if (countBadge) countBadge.textContent = `${masteredVerses.length} Câu Đã Thuộc`;
 
-  const q = currentMasteredVerseSearch;
+  const q = (currentMasteredVerseSearch || '').toLowerCase().trim();
   const filtered = masteredVerses.filter(v => {
     if (!q) return true;
     const match = v.text.toLowerCase().includes(q) ||
@@ -2123,13 +2226,13 @@ function renderMasteredModalList() {
           </div>
         </div>
 
-        <blockquote class="text-xs sm:text-sm font-serif italic text-white pl-3 border-l-2 border-amber-400">
+        <blockquote class="text-xs sm:text-sm bible-quote text-white pl-3 border-l-2 border-amber-400">
           "${v.text}"
         </blockquote>
 
         <div class="p-2 rounded-xl bg-slate-950 text-[11px] font-mono text-amber-300 flex items-center justify-between">
-          <span>Chuỗi chữ đầu: <strong>${firstLetters}</strong></span>
-          <span class="text-[10px] text-slate-500">Mỏ neo: "${v.keyword}"</span>
+          <span class="font-bold">Từ khóa: "${v.keyword}"</span>
+          <span class="text-[10px] text-slate-500">Chuỗi: ${firstLetters.substring(0, 30)}${firstLetters.length > 30 ? '...' : ''}</span>
         </div>
       </div>
     `;
@@ -2151,6 +2254,7 @@ function speakVerseText(text) {
 }
 
 function initScriptureTower() {
+  migrateAndSanitizeBibleStorage();
   renderTowerFloors();
   selectFloor(1);
   populateBookDropdown();
@@ -2265,6 +2369,9 @@ function renderVersesInRoom() {
   const allVerses = getAllScriptureVerses();
   let filtered = allVerses.filter(v => v.bookFloor === currentSelectedFloor && v.chapter === currentSelectedRoom);
 
+  // LUÔN LUÔN SẮP XẾP THỨ TỰ TỪ THẤP ĐẾN CAO (CÂU 1 -> CÂU 2 -> CÂU 3...)
+  filtered.sort((a, b) => (Number(a.verse) || 0) - (Number(b.verse) || 0));
+
   // Áp dụng bộ lọc trạng thái ghi nhớ
   if (currentBibleFilterStatus === 'mastered') {
     filtered = filtered.filter(v => isBibleVerseMastered(v.id));
@@ -2347,8 +2454,8 @@ function renderVersesInRoom() {
           </div>
         </div>
 
-        <!-- Full Text (Bản 2010) -->
-        <blockquote class="text-sm sm:text-base font-serif italic text-slate-100 border-l-2 border-amber-400 pl-4 py-1">
+        <!-- Full Text (Bản 2010) với font Lora chống lỗi dấu và khoảng cách -->
+        <blockquote class="text-sm sm:text-base bible-quote text-slate-100 border-l-2 border-amber-400 pl-4 py-1.5 leading-relaxed">
           "${v.text}"
         </blockquote>
 
@@ -2529,9 +2636,9 @@ function saveCustomVerse(e) {
   const floor = parseInt(document.getElementById('inputVerseBook').value, 10);
   const chapter = parseInt(document.getElementById('inputVerseChapter').value, 10);
   const verse = parseInt(document.getElementById('inputVerseNumber').value, 10);
-  const keyword = document.getElementById('inputVerseKeyword').value.trim();
-  const secondaryKeyword = document.getElementById('inputVerseSecondaryKeyword').value.trim();
-  const text = document.getElementById('inputVerseText').value.trim();
+  const keyword = cleanVietnameseScriptureText(document.getElementById('inputVerseKeyword').value);
+  const secondaryKeyword = cleanVietnameseScriptureText(document.getElementById('inputVerseSecondaryKeyword').value);
+  const text = cleanVietnameseScriptureText(document.getElementById('inputVerseText').value);
 
   const book = BIBLE_66_BOOKS.find(b => b.floor === floor);
 
@@ -2539,7 +2646,7 @@ function saveCustomVerse(e) {
     id: editingId || ('user_v_' + Date.now()),
     bookFloor: floor,
     bookCode: book ? book.code : 'S',
-    bookName: book ? book.name : '',
+    bookName: book ? cleanVietnameseScriptureText(book.name) : '',
     chapter: chapter,
     verse: verse,
     keyword: keyword,
@@ -2563,8 +2670,16 @@ function saveCustomVerse(e) {
         custom.push(targetVerse);
       }
     } else {
-      custom.push(targetVerse);
+      // Nếu đã có câu cùng tọa độ, cập nhật đè thay vì tạo câu trùng
+      const existingIdx = custom.findIndex(item => item.bookFloor === floor && item.chapter === chapter && item.verse === verse);
+      if (existingIdx >= 0) {
+        custom[existingIdx] = targetVerse;
+      } else {
+        custom.push(targetVerse);
+      }
     }
+    // Sắp xếp custom verses theo thứ tự tăng dần
+    custom.sort(sortVersesAscending);
     localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(custom));
   } catch (err) {
     console.error(err);
@@ -2573,6 +2688,8 @@ function saveCustomVerse(e) {
   closeAddVerseModal();
   selectFloor(floor);
   selectRoom(chapter);
+  renderVersesInRoom();
+  updateBibleStatsDashboard();
 }
 
 // SCRIPTURE REFLEX QUIZ MODAL
@@ -3572,7 +3689,7 @@ function renderPhilosophyView() {
             </h3>
             <p class="text-xs text-slate-400 font-medium">${escapeHtml(lesson.role || '')}</p>
             ${lesson.majorWorks ? `
-              <p class="text-xs text-slate-300/90 font-serif italic pt-0.5">
+              <p class="text-xs text-slate-300/90 bible-quote pt-0.5">
                 <span class="not-italic font-sans text-[10px] font-bold text-amber-400 uppercase tracking-wider">Tác phẩm / Luận điển gốc:</span> ${escapeHtml(lesson.majorWorks)}
               </p>
             ` : ''}
