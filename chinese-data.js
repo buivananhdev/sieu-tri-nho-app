@@ -3240,7 +3240,7 @@ const CHINESE_HSK_VOCAB_DATA = [
     "exampleVi": "Ngày mùng 1 tháng 10"
   },
   {
-    "id": "hsk1_hao",
+    "id": "hsk1_hao_number",
     "char": "号",
     "pinyin": "hào",
     "hanviet": "HIỆU",
@@ -4020,7 +4020,7 @@ const CHINESE_HSK_VOCAB_DATA = [
     "exampleVi": "Muộn quá rồi, đi ngủ thôi nào."
   },
   {
-    "id": "hsk1_hao",
+    "id": "hsk1_hao_good",
     "char": "好",
     "pinyin": "hǎo",
     "hanviet": "HẢO",
@@ -5781,7 +5781,7 @@ const CHINESE_LESSONS_DATA = [
       "hsk1_mifan",
       "hsk1_cai",
       "hsk1_fandian",
-      "hsk1_hao"
+      "hsk1_hao_number"
     ],
     "dialogue": [
       {
@@ -9925,7 +9925,7 @@ const CHINESE_DATA_REPOSITORY = [
     "example": "十月一日 (shí yuè yī rì: ngày 1 tháng 10) (Shí yuè yī rì - Ngày mùng 1 tháng 10)"
   },
   {
-    "id": "hsk1_hao",
+    "id": "hsk1_hao_number",
     "char": "号",
     "alt": "号",
     "pinyin": "hào",
@@ -10809,7 +10809,7 @@ const CHINESE_DATA_REPOSITORY = [
     "example": "太晚了，去睡觉吧。 (Tài wǎn le, qù shuìjiào ba. - Muộn quá rồi, đi ngủ thôi nào.)"
   },
   {
-    "id": "hsk1_hao",
+    "id": "hsk1_hao_good",
     "char": "好",
     "alt": "好",
     "pinyin": "hǎo",

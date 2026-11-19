@@ -14,7 +14,7 @@
 // ==========================================
 // 1. STATE & DATA REPOSITORY
 // ==========================================
-let currentChineseCharId = 'hsk1_nihao';
+let currentChineseCharId = 'hsk1_hao_good';
 let currentChineseFilterLevel = 'all';
 let currentChineseSearchQuery = '';
 let currentChineseSubTab = 'writer';
