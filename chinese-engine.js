@@ -1573,15 +1573,40 @@ function renderChineseMethodsView() {
             <div class="space-y-2">
               <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ví Dụ Thực Nghiệm Ứng Dụng:</div>
               <div class="space-y-2">
-                ${m.examples.map(ex => `
-                  <div class="p-3 rounded-2xl bg-cardBg border border-slate-800/90 space-y-1">
-                    <div class="flex items-center gap-2">
-                      <span class="text-base font-serif font-black text-rose-400">${ex.char}</span>
-                      <span class="text-xs font-bold text-amber-300 font-mono">${ex.formula || ''}</span>
-                    </div>
-                    <p class="text-xs text-slate-300 italic pl-1">👉 ${ex.meaning || ex.story || ''}</p>
-                  </div>
-                `).join('')}
+                ${m.examples.map(ex => {
+                  if (ex.char) {
+                    return `
+                      <div class="p-3 rounded-2xl bg-cardBg border border-slate-800/90 space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-base font-serif font-black text-rose-400">${ex.char}</span>
+                          <span class="text-xs font-bold text-amber-300 font-mono">${ex.formula || ''}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 italic pl-1">👉 ${ex.meaning || ''}</p>
+                      </div>
+                    `;
+                  }
+                  if (ex.pinyin) {
+                    return `
+                      <div class="p-3 rounded-2xl bg-cardBg border border-slate-800/90 space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-mono font-bold text-sky-300">🔊 ${ex.pinyin}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 italic pl-1">👉 ${ex.tip || ''}</p>
+                      </div>
+                    `;
+                  }
+                  if (ex.step) {
+                    return `
+                      <div class="p-3 rounded-2xl bg-cardBg border border-slate-800/90 space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-xs font-bold text-emerald-400 font-mono">⏳ ${ex.step}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 pl-1">⚡ ${ex.action || ''}</p>
+                      </div>
+                    `;
+                  }
+                  return '';
+                }).join('')}
               </div>
             </div>
           ` : ''}
