@@ -458,6 +458,16 @@ function selectChineseChar(id) {
   const strokeOrderEl = document.getElementById('charStrokeOrderDisplay');
   const exampleEl = document.getElementById('charExampleDisplay');
 
+  // Cập nhật thanh thông tin nhanh trên đầu Canvas
+  const qChar = document.getElementById('quickCharDisplay');
+  const qPinyin = document.getElementById('quickPinyinDisplay');
+  const qMeaning = document.getElementById('quickMeaningDisplay');
+  const qLevel = document.getElementById('quickLevelBadge');
+  if (qChar) qChar.textContent = charObj.char;
+  if (qPinyin) qPinyin.textContent = charObj.pinyin;
+  if (qMeaning) qMeaning.textContent = charObj.meaning;
+  if (qLevel) qLevel.textContent = charObj.level || 'HSK 1';
+
   if (bigCharEl) bigCharEl.textContent = charObj.char;
   if (pinyinEl) pinyinEl.textContent = charObj.pinyin;
   if (hanvietEl) hanvietEl.textContent = charObj.hanviet;
