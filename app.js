@@ -4135,3 +4135,361 @@ function nextPhilosophyQuiz(mastered) {
   currentPhiloQuizIndex++;
   renderPhilosophyQuizQuestion();
 }
+
+
+// ==========================================
+// 15C. HỆ THỐNG ĐỒNG BỘ DỮ LIỆU ĐA THIẾT BỊ (MÁY TÍNH ⇄ ĐIỆN THOẠI)
+// ==========================================
+
+let activeSyncQrInstance = null;
+let pendingIncomingSyncPayload = null;
+
+function browserUtf8ToBase64(str) {
+  try {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+      return String.fromCharCode(parseInt(p1, 16));
+    }));
+  } catch (e) {
+    console.error('Base64 encode error:', e);
+    return '';
+  }
+}
+
+function browserBase64ToUtf8(b64) {
+  try {
+    const binary = atob(b64);
+    const percentEncoded = Array.from(binary).map(c => {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join('');
+    return decodeURIComponent(percentEncoded);
+  } catch (e) {
+    console.error('Base64 decode error:', e);
+    return null;
+  }
+}
+
+function generateSyncPacket() {
+  const bibleProgress = localStorage.getItem('supermind_bible_progress_v1');
+  const bibleCustom = localStorage.getItem('supermind_scripture_custom_verses_v1');
+  const bibleDeleted = localStorage.getItem('supermind_scripture_deleted_verses_v1');
+  const chineseProgress = localStorage.getItem('supermind_chinese_progress_v1');
+  const chineseCustom = localStorage.getItem('supermind_chinese_custom_vocab_v1');
+  const majorProgress = localStorage.getItem('supermind_major_system_progress_v1');
+
+  const progressMap = getBibleProgressMap();
+  const masteredCount = Object.values(progressMap).filter(v => v.mastered || v === true).length;
+  const customList = bibleCustom ? JSON.parse(bibleCustom) : [];
+
+  return {
+    v: 1,
+    app: 'supermind',
+    timestamp: Date.now(),
+    dateStr: new Date().toLocaleString('vi-VN'),
+    stats: {
+      bibleMasteredCount: masteredCount,
+      bibleCustomCount: customList.length
+    },
+    data: {
+      supermind_bible_progress_v1: progressMap,
+      supermind_scripture_custom_verses_v1: customList,
+      supermind_scripture_deleted_verses_v1: bibleDeleted ? JSON.parse(bibleDeleted) : [],
+      supermind_chinese_progress_v1: chineseProgress ? JSON.parse(chineseProgress) : {},
+      supermind_chinese_custom_vocab_v1: chineseCustom ? JSON.parse(chineseCustom) : [],
+      supermind_major_system_progress_v1: majorProgress ? JSON.parse(majorProgress) : {}
+    }
+  };
+}
+
+function getSyncUrl() {
+  const packet = generateSyncPacket();
+  const json = JSON.stringify(packet);
+  const base64 = browserUtf8ToBase64(json);
+  // Dùng base URL của site (GitHub Pages hoặc host hiện tại)
+  const base = window.location.origin + window.location.pathname;
+  return base + '#sync=' + base64;
+}
+
+function openSyncModal(scope = 'bible') {
+  playSound('click');
+  const modal = document.getElementById('syncBackupModal');
+  if (!modal) return;
+
+  const packet = generateSyncPacket();
+
+  // Cập nhật thống kê xem trước
+  const elMastered = document.getElementById('syncPreviewMasteredCount');
+  const elCustom = document.getElementById('syncPreviewCustomCount');
+  if (elMastered) elMastered.textContent = packet.stats.bibleMasteredCount + ' Câu';
+  if (elCustom) elCustom.textContent = packet.stats.bibleCustomCount + ' Câu';
+
+  // Hiển thị mã văn bản
+  const codeArea = document.getElementById('syncExportCodeArea');
+  if (codeArea) {
+    codeArea.value = browserUtf8ToBase64(JSON.stringify(packet));
+  }
+
+  // Tạo mã QR Code
+  const qrContainer = document.getElementById('syncQrCodeContainer');
+  if (qrContainer) {
+    qrContainer.innerHTML = '';
+    const syncUrl = getSyncUrl();
+    try {
+      if (typeof QRCode !== 'undefined') {
+        activeSyncQrInstance = new QRCode(qrContainer, {
+          text: syncUrl,
+          width: 200,
+          height: 200,
+          colorDark: '#0b0f19',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } else {
+        qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(syncUrl)}" alt="QR Code" class="w-[200px] h-[200px] rounded-lg" />`;
+      }
+    } catch (err) {
+      console.warn('QR Code generation fallback:', err);
+      qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(syncUrl)}" alt="QR Code" class="w-[200px] h-[200px] rounded-lg" />`;
+    }
+  }
+
+  switchSyncTab('qr');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  lucide.createIcons();
+}
+
+function closeSyncModal() {
+  playSound('click');
+  const modal = document.getElementById('syncBackupModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function switchSyncTab(tab) {
+  playSound('click');
+  const tabs = ['qr', 'code', 'file'];
+  tabs.forEach(t => {
+    const btn = document.getElementById('syncTabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+    const content = document.getElementById('syncTabContent' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (t === tab) {
+      btn?.classList.add('bg-cyan-500/20', 'text-cyan-300', 'border', 'border-cyan-500/40');
+      btn?.classList.remove('text-slate-400');
+      content?.classList.remove('hidden');
+    } else {
+      btn?.classList.remove('bg-cyan-500/20', 'text-cyan-300', 'border', 'border-cyan-500/40');
+      btn?.classList.add('text-slate-400');
+      content?.classList.add('hidden');
+    }
+  });
+  lucide.createIcons();
+}
+
+function copySyncLinkToClipboard() {
+  const syncUrl = getSyncUrl();
+  navigator.clipboard.writeText(syncUrl).then(() => {
+    playSound('success');
+    const btnText = document.getElementById('copySyncLinkBtnText');
+    if (btnText) {
+      const orig = btnText.textContent;
+      btnText.textContent = '✓ ĐÃ SAO CHÉP LINK VÀO BỘ NHỚ ĐỆM!';
+      setTimeout(() => { btnText.textContent = orig; }, 2500);
+    }
+    alert('Đã sao chép link đồng bộ! Bạn chỉ cần gửi link này qua Zalo hoặc Messenger của bạn rồi mở trên điện thoại nhé.');
+  }).catch(() => {
+    prompt('Hãy sao chép đường link đồng bộ này và mở trên điện thoại:', syncUrl);
+  });
+}
+
+function copySyncCodeToClipboard() {
+  const codeArea = document.getElementById('syncExportCodeArea');
+  if (codeArea && codeArea.value) {
+    navigator.clipboard.writeText(codeArea.value).then(() => {
+      playSound('success');
+      alert('Đã sao chép mã đồng bộ vào bộ nhớ đệm!');
+    });
+  }
+}
+
+function applySyncCodeFromInput() {
+  const input = document.getElementById('syncImportCodeArea')?.value.trim();
+  if (!input) {
+    alert('Vui lòng dán mã đồng bộ vào ô trống trước khi nạp!');
+    return;
+  }
+
+  try {
+    const jsonStr = browserBase64ToUtf8(input);
+    if (!jsonStr) throw new Error('Mã đồng bộ không hợp lệ');
+    const packet = JSON.parse(jsonStr);
+    mergeSyncDataIntoLocalStorage(packet);
+    closeSyncModal();
+    alert(`Đồng bộ thành công! Đã nạp ${packet.stats?.bibleMasteredCount || 0} câu thuộc lòng và ${packet.stats?.bibleCustomCount || 0} câu tự thêm vào thiết bị này!`);
+  } catch (err) {
+    alert('Lỗi: Mã đồng bộ không hợp lệ hoặc đã bị lỗi ký tự!');
+    console.error(err);
+  }
+}
+
+function exportBackupJsonFile() {
+  playSound('success');
+  const packet = generateSyncPacket();
+  const blob = new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const dateStr = new Date().toISOString().slice(0, 10);
+  a.download = `supermind_backup_${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importBackupJsonFile(e) {
+  const file = e.target?.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const packet = JSON.parse(event.target.result);
+      mergeSyncDataIntoLocalStorage(packet);
+      closeSyncModal();
+      alert('Phục hồi dữ liệu từ file backup thành công!');
+    } catch (err) {
+      alert('Lỗi: File JSON không đúng định dạng!');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function mergeSyncDataIntoLocalStorage(packet) {
+  if (!packet || !packet.data) return;
+
+  const d = packet.data;
+
+  // 1. Merge Bible Progress
+  if (d.supermind_bible_progress_v1) {
+    const existing = getBibleProgressMap();
+    const merged = { ...existing, ...d.supermind_bible_progress_v1 };
+    localStorage.setItem(BIBLE_PROGRESS_KEY, JSON.stringify(merged));
+  }
+
+  // 2. Merge Custom Verses
+  if (Array.isArray(d.supermind_scripture_custom_verses_v1)) {
+    const rawExisting = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    const existingList = rawExisting ? JSON.parse(rawExisting) : [];
+    const map = new Map(existingList.map(v => [v.id, v]));
+
+    for (const v of d.supermind_scripture_custom_verses_v1) {
+      const sanitized = sanitizeVerseObject(v);
+      map.set(sanitized.id, sanitized);
+    }
+
+    const mergedList = Array.from(map.values()).sort(sortVersesAscending);
+    localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(mergedList));
+  }
+
+  // 3. Merge Chinese Progress
+  if (d.supermind_chinese_progress_v1) {
+    const raw = localStorage.getItem('supermind_chinese_progress_v1');
+    const existing = raw ? JSON.parse(raw) : {};
+    const merged = { ...existing, ...d.supermind_chinese_progress_v1 };
+    localStorage.setItem('supermind_chinese_progress_v1', JSON.stringify(merged));
+  }
+
+  // 4. Merge Chinese Custom
+  if (Array.isArray(d.supermind_chinese_custom_vocab_v1)) {
+    const raw = localStorage.getItem('supermind_chinese_custom_vocab_v1');
+    const existing = raw ? JSON.parse(raw) : [];
+    const map = new Map(existing.map(v => [v.id, v]));
+    for (const v of d.supermind_chinese_custom_vocab_v1) map.set(v.id, v);
+    localStorage.setItem('supermind_chinese_custom_vocab_v1', JSON.stringify(Array.from(map.values())));
+  }
+
+  // Run cleanup and refresh UI
+  migrateAndSanitizeBibleStorage();
+  updateBibleStatsDashboard();
+  renderVersesInRoom();
+  if (typeof renderMasteredModalList === 'function') renderMasteredModalList();
+  if (typeof renderChineseOverviewStats === 'function') renderChineseOverviewStats();
+  playSound('success');
+}
+
+// ==========================================
+// AUTO-DETECT INCOMING SYNC FROM URL HASH
+// ==========================================
+function checkIncomingSyncFromUrl() {
+  const hash = window.location.hash || '';
+  if (!hash.startsWith('#sync=')) return;
+
+  const b64 = hash.replace('#sync=', '').trim();
+  if (!b64) return;
+
+  try {
+    const json = browserBase64ToUtf8(b64);
+    if (!json) return;
+    const packet = JSON.parse(json);
+    if (!packet || packet.app !== 'supermind') return;
+
+    pendingIncomingSyncPayload = packet;
+
+    // Show prompt modal
+    const modal = document.getElementById('incomingSyncPromptModal');
+    if (!modal) return;
+
+    const elMastered = document.getElementById('incomingMasteredCount');
+    const elCustom = document.getElementById('incomingCustomCount');
+    const elDate = document.getElementById('incomingDateStr');
+
+    if (elMastered) elMastered.textContent = (packet.stats?.bibleMasteredCount || 0) + ' Câu';
+    if (elCustom) elCustom.textContent = (packet.stats?.bibleCustomCount || 0) + ' Câu';
+    if (elDate) elDate.textContent = packet.dateStr || 'Gần đây';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    lucide.createIcons();
+    playSound('success');
+  } catch (err) {
+    console.warn('Invalid sync hash payload:', err);
+  }
+}
+
+function acceptIncomingSync() {
+  if (pendingIncomingSyncPayload) {
+    mergeSyncDataIntoLocalStorage(pendingIncomingSyncPayload);
+    pendingIncomingSyncPayload = null;
+  }
+  // Clear hash from URL
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  } else {
+    window.location.hash = '';
+  }
+
+  const modal = document.getElementById('incomingSyncPromptModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  alert('Đã đồng bộ thành công vào điện thoại của bạn!');
+}
+
+function rejectIncomingSync() {
+  pendingIncomingSyncPayload = null;
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  } else {
+    window.location.hash = '';
+  }
+
+  const modal = document.getElementById('incomingSyncPromptModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}

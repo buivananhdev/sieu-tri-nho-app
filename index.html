@@ -357,6 +357,10 @@
                 </div>
               </div>
               <div class="flex items-center gap-2">
+                <button onclick="openSyncModal('bible')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md border border-cyan-400/40" title="Đồng bộ tiến độ học sang điện thoại trong 3 giây">
+                  <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                  <span>📲 Đồng Bộ Điện Thoại</span>
+                </button>
                 <button onclick="openMasteredBibleVersesModal()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold transition-all flex items-center gap-1.5 border border-amber-500/40">
                   <i data-lucide="book-marked" class="w-3.5 h-3.5"></i>
                   <span>Sổ Tay Đã Thuộc (<span id="statBtnMasteredCount">0</span>)</span>
@@ -2113,6 +2117,166 @@
   <script src="chinese-data.js"></script>
   <script src="chinese-engine.js"></script>
   <script src="philosophy-data.js"></script>
+  <script src="qrcode.min.js"></script>
   <script src="app.js"></script>
+
+    <!-- MODAL: ĐỒNG BỘ TIẾN ĐỘ HỌC TẬP (MÁY TÍNH ⇄ ĐIỆN THOẠI) -->
+    <div id="syncBackupModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">
+      <div class="bg-cardBg border border-cyan-500/40 rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="p-5 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
+              📲
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>Đồng Bộ Tiến Độ (Máy Tính ⇄ Điện Thoại)</span>
+              </h3>
+              <p class="text-xs text-slate-400">Chuyển toàn bộ câu đã thuộc & câu đã thêm sang điện thoại không cần đăng nhập</p>
+            </div>
+          </div>
+          <button onclick="closeSyncModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Tab Selector -->
+        <div class="flex border-b border-slate-800 bg-slate-900/50 p-2 gap-1.5 text-xs">
+          <button id="syncTabBtnQr" onclick="switchSyncTab('qr')" class="flex-1 py-2 rounded-xl font-bold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center gap-1.5">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Quét Mã QR (Nhanh)
+          </button>
+          <button id="syncTabBtnCode" onclick="switchSyncTab('code')" class="flex-1 py-2 rounded-xl font-bold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Dán Mã / Link
+          </button>
+          <button id="syncTabBtnFile" onclick="switchSyncTab('file')" class="flex-1 py-2 rounded-xl font-bold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> File Backup
+          </button>
+        </div>
+
+        <!-- Body Content -->
+        <div class="p-5 overflow-y-auto space-y-4">
+          <!-- TAB 1: QR CODE SYNC -->
+          <div id="syncTabContentQr" class="space-y-4 text-center">
+            <div class="p-3 bg-cyan-950/20 border border-cyan-500/30 rounded-2xl text-xs text-cyan-300/90 leading-relaxed text-left flex items-start gap-2.5">
+              <span class="text-base">💡</span>
+              <div>
+                <strong>Cách đồng bộ sang điện thoại siêu tốc:</strong><br>
+                1. Mở camera trên điện thoại và quét mã QR bên dưới.<br>
+                2. Chạm vào thông báo để mở trang web trên điện thoại.<br>
+                3. Bấm <strong>"Đồng Ý"</strong> trên điện thoại là toàn bộ câu đã thuộc & câu đã nhập sẽ nạp vào máy ngay!
+              </div>
+            </div>
+
+            <!-- Stats Preview of Current Device -->
+            <div class="grid grid-cols-2 gap-2 text-left">
+              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+                <span class="text-slate-400">Câu Kinh Thánh đã thuộc:</span>
+                <div class="font-bold text-amber-300 font-mono text-sm mt-0.5" id="syncPreviewMasteredCount">0 Câu</div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+                <span class="text-slate-400">Câu tự thêm vào kho:</span>
+                <div class="font-bold text-cyan-300 font-mono text-sm mt-0.5" id="syncPreviewCustomCount">0 Câu</div>
+              </div>
+            </div>
+
+            <!-- QR Container -->
+            <div class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-inner mx-auto w-[240px] h-[240px]">
+              <div id="syncQrCodeContainer" class="flex items-center justify-center"></div>
+            </div>
+
+            <!-- Quick Copy Link Button -->
+            <div class="space-y-2">
+              <button onclick="copySyncLinkToClipboard()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all">
+                <i data-lucide="link" class="w-4 h-4"></i>
+                <span id="copySyncLinkBtnText">Sao Chép Link Đồng Bộ (Gửi qua Zalo / Facebook)</span>
+              </button>
+              <p class="text-[11px] text-slate-500">Hoặc sao chép link trên và gửi sang điện thoại của bạn, chỉ cần bấm mở là đồng bộ xong!</p>
+            </div>
+          </div>
+
+          <!-- TAB 2: CODE COPY / PASTE -->
+          <div id="syncTabContentCode" class="space-y-4 hidden text-left">
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-300 flex items-center justify-between">
+                <span>Mã đồng bộ của thiết bị này (Xuất ra):</span>
+                <button onclick="copySyncCodeToClipboard()" class="text-[11px] text-cyan-400 hover:underline">Sao chép mã</button>
+              </label>
+              <textarea id="syncExportCodeArea" readonly rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[11px] font-mono text-slate-300 focus:outline-none select-all"></textarea>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800 space-y-2">
+              <label class="text-xs font-bold text-amber-300">Nhập mã đồng bộ từ thiết bị khác vào đây:</label>
+              <textarea id="syncImportCodeArea" rows="3" placeholder="Dán mã đồng bộ bạn nhận được vào đây..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"></textarea>
+              <button onclick="applySyncCodeFromInput()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all flex items-center justify-center gap-1.5">
+                <i data-lucide="download-cloud" class="w-4 h-4"></i> Nạp Dữ Liệu Vào Thiết Bị Này
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 3: FILE BACKUP -->
+          <div id="syncTabContentFile" class="space-y-4 hidden text-left">
+            <div class="p-3 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-slate-300 space-y-2">
+              <div class="font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Sao Lưu Dự Phòng Vĩnh Viễn (.json)
+              </div>
+              <p class="text-slate-400 text-[11px]">Tải toàn bộ tiến độ học tập (Kinh Thánh, Tiếng Trung, Siêu Trí Nhớ) về máy tính/điện thoại dạng file JSON để lưu giữ an toàn.</p>
+              <button onclick="exportBackupJsonFile()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold border border-slate-700 text-xs flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="download" class="w-4 h-4"></i> Tải File Sao Lưu (.json) Về Máy
+              </button>
+            </div>
+
+            <div class="p-3 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-slate-300 space-y-2">
+              <div class="font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="upload-cloud" class="w-4 h-4 text-amber-400"></i> Phục Hồi Từ File Sao Lưu
+              </div>
+              <p class="text-slate-400 text-[11px]">Chọn file JSON bạn đã tải về trước đó để phục hồi lại toàn bộ dữ liệu học tập.</p>
+              <input type="file" id="syncBackupFileInput" accept=".json" onchange="importBackupJsonFile(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 cursor-pointer">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: BÁO CÓ DỮ LIỆU ĐỒNG BỘ ĐẾN TỪ LINK/QR (INCOMING SYNC PROMPT) -->
+    <div id="incomingSyncPromptModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">
+      <div class="bg-cardBg border border-emerald-500/50 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200 text-center">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-3xl mx-auto shadow-lg">
+          📲
+        </div>
+
+        <div class="space-y-1.5">
+          <h3 class="text-lg font-black text-white">Phát Hiện Dữ Liệu Đồng Bộ!</h3>
+          <p class="text-xs text-slate-300">Tìm thấy tiến độ học tập được gửi từ thiết bị của bạn:</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-left space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">Câu Kinh Thánh đã thuộc:</span>
+            <span class="font-bold text-amber-300 font-mono" id="incomingMasteredCount">0 Câu</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">Câu bạn đã thêm vào kho:</span>
+            <span class="font-bold text-cyan-300 font-mono" id="incomingCustomCount">0 Câu</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">Thời gian sao lưu:</span>
+            <span class="text-slate-400 font-mono text-[11px]" id="incomingDateStr">Vừa xong</span>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-400">Bạn có muốn nạp dữ liệu này vào điện thoại ngay không? Các câu hiện có sẽ được hợp nhất an toàn mà không bị mất.</p>
+
+        <div class="flex gap-2">
+          <button onclick="rejectIncomingSync()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
+            Bỏ Qua
+          </button>
+          <button onclick="acceptIncomingSync()" class="flex-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition-all shadow-lg flex items-center justify-center gap-1.5">
+            <i data-lucide="check-circle" class="w-4 h-4"></i> Đồng Bộ Ngay
+          </button>
+        </div>
+      </div>
+    </div>
+
 </body>
 </html>
