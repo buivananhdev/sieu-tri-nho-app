@@ -4493,3 +4493,13 @@ function rejectIncomingSync() {
     modal.classList.remove('flex');
   }
 }
+
+// Auto-listen for sync hash changes & initial load
+window.addEventListener('hashchange', checkIncomingSyncFromUrl);
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  setTimeout(checkIncomingSyncFromUrl, 300);
+} else {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(checkIncomingSyncFromUrl, 300);
+  });
+}
