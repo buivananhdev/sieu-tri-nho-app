@@ -2779,89 +2779,339 @@ function revealQuizAnswer() {
 // 16. KHO CÁC MÔN HỌC CÁ NHÂN (SUBJECTS HUB)
 // ==========================================
 
-const DEFAULT_SUBJECTS = [
+
+// ==========================================
+// 16. VIỆN HÀN LÂM MÔN HỌC & ĐẠI NGÀNH (ACADEMIC DISCIPLINES TAXONOMY)
+// ==========================================
+
+const ACADEMIC_DISCIPLINES = [
+  { id: 'all', name: 'Tất Cả Đại Ngành', icon: 'layers' },
+  { id: 'theology', name: 'Tâm Linh & Thần Học', icon: 'sparkles', badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
+  { id: 'languages', name: 'Ngôn Ngữ & Ngoại Ngữ', icon: 'languages', badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/40' },
+  { id: 'law', name: 'Khoa Học Pháp Lý', icon: 'scale', badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
+  { id: 'medicine', name: 'Y Dược & Sức Khỏe', icon: 'heart-pulse', badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' },
+  { id: 'humanities', name: 'Khoa Học Xã Hội & Nhân Văn', icon: 'landmark', badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
+  { id: 'stem', name: 'Khoa Học Tự Nhiên & STEM', icon: 'cpu', badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/40' }
+];
+
+let currentSelectedDiscipline = 'all';
+let currentSubjectSearchQuery = '';
+
+const DEFAULT_ACADEMIC_SUBJECTS = [
+  // 1. TÂM LINH & THẦN HỌC
   {
     id: 'bibletower',
+    disciplineId: 'theology',
+    disciplineName: 'Tâm Linh & Thần Học',
     name: 'Kinh Thánh (Tòa Nhà 66 Tầng)',
-    badge: 'Bản 2010 • 66 Tầng',
-    desc: 'Mã hóa 66 sách thành 66 tầng, chương là phòng, câu là nội dung trong phòng, kích hoạt bằng Từ Khóa Mỏ Neo.',
+    badge: 'Cựu Ước & Tân Ước • 66 Tầng',
+    status: 'active', // Đang học sâu
+    desc: 'Mã hóa 66 sách thành 66 tầng, 1.189 chương là phòng nhớ, kích hoạt bằng Từ Khóa Mỏ Neo & First-Letter Drill.',
     icon: 'building-2',
     color: 'from-amber-600 to-yellow-600',
-    type: 'bible'
+    type: 'bible',
+    statsSummary: '66 Sách • 1.189 Chương • 31.102 Câu'
   },
   {
-    id: 'philosophy',
-    name: 'Triết Học Toàn Thư (Gốc Rễ Đến Đỉnh Cao)',
-    badge: 'Chuẩn Giáo Sư • Ma Trận 5D',
-    desc: 'Bắt đầu từ Cột mốc số 0 (Thales & Sự kinh ngạc) qua 5 thời kỳ lịch sử tư tưởng bằng Bộ Khung 5 Chiều Đại Tư Duy.',
-    icon: 'sparkles',
-    color: 'from-indigo-600 via-purple-600 to-amber-500',
-    type: 'philosophy'
-  },
-  {
-    id: 'english',
-    name: 'Tiếng Anh Siêu Tốc',
-    badge: 'Ngoại Ngữ',
-    desc: 'Cung điện 1000 từ vựng cốt lõi theo phương pháp Âm Thanh Tương Tự (Sound-alike) & liên tưởng cảm xúc cao.',
-    icon: 'languages',
-    color: 'from-blue-600 to-cyan-600',
+    id: 'church_history',
+    disciplineId: 'theology',
+    disciplineName: 'Tâm Linh & Thần Học',
+    name: 'Lịch Sử Giáo Hội & Thần Học Hệ Thống',
+    badge: 'Lịch Sử & Giáo Lý Cốt Lõi',
+    status: 'ready',
+    desc: 'Phân kỳ tư tưởng qua 5 thời kỳ: Sứ đồ ➔ Giáo phụ ➔ Trung cổ ➔ Cải chánh ➔ Cận hiện đại bằng Trục Thời Gian Loci.',
+    icon: 'scroll',
+    color: 'from-amber-700 to-yellow-800',
     type: 'custom',
+    statsSummary: '5 Thời Kỳ • 20 Mốc Lịch Sử Lớn',
     topics: [
-      { title: 'Chủ đề 1: Giao Tiếp & Ẩm Thực (20 từ)', notes: 'Neo vào Cung điện Phòng bếp của bạn' },
-      { title: 'Chủ đề 2: Du Lịch & Sân Bay (30 từ)', notes: 'Neo vào Sảnh sân bay Nội Bài / Tân Sơn Nhất' }
+      { title: 'Thời kỳ 1: Hội thánh đầu tiên & Kỷ nguyên Sứ đồ (Thế kỷ 1)', notes: 'Neo vào phòng Tiền sảnh' },
+      { title: 'Thời kỳ 2: Kỷ nguyên Giáo Phụ & Tín điều Nicea (325 SC)', notes: 'Neo vào phòng Nghị viện' }
     ]
   },
+
+  // 2. NGÔN NGỮ & NGOẠI NGỮ
   {
-    id: 'law',
-    name: 'Pháp Luật & Điều Khoản Cốt Lõi',
-    badge: 'Hệ Thống Luật',
-    desc: 'Mã hóa số điều luật theo Major System và gắn các tình huống thực tiễn vào Cung Điện Tòa Án.',
+    id: 'chinese_mastery',
+    disciplineId: 'languages',
+    disciplineName: 'Ngôn Ngữ & Ngoại Ngữ',
+    name: 'Tiếng Trung & Hán Tự Chuyên Sâu',
+    badge: 'Chiết Tự • Bàn Luyện Viết • HSK 1-6',
+    status: 'active',
+    desc: 'Bàn vẽ tương tác, 214 Bộ thủ cốt lõi, giải nghĩa hình tượng chữ và Cung điện 5000 từ vựng HSK.',
+    icon: 'languages',
+    color: 'from-rose-600 to-red-600',
+    type: 'chinese_link',
+    statsSummary: '214 Bộ Thủ • HSK 1-6 • Bàn Luyện Viết'
+  },
+  {
+    id: 'english_oxford',
+    disciplineId: 'languages',
+    disciplineName: 'Ngôn Ngữ & Ngoại Ngữ',
+    name: 'Tiếng Anh Toàn Diện (Oxford & Academic)',
+    badge: 'IPA • 3000 Từ Cốt Lõi • Collocations',
+    status: 'ready',
+    desc: 'Áp dụng Kỹ thuật Âm Thanh Tương Tự (Sound-alike) và Cung Điện Không Gian để ghi nhớ 3000 từ vựng học thuật.',
+    icon: 'globe-2',
+    color: 'from-blue-600 to-cyan-600',
+    type: 'custom',
+    statsSummary: '3000 Từ Oxford • 44 Âm IPA',
+    topics: [
+      { title: 'Chủ đề 1: Giao Tiếp & Ẩm Thực Cốt Lõi (30 từ)', notes: 'Cung điện Bếp ăn' },
+      { title: 'Chủ đề 2: Du Lịch & Sân Bay Quốc Tế (40 từ)', notes: 'Cung điện Ga hàng không' }
+    ]
+  },
+
+  // 3. KHOA HỌC PHÁP LÝ
+  {
+    id: 'law_vietnam',
+    disciplineId: 'law',
+    disciplineName: 'Khoa Học Pháp Lý',
+    name: 'Pháp Luật Việt Nam & Quốc Tế',
+    badge: 'Hiến Pháp • Dân Sự • Hình Sự',
+    status: 'ready',
+    desc: 'Mã hóa số điều luật theo Major System 00-99 và gắn các tình huống thực tiễn vào Cung Điện Tòa Án.',
     icon: 'scale',
     color: 'from-emerald-600 to-teal-600',
     type: 'custom',
+    statsSummary: 'Bộ Luật Dân Sự • Bộ Luật Hình Sự',
     topics: [
-      { title: 'Chương 1: Các Nguyên Tắc Cơ Bản', notes: 'Gắn Điều 1 đến Điều 15 vào Cổng vào và Hành lang' }
+      { title: 'Chương 1: Các Nguyên Tắc Cơ Bản Của Bộ Luật Dân Sự', notes: 'Gắn Điều 1 đến Điều 15 vào Cổng vào và Hành lang Tòa án' },
+      { title: 'Chương 2: Cấu Thành Tội Phạm Trong Luật Hình Sự', notes: 'Gắn 4 yếu tố cấu thành vào 4 góc phòng xử án' }
+    ]
+  },
+
+  // 4. Y DƯỢC & SỨC KHỎE
+  {
+    id: 'anatomy_medicine',
+    disciplineId: 'medicine',
+    disciplineName: 'Y Dược & Sức Khỏe',
+    name: 'Giải Phẫu Học & Dược Lý (Cung Điện Cơ Thể)',
+    badge: 'Hệ Cơ Quan • Dược Chất • Bệnh Học',
+    status: 'ready',
+    desc: 'Biến cơ thể người thành Cung Điện Ký Ức (Body Palace) để đặt tên cơ, xương, dây thần kinh và phân nhóm dược chất.',
+    icon: 'heart-pulse',
+    color: 'from-cyan-600 to-teal-500',
+    type: 'custom',
+    statsSummary: '206 Xương • 12 Đôi Dây Thần Kinh • Nhóm Dược',
+    topics: [
+      { title: 'Phân khu 1: Hệ Thần Kinh Trung Ương & 12 Đôi Dây Thần Kinh Sọ', notes: 'Neo từ Đỉnh đầu xuống Vùng cổ' },
+      { title: 'Phân khu 2: Nhóm Kháng Sinh & Cơ Chế Diệt Khuẩn', notes: 'Neo vào phòng Xét nghiệm' }
+    ]
+  },
+
+  // 5. KHOA HỌC XÃ HỘI & NHÂN VĂN
+  {
+    id: 'philosophy',
+    disciplineId: 'humanities',
+    disciplineName: 'Khoa Học Xã Hội & Nhân Văn',
+    name: 'Triết Học Toàn Thư (Ma Trận 5D)',
+    badge: 'Chuẩn Giáo Sư • 5 Thời Kỳ',
+    status: 'active',
+    desc: 'Bắt đầu từ Cột mốc số 0 (Thales & Sự kinh ngạc) qua 5 thời kỳ lịch sử tư tưởng bằng Bộ Khung 5 Chiều Đại Tư Duy.',
+    icon: 'sparkles',
+    color: 'from-indigo-600 via-purple-600 to-amber-500',
+    type: 'philosophy',
+    statsSummary: '5 Thời Kỳ • 32 Triết Gia Đại Thụ'
+  },
+  {
+    id: 'history_world_vn',
+    disciplineId: 'humanities',
+    disciplineName: 'Khoa Học Xã Hội & Nhân Văn',
+    name: 'Lịch Sử Dân Tộc & Lịch Sử Thế Giới',
+    badge: 'Niên Biểu • Trục Thời Gian Loci',
+    status: 'ready',
+    desc: 'Mã hóa các mốc năm lịch sử bằng Major System 00-99 kết hợp chuỗi sự kiện nguyên nhân - diễn biến - kết quả.',
+    icon: 'history',
+    color: 'from-purple-700 to-indigo-800',
+    type: 'custom',
+    statsSummary: 'Trục Niên Biểu 4000 Năm • Mốc Cận Hiện Đại',
+    topics: [
+      { title: 'Kỷ nguyên 1: Các triều đại phong kiến độc lập tự chủ', notes: 'Ngô - Đinh - Tiền Lê - Lý - Trần - Lê' },
+      { title: 'Kỷ nguyên 2: Hai cuộc Thế chiến & Trật tự thế giới', notes: 'Mã hóa các năm 1914, 1918, 1939, 1945' }
+    ]
+  },
+
+  // 6. STEM & CÔNG NGHỆ
+  {
+    id: 'stem_math_logic',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Toán Học Tư Duy & Mô Hình Thuật Toán',
+    badge: 'Công Thức • Ký Hiệu Hình Ảnh • Logic',
+    status: 'ready',
+    desc: 'Chuyển đổi công thức đại số, giải tích và cấu trúc thuật toán thành biểu tượng hình ảnh mỏ neo.',
+    icon: 'cpu',
+    color: 'from-blue-600 to-indigo-700',
+    type: 'custom',
+    statsSummary: 'Đại Số • Giải Tích • Thuật Toán Cốt Lõi',
+    topics: [
+      { title: 'Mô hình 1: Các hằng đẳng thức & Bất đẳng thức kinh điển', notes: 'Mã hóa hình học không gian' },
+      { title: 'Mô hình 2: Tư duy thuật toán đệ quy & Quy hoạch động', notes: 'Mô hình bậc thang Loci' }
     ]
   }
 ];
-
-const SUBJECTS_STORAGE_KEY = 'supermind_custom_user_subjects_v1';
-let currentActiveSubjectId = 'bibletower';
 
 function getStoredSubjects() {
   try {
     const raw = localStorage.getItem(SUBJECTS_STORAGE_KEY);
     const custom = raw ? JSON.parse(raw) : [];
-    return [...DEFAULT_SUBJECTS, ...custom];
+    // Ensure all subjects have discipline info
+    const sanitizedCustom = custom.map(s => ({
+      ...s,
+      disciplineId: s.disciplineId || 'general',
+      disciplineName: s.disciplineName || 'Kỹ Năng & Lĩnh Vực Khác',
+      status: s.status || 'custom'
+    }));
+    return [...DEFAULT_ACADEMIC_SUBJECTS, ...sanitizedCustom];
   } catch (e) {
-    return DEFAULT_SUBJECTS;
+    return DEFAULT_ACADEMIC_SUBJECTS;
   }
+}
+
+function renderDisciplineFilterTabs() {
+  const container = document.getElementById('disciplineFilterTabsBar');
+  if (!container) return;
+
+  const subjects = getStoredSubjects();
+
+  container.innerHTML = ACADEMIC_DISCIPLINES.map(d => {
+    const isActive = d.id === currentSelectedDiscipline;
+    const count = d.id === 'all' 
+      ? subjects.length 
+      : subjects.filter(s => s.disciplineId === d.id).length;
+
+    return `
+      <button onclick="filterByDiscipline('${d.id}')" class="px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shadow-sm ${
+        isActive 
+          ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black shadow-md border border-amber-300' 
+          : 'bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800'
+      }">
+        <i data-lucide="${d.icon || 'folder'}" class="w-3.5 h-3.5"></i>
+        <span>${d.name}</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-slate-950/30 text-slate-950' : 'bg-slate-800 text-amber-300 font-mono'} font-bold">${count}</span>
+      </button>
+    `;
+  }).join('');
+
+  lucide.createIcons();
+}
+
+function filterByDiscipline(disciplineId) {
+  playSound('click');
+  currentSelectedDiscipline = disciplineId;
+  renderDisciplineFilterTabs();
+  renderSubjectsGrid();
+}
+
+function handleSubjectSearch(query) {
+  currentSubjectSearchQuery = (query || '').toLowerCase().trim();
+  renderSubjectsGrid();
 }
 
 function renderSubjectsGrid() {
   const container = document.getElementById('subjectsCardsContainer');
   if (!container) return;
 
-  const subjects = getStoredSubjects();
+  const allSubjects = getStoredSubjects();
+  let filtered = allSubjects;
 
-  let html = subjects.map(s => {
-    return `
-      <div onclick="openSubjectDetail('${s.id}')" class="p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-amber-500/60 hover:bg-slate-900/60 cursor-pointer flex flex-col justify-between transition-all group shadow-md">
-        <div>
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${s.color || 'from-purple-600 to-indigo-600'} text-white flex items-center justify-center text-sm shadow">
-              <i data-lucide="${s.icon || 'book-open'}" class="w-5 h-5"></i>
-            </div>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-amber-300 border border-slate-700">
-              ${s.badge || 'Môn học'}
-            </span>
-          </div>
-          <h4 class="text-sm font-bold text-white group-hover:text-amber-300 transition-colors mb-1.5">${s.name}</h4>
-          <p class="text-xs text-slate-400 leading-relaxed line-clamp-2">${s.desc}</p>
+  // Filter by Discipline
+  if (currentSelectedDiscipline !== 'all') {
+    filtered = filtered.filter(s => s.disciplineId === currentSelectedDiscipline);
+  }
+
+  // Filter by Search Query
+  if (currentSubjectSearchQuery) {
+    const q = currentSubjectSearchQuery;
+    filtered = filtered.filter(s => {
+      return s.name.toLowerCase().includes(q) ||
+             (s.desc && s.desc.toLowerCase().includes(q)) ||
+             (s.badge && s.badge.toLowerCase().includes(q)) ||
+             (s.disciplineName && s.disciplineName.toLowerCase().includes(q));
+    });
+  }
+
+  // Update counter
+  const counterEl = document.getElementById('statTotalSubjectsCount');
+  if (counterEl) counterEl.textContent = allSubjects.length + ' Môn';
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="col-span-full py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-3xl p-8 space-y-3">
+        <div class="w-12 h-12 rounded-full bg-slate-800 text-amber-400 flex items-center justify-center mx-auto">
+          <i data-lucide="search-x" class="w-6 h-6"></i>
         </div>
-        <div class="pt-3 mt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300">
-          <span>Vào học môn này</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        <div class="text-sm font-bold text-slate-300">Không tìm thấy môn học nào phù hợp!</div>
+        <p class="text-xs text-slate-500">Hãy thử xóa bộ lọc tìm kiếm hoặc bấm nút bên dưới để tạo môn học mới.</p>
+        <button onclick="openAddSubjectModal()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition-all inline-flex items-center gap-1.5">
+          <i data-lucide="plus" class="w-4 h-4"></i> Thêm Môn Vào Ngành Này
+        </button>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  let html = filtered.map(s => {
+    const isActiveStudy = s.status === 'active';
+    const disc = ACADEMIC_DISCIPLINES.find(d => d.id === s.disciplineId) || { badgeColor: 'bg-slate-800 text-slate-300 border-slate-700' };
+
+    return `
+      <div onclick="openSubjectDetail('${s.id}')" class="p-5 rounded-3xl bg-cardBg border ${isActiveStudy ? 'border-amber-500/50 shadow-amber-950/20' : 'border-slate-800 hover:border-slate-700'} hover:scale-[1.01] hover:bg-slate-900/80 cursor-pointer flex flex-col justify-between transition-all group shadow-lg space-y-4">
+        <div>
+          <!-- Top Discipline Banner & Status -->
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${disc.badgeColor}">
+              <i data-lucide="bookmark" class="w-2.5 h-2.5"></i>
+              ${s.disciplineName || 'Đại Ngành'}
+            </span>
+            ${isActiveStudy ? `
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 animate-pulse">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ĐANG HỌC SÂU
+              </span>
+            ` : `
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                SẴN SÀNG NẠP
+              </span>
+            `}
+          </div>
+
+          <!-- Main Subject Info -->
+          <div class="flex items-start gap-3.5 mb-2.5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${s.color || 'from-indigo-600 to-purple-600'} text-white flex items-center justify-center text-lg shadow-md shrink-0 group-hover:scale-105 transition-transform">
+              <i data-lucide="${s.icon || 'book-open'}" class="w-6 h-6"></i>
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-base font-bold text-white group-hover:text-amber-300 transition-colors leading-snug">
+                ${s.name}
+              </h4>
+              <div class="text-[11px] font-semibold text-amber-400/90 font-mono">
+                ${s.badge || 'Cung Điện Ghi Nhớ'}
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="text-xs text-slate-400 leading-relaxed line-clamp-2 mt-2">
+            ${s.desc}
+          </p>
+
+          <!-- Stats Pill -->
+          ${s.statsSummary ? `
+            <div class="mt-3 p-2 rounded-xl bg-slate-950/80 border border-slate-800/80 text-[11px] text-slate-300 flex items-center gap-1.5 font-mono">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+              <span class="truncate">${s.statsSummary}</span>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Action Footer -->
+        <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold ${isActiveStudy ? 'text-amber-300' : 'text-slate-300 group-hover:text-amber-400'}">
+          <span class="flex items-center gap-1">
+            ${isActiveStudy ? 'Vào Không Gian Học Sâu' : 'Xem & Nạp Dữ Liệu'}
+          </span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1.5 transition-transform"></i>
         </div>
       </div>
     `;
@@ -2869,18 +3119,33 @@ function renderSubjectsGrid() {
 
   // Add "+" card to prompt adding custom subjects
   html += `
-    <div onclick="openAddSubjectModal()" class="p-5 rounded-2xl border border-dashed border-slate-700 hover:border-amber-400/60 bg-slate-900/40 hover:bg-slate-900 cursor-pointer flex flex-col items-center justify-center text-center transition-all group min-h-[160px]">
-      <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-amber-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-        <i data-lucide="plus" class="w-5 h-5"></i>
+    <div onclick="openAddSubjectModal()" class="p-6 rounded-3xl border border-dashed border-slate-800 hover:border-amber-400/60 bg-slate-900/40 hover:bg-slate-900/80 cursor-pointer flex flex-col items-center justify-center text-center transition-all group min-h-[220px] space-y-2">
+      <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
+        <i data-lucide="plus" class="w-6 h-6"></i>
       </div>
-      <div class="text-xs font-bold text-white group-hover:text-amber-300 mb-1">+ Thêm Môn Học Mới Của Bạn</div>
-      <p class="text-[11px] text-slate-400">Tạo Cung điện / Tòa nhà riêng cho bất kỳ môn học nào</p>
+      <div class="text-sm font-bold text-white group-hover:text-amber-300">+ Thêm Môn Học Mới Của Bạn</div>
+      <p class="text-xs text-slate-400 max-w-xs leading-relaxed">
+        Phân loại vào đúng Đại Ngành và thiết lập Cung điện Ký ức riêng biệt
+      </p>
     </div>
   `;
 
   container.innerHTML = html;
   lucide.createIcons();
 }
+
+// Redirect Chinese to Chinese Hub
+const _orig_openSubjectDetail = openSubjectDetail;
+openSubjectDetail = function(subjectId) {
+  if (subjectId === 'chinese_mastery') {
+    switchTab('chinese');
+    return;
+  }
+  _orig_openSubjectDetail(subjectId);
+};
+
+const SUBJECTS_STORAGE_KEY = 'supermind_custom_user_subjects_v1';
+let currentActiveSubjectId = 'bibletower';
 
 // Khi bấm vào 1 môn học -> Mới mở toàn bộ không gian của môn đó ra!
 function openSubjectDetail(subjectId) {
@@ -2993,18 +3258,24 @@ function saveCustomSubject(e) {
   e.preventDefault();
   playSound('success');
 
+  const disciplineId = document.getElementById('inputSubjectDiscipline')?.value || 'general';
+  const discObj = ACADEMIC_DISCIPLINES.find(d => d.id === disciplineId) || { name: 'Kỹ Năng & Lĩnh Vực Khác' };
   const name = document.getElementById('inputSubjectName').value.trim();
   const model = document.getElementById('inputSubjectModel').value.trim();
   const desc = document.getElementById('inputSubjectDesc').value.trim();
 
   const newSubj = {
     id: 'subj_' + Date.now(),
+    disciplineId: disciplineId,
+    disciplineName: discObj.name,
     name: name,
     badge: model || 'Cung Điện Riêng',
+    status: 'ready',
     desc: desc || `Ứng dụng phương pháp ${model} để ghi nhớ môn ${name}.`,
     icon: 'book-open',
     color: 'from-purple-600 to-indigo-600',
     type: 'custom',
+    statsSummary: `Mô hình: ${model}`,
     topics: []
   };
 
