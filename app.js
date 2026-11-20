@@ -327,44 +327,124 @@ function toggleAudio() {
 // ==========================================
 // 7. TAB NAVIGATION
 // ==========================================
+
+// ==========================================
+// ĐIỀU HƯỚNG 4 TRỤ CỘT CHUẨN MỰC TỐI GIẢN (MASTER PILLARS NAVIGATION)
+// ==========================================
+
+function switchMethodsSubTab(sub) {
+  playSound('click');
+  const btnMemory = document.getElementById('btnSubTabMemory');
+  const btnIntel = document.getElementById('btnSubTabIntelligence');
+  const secMemory = document.getElementById('methodsSubSectionMemory');
+  const secIntel = document.getElementById('methodsSubSectionIntelligence');
+
+  if (sub === 'memory') {
+    btnMemory?.classList.add('bg-gradient-to-r', 'from-purple-600', 'to-indigo-600', 'text-white', 'shadow-md');
+    btnMemory?.classList.remove('text-slate-400');
+    btnIntel?.classList.remove('bg-gradient-to-r', 'from-purple-600', 'to-indigo-600', 'text-white', 'shadow-md');
+    btnIntel?.classList.add('text-slate-400');
+
+    secMemory?.classList.remove('hidden');
+    secIntel?.classList.add('hidden');
+  } else {
+    btnIntel?.classList.add('bg-gradient-to-r', 'from-purple-600', 'to-indigo-600', 'text-white', 'shadow-md');
+    btnIntel?.classList.remove('text-slate-400');
+    btnMemory?.classList.remove('bg-gradient-to-r', 'from-purple-600', 'to-indigo-600', 'text-white', 'shadow-md');
+    btnMemory?.classList.add('text-slate-400');
+
+    secIntel?.classList.remove('hidden');
+    secMemory?.classList.add('hidden');
+  }
+  lucide.createIcons();
+}
+
+function switchPracticeSubTab(sub) {
+  playSound('click');
+  const tabs = ['arena', 'converter', 'roadmap'];
+  tabs.forEach(t => {
+    const btn = document.getElementById('btnSubTab' + t.charAt(0).toUpperCase() + t.slice(1));
+    const sec = document.getElementById('practiceSubSection' + t.charAt(0).toUpperCase() + t.slice(1));
+
+    if (t === sub) {
+      btn?.classList.add('bg-gradient-to-r', 'from-emerald-600', 'to-teal-600', 'text-white', 'shadow-md');
+      btn?.classList.remove('text-slate-400');
+      sec?.classList.remove('hidden');
+    } else {
+      btn?.classList.remove('bg-gradient-to-r', 'from-emerald-600', 'to-teal-600', 'text-white', 'shadow-md');
+      btn?.classList.add('text-slate-400');
+      sec?.classList.add('hidden');
+    }
+  });
+  lucide.createIcons();
+}
+
+// Master Unified switchTab with Full Backward Compatibility
 function switchTab(tabId) {
-  currentTab = tabId;
+  let targetTabId = tabId;
+  let subSection = null;
+
+  // Map sub-tabs into their Parent Pillars
+  if (tabId === 'memory') {
+    targetTabId = 'methods';
+    subSection = 'memory';
+  } else if (tabId === 'intelligence') {
+    targetTabId = 'methods';
+    subSection = 'intelligence';
+  } else if (tabId === 'converter') {
+    targetTabId = 'practice';
+    subSection = 'converter';
+  } else if (tabId === 'roadmap') {
+    targetTabId = 'practice';
+    subSection = 'roadmap';
+  }
+
+  currentTab = targetTabId;
   playSound('click');
 
-  // Hide all contents
+  // Hide all main tab contents
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
 
   // Show active tab
-  const target = document.getElementById(`tab-${tabId}`);
+  const target = document.getElementById(`tab-${targetTabId}`);
   if (target) {
     target.classList.remove('hidden');
     target.classList.add('block');
   }
 
-  if (tabId === 'subjects') {
+  if (targetTabId === 'subjects') {
     renderSubjectsGrid();
     updateProgressDashboard();
     updateOverviewPhiloMetrics();
     renderPhilosophyView();
   }
 
-  if (tabId === 'chinese' && typeof initChineseHub === 'function') {
+  if (targetTabId === 'chinese' && typeof initChineseHub === 'function') {
     initChineseHub();
   }
 
-  // Update desktop navigation active states
+  // Trigger subtab activations if mapped
+  if (subSection === 'memory' || subSection === 'intelligence') {
+    switchMethodsSubTab(subSection);
+  } else if (subSection === 'converter' || subSection === 'roadmap') {
+    switchPracticeSubTab(subSection);
+  }
+
+  // Update navigation pillar active states
+  // Note: Chinese tab is considered part of Bách Khoa Môn Học (subjects pillar)
+  const navPillar = (targetTabId === 'chinese' ? 'subjects' : targetTabId);
+
   document.querySelectorAll('.nav-tab').forEach(btn => {
-    if (btn.dataset.tab === tabId) {
+    if (btn.dataset.tab === navPillar || btn.dataset.tab === targetTabId) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');
     }
   });
 
-  // Update mobile nav states
   document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-    if (btn.dataset.tab === tabId) {
+    if (btn.dataset.tab === navPillar || btn.dataset.tab === targetTabId) {
       btn.classList.remove('text-slate-400');
       btn.classList.add('text-brand-400');
     } else {
@@ -373,9 +453,9 @@ function switchTab(tabId) {
     }
   });
 
-  // Scroll to top of window smoothly
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 
 // ==========================================
 // 8. RENDER METHOD CARDS & POPUP
