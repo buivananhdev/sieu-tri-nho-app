@@ -3010,6 +3010,7 @@ function handleSubjectSearch(query) {
 }
 
 function renderSubjectsGrid() {
+  renderDisciplineFilterTabs();
   const container = document.getElementById('subjectsCardsContainer');
   if (!container) return;
 
