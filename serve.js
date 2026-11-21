@@ -43,6 +43,55 @@ function writeSyncStorage(data) {
   }
 }
 
+function mergeIncomingData(currentData, incomingData) {
+  const cur = currentData || {};
+  const inc = incomingData || {};
+
+  // 1. Merge Bible Progress
+  let curProgress = {};
+  let incProgress = {};
+  try { curProgress = JSON.parse(cur.bible_progress || '{}'); } catch (e) {}
+  try { incProgress = JSON.parse(inc.bible_progress || '{}'); } catch (e) {}
+  const mergedProgress = { ...curProgress };
+  Object.keys(incProgress).forEach(k => {
+    const iItem = incProgress[k];
+    const cItem = mergedProgress[k];
+    if (!cItem) {
+      mergedProgress[k] = iItem;
+    } else {
+      mergedProgress[k] = {
+        status: (iItem.mastered || cItem.mastered) ? 'mastered' : (iItem.status || cItem.status),
+        mastered: !!(iItem.mastered || cItem.mastered),
+        reviewCount: Math.max(iItem.reviewCount || 0, cItem.reviewCount || 0),
+        lastReviewed: Math.max(iItem.lastReviewed || 0, cItem.lastReviewed || 0)
+      };
+    }
+  });
+
+  // 2. Merge Custom Verses (Union by ID and Coordinate)
+  let curCustom = [];
+  let incCustom = [];
+  try { curCustom = JSON.parse(cur.bible_custom_verses || '[]'); } catch (e) {}
+  try { incCustom = JSON.parse(inc.bible_custom_verses || '[]'); } catch (e) {}
+  const customMap = new Map();
+  if (Array.isArray(curCustom)) {
+    curCustom.forEach(v => customMap.set(v.id || `${v.bookFloor}_${v.chapter}_${v.verse}`, v));
+  }
+  if (Array.isArray(incCustom)) {
+    incCustom.forEach(v => customMap.set(v.id || `${v.bookFloor}_${v.chapter}_${v.verse}`, v));
+  }
+  const mergedCustom = Array.from(customMap.values());
+
+  return {
+    ...cur,
+    ...inc,
+    timestamp: Date.now(),
+    bible_progress: JSON.stringify(mergedProgress),
+    bible_custom_verses: JSON.stringify(mergedCustom),
+    study_streak: String(Math.max(parseInt(cur.study_streak || '1', 10), parseInt(inc.study_streak || '1', 10)))
+  };
+}
+
 const server = http.createServer((req, res) => {
   // Common CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -82,15 +131,15 @@ const server = http.createServer((req, res) => {
           const incoming = JSON.parse(body);
           const current = readSyncStorage();
 
-          // Merge incoming payload
+          const incomingData = incoming.data || incoming;
+
+          // Merge incoming payload with existing storage
+          const mergedData = mergeIncomingData(current.data, incomingData);
           const merged = {
             app: 'supermind',
             roomKey: incoming.roomKey || current.roomKey || 'buivananhdev',
-            timestamp: Date.now(),
-            data: {
-              ...(current.data || {}),
-              ...(incoming.data || incoming)
-            }
+            timestamp: mergedData.timestamp,
+            data: mergedData
           };
 
           writeSyncStorage(merged);

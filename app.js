@@ -5573,23 +5573,35 @@ function triggerImmediateSync() {
 }
 
 function initRealtimeSyncEngine() {
-  // Lần đầu tải trang: kéo dữ liệu
+  // Lần đầu tải trang: Nếu thiết bị có câu tự thêm hoặc tiến độ, tự động đẩy lên server trước
   setTimeout(() => {
-    pullRealtimeAutoSync(true);
-  }, 500);
+    const localCustom = getBibleCustomVerses();
+    const localProgress = getBibleProgressMap();
+    if (localCustom.length > 0 || Object.keys(localProgress).length > 0) {
+      dispatchRealtimeAutoSync().then(() => {
+        pullRealtimeAutoSync(true);
+      });
+    } else {
+      pullRealtimeAutoSync(true);
+    }
+  }, 300);
 
-  // Chu kỳ tự động kiểm tra mỗi 3 giây trên máy chủ mạng nội bộ LAN (/api/sync)
+  // Chu kỳ tự động kiểm tra mỗi 2 giây trên máy chủ mạng nội bộ LAN (/api/sync)
   if (realtimeSyncIntervalTimer) clearInterval(realtimeSyncIntervalTimer);
   realtimeSyncIntervalTimer = setInterval(() => {
     pullRealtimeAutoSync(true);
-  }, 3000);
+  }, 2000);
 
   // Khi người dùng chuyển tab hoặc mở lại màn hình điện thoại
   window.addEventListener('focus', () => {
+    const localCustom = getBibleCustomVerses();
+    if (localCustom.length > 0) dispatchRealtimeAutoSync();
     pullRealtimeAutoSync(true);
   });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
+      const localCustom = getBibleCustomVerses();
+      if (localCustom.length > 0) dispatchRealtimeAutoSync();
       pullRealtimeAutoSync(true);
     }
   });
