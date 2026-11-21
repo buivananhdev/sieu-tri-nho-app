@@ -1949,6 +1949,15 @@ const INITIAL_SCRIPTURE_VERSES = [
 
 // LocalStorage helpers for custom user verses
 const SCRIPTURE_STORAGE_KEY = 'supermind_scripture_custom_verses_v1';
+
+function getBibleCustomVerses() {
+  try {
+    const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
 const SCRIPTURE_DELETED_KEY = 'supermind_scripture_deleted_verses_v1';
 
 
@@ -2963,6 +2972,9 @@ function deleteScriptureVerse(verseId) {
 
   playSound('success');
   renderVersesInRoom();
+  if (typeof dispatchRealtimeAutoSync === 'function') {
+    dispatchRealtimeAutoSync();
+  }
 }
 
 function openAddVerseForCurrentFloor() {
@@ -3038,6 +3050,11 @@ function saveCustomVerse(e) {
   selectRoom(chapter);
   renderVersesInRoom();
   updateBibleStatsDashboard();
+
+  // TỰ ĐỘNG ĐẨY ĐỒNG BỘ REALTIME SANG MÁY TÍNH / THIẾT BỊ KHÁC
+  if (typeof dispatchRealtimeAutoSync === 'function') {
+    dispatchRealtimeAutoSync();
+  }
 }
 
 // SCRIPTURE REFLEX QUIZ MODAL
@@ -5342,10 +5359,10 @@ function autoNotifyCloudSync() {
 // =========================================================================
 // REALTIME DUAL-SYNC ENGINE (PC ↔ MOBILE ZERO-CONFIG SYNC)
 // =========================================================================
-const SYNC_CLOUD_ENDPOINT = 'https://api.restful-api.dev/objects/ff808181a09d98f701a1f95c16b4091a';
 let isSyncingInProgress = false;
 let lastSyncTimestampLocal = parseInt(localStorage.getItem('bible_last_sync_timestamp') || '0', 10);
 let realtimeSyncIntervalTimer = null;
+let lastCloudPullTime = 0;
 
 function updateSyncStatusUI(state, msg) {
   const banner = document.getElementById('bibleRealtimeSyncBanner');
@@ -5391,7 +5408,7 @@ function buildSyncPayload() {
   };
 }
 
-// Đẩy dữ liệu lên Cloud Relay & Local /api/sync
+// Đẩy dữ liệu lên Local Server (/api/sync) và Cloud (nếu có cấu hình)
 async function dispatchRealtimeAutoSync() {
   if (isSyncingInProgress) return;
   isSyncingInProgress = true;
@@ -5402,33 +5419,29 @@ async function dispatchRealtimeAutoSync() {
     lastSyncTimestampLocal = payload.timestamp;
     localStorage.setItem('bible_last_sync_timestamp', String(lastSyncTimestampLocal));
 
-    // 1. Thử gửi Local Server (/api/sync) nếu đang chạy trên host cục bộ
+    // 1. Thử gửi Local Server (/api/sync) - Hoạt động trên cả localhost và IP LAN (192.168.x.x)
     try {
-      fetch('/api/sync', {
+      await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ roomKey: payload.room, timestamp: payload.timestamp, data: payload })
-      }).catch(() => {});
+      });
+      console.log('Dispatched sync to /api/sync at', new Date().toLocaleTimeString());
     } catch (e) {}
 
-    // 2. Gửi Cloud Relay (CORS mở, hoạt động cả trên GitHub Pages và Mobile)
-    const putBody = JSON.stringify({
-      name: 'supermind_sync_' + payload.room,
-      data: payload
-    });
-
-    const res = await fetch(SYNC_CLOUD_ENDPOINT, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: putBody
-    });
-
-    if (res.ok) {
-      console.log('Realtime sync push OK at', new Date().toLocaleTimeString());
-      updateSyncStatusUI('synced');
-    } else {
-      updateSyncStatusUI('synced');
+    // 2. Gửi Cloud nếu người dùng có cấu hình Firebase RTDB
+    const cfg = getCloudSyncConfig();
+    if (cfg && cfg.enabled && cfg.dbUrl) {
+      try {
+        await fetch(`${cfg.dbUrl}/sync/${payload.room}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {}
     }
+
+    updateSyncStatusUI('synced');
   } catch (err) {
     console.warn('Realtime sync push error:', err);
     updateSyncStatusUI('synced');
@@ -5437,7 +5450,7 @@ async function dispatchRealtimeAutoSync() {
   }
 }
 
-// Kéo dữ liệu từ Cloud / Server về máy
+// Kéo dữ liệu từ Server LAN / Cloud về máy
 async function pullRealtimeAutoSync(silent = true) {
   if (isSyncingInProgress) return;
 
@@ -5445,7 +5458,7 @@ async function pullRealtimeAutoSync(silent = true) {
     let remoteData = null;
     let remoteTimestamp = 0;
 
-    // 1. Thử lấy từ /api/sync cục bộ trước (ưu tiên LAN cực nhanh)
+    // 1. Ưu tiên lấy từ Local Server /api/sync (mạng LAN cực nhanh, không tốn internet)
     try {
       const locRes = await fetch('/api/sync', { cache: 'no-cache' });
       if (locRes.ok) {
@@ -5457,26 +5470,31 @@ async function pullRealtimeAutoSync(silent = true) {
       }
     } catch (e) {}
 
-    // 2. Nếu không có từ local hoặc local cũ hơn, kéo từ Cloud Relay
+    // 2. Nếu có Firebase URL cấu hình
     if (!remoteData) {
-      const cloudRes = await fetch(SYNC_CLOUD_ENDPOINT, { cache: 'no-cache' });
-      if (cloudRes.ok) {
-        const obj = await cloudRes.json();
-        if (obj && obj.data && obj.data.timestamp) {
-          remoteData = obj.data;
-          remoteTimestamp = obj.data.timestamp;
-        }
+      const cfg = getCloudSyncConfig();
+      if (cfg && cfg.enabled && cfg.dbUrl) {
+        try {
+          const fbRes = await fetch(`${cfg.dbUrl}/sync/${cfg.roomKey || 'buivananhdev'}.json`, { cache: 'no-cache' });
+          if (fbRes.ok) {
+            const fbJson = await fbRes.json();
+            if (fbJson && fbJson.timestamp) {
+              remoteData = fbJson;
+              remoteTimestamp = fbJson.timestamp;
+            }
+          }
+        } catch (e) {}
       }
     }
 
     if (!remoteData || !remoteTimestamp) {
-      if (!silent) alert('Không tìm thấy dữ liệu trên mây.');
+      if (!silent) alert('Chưa tìm thấy dữ liệu đồng bộ mới từ thiết bị khác trên máy chủ.');
       return;
     }
 
-    // Nếu dữ liệu trên mây MỚI HƠN dữ liệu tại máy hiện tại
+    // Nếu dữ liệu từ xa MỚI HƠN dữ liệu tại máy hiện tại
     if (remoteTimestamp > lastSyncTimestampLocal) {
-      console.log('Pulling fresh sync data from cloud/server, timestamp:', remoteTimestamp);
+      console.log('Found newer sync packet from remote:', remoteTimestamp);
       updateSyncStatusUI('syncing');
 
       // HỢP NHẤT TIẾN ĐỘ THUỘC KINH THÁNH (KHÔNG BAO GIỜ MẤT DỮ LIỆU)
@@ -5486,7 +5504,6 @@ async function pullRealtimeAutoSync(silent = true) {
         remoteMap = JSON.parse(remoteData.bible_progress || '{}');
       } catch (e) {}
 
-      // Lấy hợp nhất: nếu 1 trong 2 thiết bị đã thuộc thì giữ nguyên đã thuộc
       const mergedMap = { ...currentMap };
       Object.keys(remoteMap).forEach(k => {
         const rItem = remoteMap[k];
@@ -5494,7 +5511,6 @@ async function pullRealtimeAutoSync(silent = true) {
         if (!cItem) {
           mergedMap[k] = rItem;
         } else {
-          // Hợp nhất: ưu tiên mastered = true
           mergedMap[k] = {
             status: (rItem.mastered || cItem.mastered) ? 'mastered' : (rItem.status || cItem.status),
             mastered: !!(rItem.mastered || cItem.mastered),
@@ -5503,38 +5519,41 @@ async function pullRealtimeAutoSync(silent = true) {
           };
         }
       });
-
       localStorage.setItem(BIBLE_PROGRESS_KEY, JSON.stringify(mergedMap));
 
-      // Hợp nhất câu tự thêm (Custom verses)
+      // HỢP NHẤT CÂU KINH THÁNH TỰ THÊM VÀO SCRIPTURE_STORAGE_KEY CHUẨN XÁC
       let remoteCustom = [];
       try {
         remoteCustom = JSON.parse(remoteData.bible_custom_verses || '[]');
       } catch (e) {}
       if (Array.isArray(remoteCustom) && remoteCustom.length > 0) {
         const localCustom = getBibleCustomVerses();
-        const customIdMap = new Map();
-        localCustom.forEach(v => customIdMap.set(v.id, v));
-        remoteCustom.forEach(v => customIdMap.set(v.id, v));
-        const mergedCustom = Array.from(customIdMap.values());
-        localStorage.setItem(BIBLE_CUSTOM_VERSES_KEY, JSON.stringify(mergedCustom));
+        const customMap = new Map();
+        localCustom.forEach(v => customMap.set(v.id, v));
+        remoteCustom.forEach(v => {
+          const s = sanitizeVerseObject(v);
+          customMap.set(s.id, s);
+        });
+        const mergedCustom = Array.from(customMap.values()).sort(sortVersesAscending);
+        localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(mergedCustom));
       }
 
       lastSyncTimestampLocal = remoteTimestamp;
       localStorage.setItem('bible_last_sync_timestamp', String(lastSyncTimestampLocal));
 
-      // Re-render UI
+      // Refresh lại toàn bộ giao diện học tập
+      migrateAndSanitizeBibleStorage();
       updateBibleStatsDashboard();
       renderTowerFloors();
       const book = BIBLE_66_BOOKS.find(b => b.floor === currentSelectedFloor);
       if (book) renderRooms(book.chapters);
       renderVersesInRoom();
-      renderMasteredModalList();
+      if (typeof renderMasteredModalList === 'function') renderMasteredModalList();
       updateSyncStatusUI('synced');
 
       if (!silent) {
         playSound('success');
-        alert('Đồng bộ thành công! Toàn bộ tiến độ học từ điện thoại/máy tính khác đã được cập nhật.');
+        alert('Đồng bộ thành công! Tiến độ và các câu mới từ điện thoại đã được cập nhật sang máy tính.');
       }
     } else {
       updateSyncStatusUI('synced');
@@ -5554,16 +5573,16 @@ function triggerImmediateSync() {
 }
 
 function initRealtimeSyncEngine() {
-  // Lần đầu tải trang: kéo dữ liệu từ mây
+  // Lần đầu tải trang: kéo dữ liệu
   setTimeout(() => {
     pullRealtimeAutoSync(true);
-  }, 1000);
+  }, 500);
 
-  // Chu kỳ tự động kiểm tra mỗi 4 giây
+  // Chu kỳ tự động kiểm tra mỗi 3 giây trên máy chủ mạng nội bộ LAN (/api/sync)
   if (realtimeSyncIntervalTimer) clearInterval(realtimeSyncIntervalTimer);
   realtimeSyncIntervalTimer = setInterval(() => {
     pullRealtimeAutoSync(true);
-  }, 4000);
+  }, 3000);
 
   // Khi người dùng chuyển tab hoặc mở lại màn hình điện thoại
   window.addEventListener('focus', () => {

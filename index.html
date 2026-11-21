@@ -2415,6 +2415,27 @@
               </div>
             </div>
 
+            <!-- Direct Wi-Fi LAN Connection Badge -->
+            <div class="p-3.5 bg-gradient-to-r from-emerald-950/40 to-cyan-950/30 border border-emerald-500/40 rounded-2xl text-left space-y-2">
+              <div class="text-xs font-bold text-emerald-300 flex items-center justify-between">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Kết Nối Trực Tiếp Mạng Wi-Fi (Real-time LAN)</span>
+                </span>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono">Tự Động 100%</span>
+              </div>
+              <p class="text-[11px] text-slate-300">
+                Mở trình duyệt trên điện thoại và truy cập địa chỉ này (khi dùng chung Wi-Fi với máy tính):
+              </p>
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300">
+                <span class="font-bold">http://192.168.2.7:8899/</span>
+                <button onclick="navigator.clipboard.writeText('http://192.168.2.7:8899/'); playSound('success'); alert('Đã sao chép http://192.168.2.7:8899/ !');" class="text-[10px] text-amber-400 hover:underline">Sao Chép</button>
+              </div>
+              <p class="text-[10px] text-slate-400">
+                ⚡ Khi mở trên điện thoại bằng địa chỉ này, mọi câu Kinh Thánh bạn thêm hoặc thuộc sẽ tự động lưu thẳng về máy tính tức thì!
+              </p>
+            </div>
+
             <!-- QR Container -->
             <div class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-inner mx-auto w-[240px] h-[240px]">
               <div id="syncQrCodeContainer" class="flex items-center justify-center"></div>
