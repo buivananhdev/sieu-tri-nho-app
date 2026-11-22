@@ -3314,35 +3314,165 @@ const DEFAULT_ACADEMIC_SUBJECTS = [
     ]
   },
 
-  // 6. KHOA HỌC TỰ NHIÊN & STEM
+  // 6. KHOA HỌC TỰ NHIÊN & STEM (PHÂN LOẠI CÁC MÔN HỌC KHOA HỌC)
   {
-    id: 'academy_science',
+    id: 'science_physics',
     disciplineId: 'stem',
     disciplineName: 'Khoa Học Tự Nhiên & STEM',
-    name: 'Đại Học Viện Khoa Học Tự Nhiên (Vật Lý, Hóa Học, Sinh Học, Toán, Y Học)',
-    badge: '6 Phân Viện • 30 Định Luật • Thí Nghiệm Tư Duy',
-    status: 'active',
-    desc: 'Tổng hợp toàn bộ các quy luật chi phối vũ trụ và sự sống: Từ Cơ học lượng tử, Thuyết tương đối, Bảng tuần hoàn Mendeleev, Mật mã ADN đến Giải tích và Trí tuệ nhân tạo.',
+    name: 'Vật Lý Học Đại Cương & Hiện Đại',
+    badge: 'Cơ Học • Nhiệt • Điện Từ • Lượng Tử',
+    status: 'ready',
+    desc: 'Các quy luật chi phối chuyển động, năng lượng, vật chất, không gian và thời gian từ hạ nguyên tử đến vũ trụ.',
     icon: 'atom',
-    color: 'from-teal-600 via-emerald-600 to-cyan-500',
-    type: 'science',
-    statsSummary: '6 Phân Viện • 30 Định Luật Vĩ Đại • Hằng Số Vũ Trụ'
+    color: 'from-blue-600 to-indigo-700',
+    type: 'custom',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
+    topics: [
+      { title: 'Phần 1: Cơ học cổ điển Newton & Vạn vật hấp dẫn', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Nhiệt động lực học & Chiều mũi tên thời gian (Entropy)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Điện từ học Maxwell & Bản chất của ánh sáng', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Thuyết tương đối Einstein (Hẹp & Rộng)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Cơ học lượng tử & Lưỡng tính sóng-hạt', notes: 'Khung chương trình sẵn sàng phát triển' }
+    ]
+  },
+  {
+    id: 'science_chemistry',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Hóa Học & Cấu Trúc Vật Chất',
+    badge: 'Bảng Tuần Hoàn • Phản Ứng • Hóa Hữu Cơ & Vô Cơ',
+    status: 'ready',
+    desc: 'Bản chất của các nguyên tố, liên kết phân tử, phản ứng hóa học và sự biến đổi của vật chất trong tự nhiên.',
+    icon: 'flask-conical',
+    color: 'from-emerald-600 to-teal-700',
+    type: 'custom',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
+    topics: [
+      { title: 'Phần 1: Bảng tuần hoàn Mendeleev & Cấu trúc nguyên tử', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Các loại liên kết hóa học & Năng lượng phân tử', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Cân bằng hóa học & Tốc độ phản ứng', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Phản ứng Oxy hóa - Khử & Năng lượng điện hóa', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Hóa học hữu cơ & Các hợp chất của sự sống', notes: 'Khung chương trình sẵn sàng phát triển' }
+    ]
+  },
+  {
+    id: 'science_biology',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Sinh Học & Khoa Học Sự Sống',
+    badge: 'Di Truyền • ADN • Tiến Hóa • Tế Bào',
+    status: 'ready',
+    desc: 'Nguồn gốc, cấu trúc và cơ chế vận hành của sự sống: từ phân tử ADN, tế bào học đến các quy luật tiến hóa sinh giới.',
+    icon: 'dna',
+    color: 'from-teal-600 to-green-700',
+    type: 'custom',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
+    topics: [
+      { title: 'Phần 1: Học thuyết tế bào & Ti thể tạo năng lượng ATP', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Cấu trúc chuỗi xoắn kép ADN & Mã di truyền', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Thuyết tiến hóa chọn lọc tự nhiên Darwin', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Hệ miễn dịch & Cơ chế phòng vệ tế bào', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Sinh thái học & Đa dạng sinh học', notes: 'Khung chương trình sẵn sàng phát triển' }
+    ]
   },
   {
     id: 'stem_math_logic',
     disciplineId: 'stem',
     disciplineName: 'Khoa Học Tự Nhiên & STEM',
-    name: 'Toán Học Tư Duy & Mô Hình Thuật Toán',
-    badge: 'Công Thức • Ký Hiệu Hình Ảnh • Logic',
+    name: 'Toán Học Tư Duy & Khoa Học Tính Toán',
+    badge: 'Giải Tích • Đại Số Ma Trận • Xác Suất',
     status: 'ready',
-    desc: 'Chuyển đổi công thức đại số, giải tích và cấu trúc thuật toán thành biểu tượng hình ảnh mỏ neo.',
+    desc: 'Ngôn ngữ tối thượng của vũ trụ: Giải tích vi tích phân, đại số tuyến tính ma trận, xác suất thống kê và thuật toán logic.',
     icon: 'cpu',
-    color: 'from-blue-600 to-indigo-700',
+    color: 'from-indigo-600 to-blue-700',
     type: 'custom',
-    statsSummary: 'Đại Số • Giải Tích • Thuật Toán Cốt Lõi',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
     topics: [
-      { title: 'Mô hình 1: Các hằng đẳng thức & Bất đẳng thức kinh điển', notes: 'Mã hóa hình học không gian' },
-      { title: 'Mô hình 2: Tư duy thuật toán đệ quy & Quy hoạch động', notes: 'Mô hình bậc thang Loci' }
+      { title: 'Phần 1: Giải tích vi tích phân (Đạo hàm & Tích phân)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Đại số tuyến tính, Ma trận & Không gian véc-tơ', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Xác suất thống kê & Lý thuyết kỳ vọng', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Lý thuyết hỗn loạn & Hiệu ứng cánh bướm', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Tư duy mô hình hóa toán học cho đời thực', notes: 'Khung chương trình sẵn sàng phát triển' }
+    ]
+  },
+  {
+    id: 'science_astronomy',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Thiên Văn Học & Vũ Trụ Học',
+    badge: 'Hệ Mặt Trời • Sao • Thiên Hà • Lỗ Đen',
+    status: 'ready',
+    desc: 'Khám phá các thiên thể, cơ chế tiến hóa của các vì sao, thiên hà, vật chất tối và lịch sử 13,8 tỷ năm của vũ trụ.',
+    icon: 'orbit',
+    color: 'from-purple-700 to-indigo-900',
+    type: 'custom',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
+    topics: [
+      { title: 'Phần 1: Thuyết Vụ Nổ Lớn (Big Bang) & Sự giãn nở vũ trụ', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Hệ Mặt Trời & Cơ học thiên thể Kepler', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Vòng đời các ngôi sao (Từ tinh vân đến Siêu tân tinh)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Lỗ đen, Chân trời sự kiện & Bức xạ Hawking', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Vật chất tối (Dark Matter) & Năng lượng tối', notes: 'Khung chương trình sẵn sàng phát triển' }
+    ]
+  },
+  {
+    id: 'science_earth',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Khoa Học Trái Đất & Địa Chất Học',
+    badge: 'Kiến Tạo Mảng • Địa Tầng • Khí Hậu',
+    status: 'ready',
+    desc: 'Cấu trúc 4 lớp của Trái Đất, thuyết kiến tạo mảng trôi dạt lục địa, chu trình khoáng sản và hệ thống khí hậu hành tinh.',
+    icon: 'globe',
+    color: 'from-amber-700 to-emerald-800',
+    type: 'custom',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
+    topics: [
+      { title: 'Phần 1: Cấu trúc lòng Trái Đất & Từ trường bảo vệ', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Thuyết kiến tạo mảng (Động đất, núi lửa, trôi dạt lục địa)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Thang thời gian địa chất & Hóa thạch 4,5 tỷ năm', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Chu trình sinh địa hóa (Nước, Carbon, Nitơ)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Khí hậu học & Động lực quyển khí quyển', notes: 'Khung chương trình sẵn sàng phát triển' }
+    ]
+  },
+  {
+    id: 'science_computer',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Khoa Học Máy Tính & Trí Tuệ Nhân Tạo (AI)',
+    badge: 'Máy Turing • Thuật Toán • Mạng Nơ-ron',
+    status: 'ready',
+    desc: 'Lý thuyết tính toán, cấu trúc dữ liệu và giải thuật, kiến trúc vi xử lý và các mô hình học sâu (Deep Learning).',
+    icon: 'binary',
+    color: 'from-cyan-600 to-blue-800',
+    type: 'custom',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
+    topics: [
+      { title: 'Phần 1: Máy Turing & Lý thuyết khả tính toán', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Thuật toán kinh điển & Độ phức tạp tính toán O(n)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Cấu trúc máy tính von Neumann & Hệ điều hành', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Mạng nơ-ron nhân tạo & Thuật toán Lan truyền ngược', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Kiến trúc Transformer & Trí tuệ nhân tạo tạo sinh', notes: 'Khung chương trình sẵn sàng phát triển' }
+    ]
+  },
+  {
+    id: 'science_neuroscience',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Khoa Học Thần Kinh & Cơ Chế Não Bộ',
+    badge: '86 Tỷ Nơ-ron • Synapse • Tính Dẻo Não Bộ',
+    status: 'ready',
+    desc: 'Bản đồ giải phẫu vỏ não, cơ chế vật lý lưu trữ ký ức ở khớp synapse, tính dẻo não bộ và nguồn gốc nhận thức.',
+    icon: 'brain',
+    color: 'from-pink-600 to-rose-700',
+    type: 'custom',
+    statsSummary: '5 Chuyên Đề Cốt Lõi • Sẵn Sàng Phát Triển',
+    topics: [
+      { title: 'Phần 1: Cấu trúc nơ-ron & Cơ chế điện thế hoạt động', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 2: Khớp thần kinh Synapse & Các chất dẫn truyền (Dopamine, Serotonin)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 3: Tính dẻo não bộ (Neuroplasticity) & Định luật Hebb', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 4: Cơ chế vật lý của Trí Nhớ (Hippocampus & Vỏ não)', notes: 'Khung chương trình sẵn sàng phát triển' },
+      { title: 'Phần 5: Nhận thức, Ý thức & Sóng não', notes: 'Khung chương trình sẵn sàng phát triển' }
     ]
   }
 ];
@@ -3614,26 +3744,14 @@ function selectSubject(subjectId) {
 
   if (subj.type === 'bible' || subj.id === 'bibletower') {
     if (bibleView) bibleView.classList.remove('hidden');
-    if (philoView) philoView.classList.add('hidden');
-    if (document.getElementById('subjectThinkingView')) document.getElementById('subjectThinkingView').classList.add('hidden');
-    if (customView) customView.classList.add('hidden');
     initScriptureTower();
   } else if (subj.type === 'philosophy' || subj.id === 'philosophy') {
-    if (bibleView) bibleView.classList.add('hidden');
     if (philoView) philoView.classList.remove('hidden');
-    if (document.getElementById('subjectThinkingView')) document.getElementById('subjectThinkingView').classList.add('hidden');
-    if (customView) customView.classList.add('hidden');
     renderPhilosophyView();
   } else if (subj.type === 'thinking' || subj.id === 'deep_thinking') {
     if (thinkingView) thinkingView.classList.remove('hidden');
     if (typeof renderThinkingView === 'function') renderThinkingView();
-  } else if (subj.type === 'science' || subj.id === 'academy_science') {
-    if (scienceView) scienceView.classList.remove('hidden');
-    if (typeof renderScienceView === 'function') renderScienceView();
   } else {
-    if (document.getElementById('subjectThinkingView')) document.getElementById('subjectThinkingView').classList.add('hidden');
-    if (bibleView) bibleView.classList.add('hidden');
-    if (philoView) philoView.classList.add('hidden');
     if (customView) customView.classList.remove('hidden');
 
     document.getElementById('customSubjectTitle').textContent = subj.name;

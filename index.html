@@ -182,7 +182,7 @@
       </div>
 
       <!-- Core Pillars Overview Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid md:grid-cols-2 gap-8">
         
         <!-- Pillar 1 -->
         <div class="rounded-3xl bg-cardBg p-6 sm:p-8 border border-slate-800 flex flex-col justify-between hover:border-amber-500/40 transition-all">
@@ -229,33 +229,6 @@
           </div>
           <button class="w-full py-3 rounded-xl bg-slate-800 group-hover:bg-purple-600/30 text-purple-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 border border-slate-700 group-hover:border-purple-500/40">
             Khám Phá Cung Điện Tư Duy (Nhấn Để Vào Bên Trong) <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <!-- Pillar 3: THẺ VUÔNG MÔN HỌC ĐẠI HỌC VIỆN KHOA HỌC TỰ NHIÊN -->
-        <div onclick="openSubjectDetail('academy_science')" class="rounded-3xl bg-cardBg p-6 sm:p-8 border border-slate-800 hover:border-teal-500/50 hover:bg-slate-900/80 cursor-pointer flex flex-col justify-between transition-all group shadow-lg">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-4">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-600 to-cyan-500 text-white flex items-center justify-center text-lg shadow-md group-hover:scale-105 transition-transform">
-                <i data-lucide="atom" class="w-6 h-6"></i>
-              </div>
-              <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 animate-pulse">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ĐANG HỌC SÂU
-              </span>
-            </div>
-            <div class="text-[11px] font-bold text-amber-300 mb-1">6 PHÂN VIỆN • 30 ĐỊNH LUẬT VĨ ĐẠI</div>
-            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">Đại Học Viện Khoa Học Tự Nhiên</h3>
-            <p class="text-slate-400 text-sm leading-relaxed mb-6">
-              Tổng hợp toàn bộ các quy luật chi phối vũ trụ và sự sống: Từ Cơ học lượng tử, Thuyết tương đối, Bảng tuần hoàn Mendeleev, Mật mã ADN đến Trí tuệ nhân tạo.
-            </p>
-            <ul class="space-y-3 text-sm text-slate-300 mb-6">
-              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-teal-400"></i> <strong>Vật Lý & Vũ Trụ:</strong> Newton, Einstein, Maxwell, Lượng tử.</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-teal-400"></i> <strong>Hóa Học & Sự Sống:</strong> Bảng tuần hoàn, ADN, Nơ-ron não bộ.</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-teal-400"></i> <strong>Toán, AI & Y Học:</strong> Giải tích, Mạng nơ-ron, Cân bằng nội môi.</li>
-            </ul>
-          </div>
-          <button class="w-full py-3 rounded-xl bg-slate-800 group-hover:bg-teal-600/30 text-teal-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 border border-slate-700 group-hover:border-teal-500/40">
-            Khám Phá Cung Điện Khoa Học (Nhấn Để Vào Bên Trong) <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
         </div>
 
@@ -840,11 +813,6 @@
         <!-- VIEW 4: TƯ DUY & NGHỆ THUẬT ĐẶT CÂU HỎI (TỪ CĂN BẢN ĐẾN GIÁO SƯ KHỦNG) -->
         <div id="subjectThinkingView" class="hidden space-y-6">
           <!-- Rendered dynamically by thinking-engine.js -->
-        </div>
-
-        <!-- VIEW 5: ĐẠI HỌC VIỆN KHOA HỌC TỰ NHIÊN (30 TRỤ CỘT KHOA HỌC) -->
-        <div id="subjectScienceView" class="hidden space-y-6">
-          <!-- Rendered dynamically by science-engine.js -->
         </div>
 
         <!-- VIEW 3: GENERIC CUSTOM SUBJECT VIEW (Cho các môn khác bạn thêm vào) -->
@@ -2327,11 +2295,9 @@
   <script src="philosophy-data.js"></script>
   <script src="thinking-data.js"></script>
   <script src="thinking-engine.js"></script>
-  <script src="science-data.js"></script>
-  <script src="science-engine.js"></script>
   <script src="qrcode.min.js"></script>
   <script src="peerjs.min.js"></script>
-  <script src="app.js?v=20261122_cf6"></script>
+  <script src="app.js?v=20261122_stem1"></script>
 
     <!-- MODAL: ĐỒNG BỘ TIẾN ĐỘ HỌC TẬP (MÁY TÍNH ⇄ ĐIỆN THOẠI) -->
     <div id="syncBackupModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">
