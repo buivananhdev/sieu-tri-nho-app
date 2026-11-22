@@ -413,6 +413,12 @@ function switchTab(tabId) {
     target.classList.add('block');
   }
 
+  if (targetTabId === 'overview') {
+    if (typeof renderThinkingView === 'function') {
+      renderThinkingView();
+    }
+  }
+
   if (targetTabId === 'subjects') {
     renderSubjectsGrid();
     updateProgressDashboard();
@@ -5641,15 +5647,17 @@ async function dispatchRealtimeAutoSync() {
       try { broadcastP2pUpdate(payload); } catch (e) {}
     }
 
-    // 2. Thử gửi Local Server (/api/sync) - nếu đang chạy dev server LAN
-    try {
-      await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomKey: payload.room, timestamp: payload.timestamp, data: payload })
-      });
-      console.log('Dispatched sync to /api/sync at', new Date().toLocaleTimeString());
-    } catch (e) {}
+    // 2. Thử gửi Local Server (/api/sync) - chỉ khi đang chạy dev server LAN
+    if (window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.')) {
+      try {
+        await fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomKey: payload.room, timestamp: payload.timestamp, data: payload })
+        });
+        console.log('Dispatched sync to /api/sync at', new Date().toLocaleTimeString());
+      } catch (e) {}
+    }
 
     // 3. Gửi lên Cloudflare Worker (Toàn cầu, miễn phí 100.000 req/ngày, không bao giờ giới hạn)
     try {

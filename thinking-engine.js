@@ -602,3 +602,12 @@ function answerArenaScenario(optIdx) {
   playSound(opt.isBest ? 'success' : 'click');
   renderThinkingView();
 }
+
+// Auto initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(renderThinkingView, 150);
+  });
+} else {
+  setTimeout(renderThinkingView, 150);
+}
