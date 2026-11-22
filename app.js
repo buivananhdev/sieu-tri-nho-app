@@ -3314,7 +3314,20 @@ const DEFAULT_ACADEMIC_SUBJECTS = [
     ]
   },
 
-  // 6. STEM & CÔNG NGHỆ
+  // 6. KHOA HỌC TỰ NHIÊN & STEM
+  {
+    id: 'academy_science',
+    disciplineId: 'stem',
+    disciplineName: 'Khoa Học Tự Nhiên & STEM',
+    name: 'Đại Học Viện Khoa Học Tự Nhiên (Vật Lý, Hóa Học, Sinh Học, Toán, Y Học)',
+    badge: '6 Phân Viện • 30 Định Luật • Thí Nghiệm Tư Duy',
+    status: 'active',
+    desc: 'Tổng hợp toàn bộ các quy luật chi phối vũ trụ và sự sống: Từ Cơ học lượng tử, Thuyết tương đối, Bảng tuần hoàn Mendeleev, Mật mã ADN đến Giải tích và Trí tuệ nhân tạo.',
+    icon: 'atom',
+    color: 'from-teal-600 via-emerald-600 to-cyan-500',
+    type: 'science',
+    statsSummary: '6 Phân Viện • 30 Định Luật Vĩ Đại • Hằng Số Vũ Trụ'
+  },
   {
     id: 'stem_math_logic',
     disciplineId: 'stem',
@@ -3581,7 +3594,16 @@ function selectSubject(subjectId) {
   const badgeEl = document.getElementById('activeSubjectBadge');
   const bibleView = document.getElementById('subjectBibleView');
   const philoView = document.getElementById('subjectPhilosophyView');
+  const thinkingView = document.getElementById('subjectThinkingView');
+  const scienceView = document.getElementById('subjectScienceView');
   const customView = document.getElementById('subjectCustomView');
+
+  // Đảm bảo ẩn sạch mọi view trước khi kích hoạt môn được chọn
+  if (bibleView) bibleView.classList.add('hidden');
+  if (philoView) philoView.classList.add('hidden');
+  if (thinkingView) thinkingView.classList.add('hidden');
+  if (scienceView) scienceView.classList.add('hidden');
+  if (customView) customView.classList.add('hidden');
 
   if (titleEl) {
     titleEl.innerHTML = `<i data-lucide="${subj.icon || 'book-open'}" class="w-4 h-4 text-amber-400"></i> ${subj.name}`;
@@ -3603,12 +3625,11 @@ function selectSubject(subjectId) {
     if (customView) customView.classList.add('hidden');
     renderPhilosophyView();
   } else if (subj.type === 'thinking' || subj.id === 'deep_thinking') {
-    if (bibleView) bibleView.classList.add('hidden');
-    if (philoView) philoView.classList.add('hidden');
-    const thinkingView = document.getElementById('subjectThinkingView');
     if (thinkingView) thinkingView.classList.remove('hidden');
-    if (customView) customView.classList.add('hidden');
     if (typeof renderThinkingView === 'function') renderThinkingView();
+  } else if (subj.type === 'science' || subj.id === 'academy_science') {
+    if (scienceView) scienceView.classList.remove('hidden');
+    if (typeof renderScienceView === 'function') renderScienceView();
   } else {
     if (document.getElementById('subjectThinkingView')) document.getElementById('subjectThinkingView').classList.add('hidden');
     if (bibleView) bibleView.classList.add('hidden');
@@ -5445,6 +5466,7 @@ function buildSyncPayload() {
     bible_progress: JSON.stringify(map),
     bible_custom_verses: JSON.stringify(custom),
     thinking_progress: localStorage.getItem('supermind_thinking_progress_v1') || '{}',
+    science_progress: localStorage.getItem('supermind_science_progress_v1') || '{}',
     study_streak: streak
   };
 }

@@ -133,6 +133,31 @@ export default {
           lastUpdated: Date.now()
         };
 
+        // 4. Hợp nhất tiến độ Đại Học Viện Khoa Học (Science Progress)
+        let curScience = {};
+        let incScience = {};
+        try {
+          if (typeof curData.science_progress === 'string') {
+            curScience = JSON.parse(curData.science_progress || '{}');
+          } else if (typeof curData.science_progress === 'object' && curData.science_progress !== null) {
+            curScience = curData.science_progress;
+          }
+        } catch (e) {}
+
+        try {
+          if (typeof incData.science_progress === 'string') {
+            incScience = JSON.parse(incData.science_progress || '{}');
+          } else if (typeof incData.science_progress === 'object' && incData.science_progress !== null) {
+            incScience = incData.science_progress;
+          }
+        } catch (e) {}
+
+        const mergedMasteredLessons = { ...(curScience.masteredLessons || {}), ...(incScience.masteredLessons || {}) };
+        const mergedScience = {
+          masteredLessons: mergedMasteredLessons,
+          lastUpdated: Date.now()
+        };
+
         const now = Date.now();
         const mergedPayload = {
           app: 'supermind',
@@ -143,6 +168,7 @@ export default {
             bible_custom_verses: JSON.stringify(mergedCustom),
             study_streak: String(Math.max(parseInt(curData.study_streak || '1', 10), parseInt(incData.study_streak || '1', 10))),
             thinking_progress: JSON.stringify(mergedThinking),
+            science_progress: JSON.stringify(mergedScience),
             timestamp: now
           }
         };
@@ -156,7 +182,8 @@ export default {
           updated: true,
           masteredCount: Object.values(mergedMap).filter(v => v && v.mastered).length,
           customCount: mergedCustom.length,
-          thinkingModelsMastered: Object.values(mergedMasteredModels).filter(Boolean).length
+          thinkingModelsMastered: Object.values(mergedMasteredModels).filter(Boolean).length,
+          scienceLessonsMastered: Object.values(mergedMasteredLessons).filter(Boolean).length
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
