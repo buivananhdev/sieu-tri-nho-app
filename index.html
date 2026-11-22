@@ -205,32 +205,33 @@
           </button>
         </div>
 
-        <!-- Pillar 2 -->
-        <div class="rounded-3xl bg-cardBg p-6 sm:p-8 border border-slate-800 flex flex-col justify-between hover:border-cyan-500/40 transition-all">
+        <!-- Pillar 2: THẺ VUÔNG MÔN HỌC TƯ DUY & NGHỆ THUẬT ĐẶT CÂU HỎI -->
+        <div onclick="openSubjectDetail('deep_thinking')" class="rounded-3xl bg-cardBg p-6 sm:p-8 border border-slate-800 hover:border-purple-500/50 hover:bg-slate-900/80 cursor-pointer flex flex-col justify-between transition-all group shadow-lg">
           <div>
-            <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mb-6">
-              <i data-lucide="lightbulb" class="w-6 h-6"></i>
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-pink-600 to-amber-500 text-white flex items-center justify-center text-lg shadow-md group-hover:scale-105 transition-transform">
+                <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+              </div>
+              <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 animate-pulse">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ĐANG HỌC SÂU
+              </span>
             </div>
-            <h3 class="text-xl font-bold text-white mb-3">2. Kho Tàng Siêu Trí Tuệ (Mental Models)</h3>
+            <div class="text-[11px] font-bold text-amber-300 mb-1">CĂN BẢN ➔ GIÁO SƯ KHỦNG</div>
+            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">Tư Duy & Nghệ Thuật Đặt Câu Hỏi</h3>
             <p class="text-slate-400 text-sm leading-relaxed mb-6">
-              Trí nhớ là kho chứa, còn trí tuệ là khả năng phân tích, liên kết và giải quyết những vấn đề phức tạp. Trang bị những mô hình tư duy từ các bộ óc vĩ đại như Richard Feynman, Charlie Munger, Elon Musk để nhìn thấy bản chất của mọi sự việc.
+              Thang 7 cấp độ câu hỏi Socratic, Tư duy Nguyên lý đầu tiên (First Principles), Nghịch đảo Munger, Hệ thống bậc 2 và Đấu trường nâng cấp câu hỏi.
             </p>
             <ul class="space-y-3 text-sm text-slate-300 mb-6">
-              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> <strong>Kỹ Thuật Feynman:</strong> Giải thích đơn giản để hiểu sâu bản chất.</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> <strong>Tư Duy Nguyên Lý Đầu Tiên:</strong> Đập tan định kiến, kiến tạo giải pháp đột phá.</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> <strong>Bộ Não Thứ Hai (Second Brain):</strong> Tự động hóa tri thức cá nhân.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-purple-400"></i> <strong>7 Cấp Độ Câu Hỏi:</strong> Từ thực tế thô tới đột phá nhận thức luận.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-purple-400"></i> <strong>12 Mô Hình Kinh Điển:</strong> Feynman, First Principles, Inversion, Bayes...</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-purple-400"></i> <strong>Đấu Trường Nâng Cấp:</strong> Tiến hóa mọi câu hỏi qua 7 nấc thang.</li>
             </ul>
           </div>
-          <button onclick="switchTab('intelligence')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-semibold text-sm transition-all flex items-center justify-center gap-2">
-            Khám Phá Các Khung Tư Duy <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          <button class="w-full py-3 rounded-xl bg-slate-800 group-hover:bg-purple-600/30 text-purple-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 border border-slate-700 group-hover:border-purple-500/40">
+            Khám Phá Cung Điện Tư Duy (Nhấn Để Vào Bên Trong) <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
         </div>
 
-      </div>
-
-      <!-- PHÂN KHU ĐẠI TƯ DUY & NGHỆ THUẬT ĐẶT CÂU HỎI (TỪ CĂN BẢN ➔ GIÁO SƯ KHỦNG) TRỰC TIẾP TRONG TỔNG QUAN -->
-      <div id="subjectThinkingView" class="space-y-6 pt-2">
-        <!-- Rendered dynamically by thinking-engine.js -->
       </div>
 
       <!-- Personal Subjects CTA Strip -->
@@ -807,6 +808,11 @@
             <!-- Rendered by app.js -->
           </div>
 
+        </div>
+
+        <!-- VIEW 4: TƯ DUY & NGHỆ THUẬT ĐẶT CÂU HỎI (TỪ CĂN BẢN ĐẾN GIÁO SƯ KHỦNG) -->
+        <div id="subjectThinkingView" class="hidden space-y-6">
+          <!-- Rendered dynamically by thinking-engine.js -->
         </div>
 
         <!-- VIEW 3: GENERIC CUSTOM SUBJECT VIEW (Cho các môn khác bạn thêm vào) -->
@@ -2291,7 +2297,7 @@
   <script src="thinking-engine.js"></script>
   <script src="qrcode.min.js"></script>
   <script src="peerjs.min.js"></script>
-  <script src="app.js?v=20261122_cf5"></script>
+  <script src="app.js?v=20261122_cf6"></script>
 
     <!-- MODAL: ĐỒNG BỘ TIẾN ĐỘ HỌC TẬP (MÁY TÍNH ⇄ ĐIỆN THOẠI) -->
     <div id="syncBackupModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">

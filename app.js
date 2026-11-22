@@ -414,9 +414,7 @@ function switchTab(tabId) {
   }
 
   if (targetTabId === 'overview') {
-    if (typeof renderThinkingView === 'function') {
-      renderThinkingView();
-    }
+    // Overview tab active
   }
 
   if (targetTabId === 'subjects') {
@@ -3533,9 +3531,17 @@ const SUBJECTS_STORAGE_KEY = 'supermind_custom_user_subjects_v1';
 let currentActiveSubjectId = 'bibletower';
 
 // Khi bấm vào 1 môn học -> Mới mở toàn bộ không gian của môn đó ra!
+let previousScreenBeforeSubjectDetail = 'subjects';
+
 function openSubjectDetail(subjectId) {
   playSound('click');
+  previousScreenBeforeSubjectDetail = currentTab || 'subjects';
   currentActiveSubjectId = subjectId;
+
+  // Nếu mở từ Overview thì chuyển sang tab subjects để hiển thị màn hình chi tiết
+  if (currentTab !== 'subjects') {
+    switchTab('subjects');
+  }
 
   const listScreen = document.getElementById('subjectsListScreen');
   const detailScreen = document.getElementById('subjectDetailScreen');
@@ -3554,9 +3560,14 @@ function backToSubjectsList() {
   const detailScreen = document.getElementById('subjectDetailScreen');
 
   if (detailScreen) detailScreen.classList.add('hidden');
-  if (listScreen) listScreen.classList.remove('hidden');
 
-  renderSubjectsGrid();
+  if (previousScreenBeforeSubjectDetail === 'overview') {
+    switchTab('overview');
+  } else {
+    if (listScreen) listScreen.classList.remove('hidden');
+    renderSubjectsGrid();
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -3582,6 +3593,7 @@ function selectSubject(subjectId) {
   if (subj.type === 'bible' || subj.id === 'bibletower') {
     if (bibleView) bibleView.classList.remove('hidden');
     if (philoView) philoView.classList.add('hidden');
+    if (document.getElementById('subjectThinkingView')) document.getElementById('subjectThinkingView').classList.add('hidden');
     if (customView) customView.classList.add('hidden');
     initScriptureTower();
   } else if (subj.type === 'philosophy' || subj.id === 'philosophy') {
