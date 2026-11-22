@@ -1,0 +1,4 @@
+node_modules/
+.wrangler/
+cloudflare-worker/.wrangler/
+sync_storage.json

@@ -5601,6 +5601,8 @@ function applyIncomingP2pPayload(remoteData) {
   updateSyncStatusUI('synced');
 }
 
+const CLOUDFLARE_WORKER_SYNC_URL = 'https://supermind-sync.buivananh-dev.workers.dev';
+
 async function dispatchRealtimeAutoSync() {
   if (isSyncingInProgress) return;
   isSyncingInProgress = true;
@@ -5611,7 +5613,12 @@ async function dispatchRealtimeAutoSync() {
     lastSyncTimestampLocal = payload.timestamp;
     localStorage.setItem('bible_last_sync_timestamp', String(lastSyncTimestampLocal));
 
-    // 1. Thử gửi Local Server (/api/sync) - Hoạt động trên cả localhost và IP LAN (192.168.x.x)
+    // 1. P2P WebRTC Direct broadcast (nếu có thiết bị đang mở đồng thời)
+    if (typeof broadcastP2pUpdate === 'function') {
+      try { broadcastP2pUpdate(payload); } catch (e) {}
+    }
+
+    // 2. Thử gửi Local Server (/api/sync) - nếu đang chạy dev server LAN
     try {
       await fetch('/api/sync', {
         method: 'POST',
@@ -5621,16 +5628,19 @@ async function dispatchRealtimeAutoSync() {
       console.log('Dispatched sync to /api/sync at', new Date().toLocaleTimeString());
     } catch (e) {}
 
-    // 2. Gửi Cloud nếu người dùng có cấu hình Firebase RTDB
-    const cfg = getCloudSyncConfig();
-    if (cfg && cfg.enabled && cfg.dbUrl) {
-      try {
-        await fetch(`${cfg.dbUrl}/sync/${payload.room}.json`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {}
+    // 3. Gửi lên Cloudflare Worker (Toàn cầu, miễn phí 100.000 req/ngày, không bao giờ giới hạn)
+    try {
+      const room = payload.room || 'buivananhdev';
+      const cfRes = await fetch(`${CLOUDFLARE_WORKER_SYNC_URL}?room=${encodeURIComponent(room)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room, timestamp: payload.timestamp, data: payload })
+      });
+      if (cfRes.ok) {
+        console.log('☁️ Dispatched sync to Cloudflare Worker successfully at', new Date().toLocaleTimeString());
+      }
+    } catch (cfErr) {
+      console.warn('Cloudflare Worker dispatch error:', cfErr);
     }
 
     updateSyncStatusUI('synced');
@@ -5642,7 +5652,7 @@ async function dispatchRealtimeAutoSync() {
   }
 }
 
-// Kéo dữ liệu từ Server LAN / Cloud về máy
+// Kéo dữ liệu từ Cloudflare Worker / Server LAN về máy
 async function pullRealtimeAutoSync(silent = true) {
   if (isSyncingInProgress) return;
 
@@ -5650,61 +5660,81 @@ async function pullRealtimeAutoSync(silent = true) {
     let remoteData = null;
     let remoteTimestamp = 0;
 
-    // 1. Ưu tiên lấy từ Local Server /api/sync (mạng LAN cực nhanh, không tốn internet)
+    // 1. Kéo từ Cloudflare Worker (hoạt động mọi lúc mọi nơi trên GitHub Pages và điện thoại)
     try {
-      const locRes = await fetch('/api/sync', { cache: 'no-cache' });
-      if (locRes.ok) {
-        const json = await locRes.json();
-        if (json && json.data && json.data.timestamp) {
-          remoteData = json.data;
-          remoteTimestamp = json.data.timestamp;
+      const room = (getCloudSyncConfig().roomKey || 'buivananhdev').trim();
+      const cfRes = await fetch(`${CLOUDFLARE_WORKER_SYNC_URL}?room=${encodeURIComponent(room)}`, { cache: 'no-cache' });
+      if (cfRes.ok) {
+        const cfJson = await cfRes.json();
+        if (cfJson && cfJson.data) {
+          remoteData = cfJson.data;
+          remoteTimestamp = cfJson.timestamp || (cfJson.data && cfJson.data.timestamp) || 0;
         }
       }
-    } catch (e) {}
-
-    // 2. Nếu có Firebase URL cấu hình
-    if (!remoteData) {
-      const cfg = getCloudSyncConfig();
-      if (cfg && cfg.enabled && cfg.dbUrl) {
-        try {
-          const fbRes = await fetch(`${cfg.dbUrl}/sync/${cfg.roomKey || 'buivananhdev'}.json`, { cache: 'no-cache' });
-          if (fbRes.ok) {
-            const fbJson = await fbRes.json();
-            if (fbJson && fbJson.timestamp) {
-              remoteData = fbJson;
-              remoteTimestamp = fbJson.timestamp;
-            }
-          }
-        } catch (e) {}
-      }
+    } catch (cfErr) {
+      console.warn('Cloudflare Worker pull error:', cfErr);
     }
 
-    if (!remoteData || !remoteTimestamp) {
-      if (!silent) alert('Chưa tìm thấy dữ liệu đồng bộ mới từ thiết bị khác trên máy chủ.');
+    // 2. Nếu đang chạy local/LAN server và có dữ liệu mới hơn
+    if (window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.')) {
+      try {
+        const locRes = await fetch('/api/sync', { cache: 'no-cache' });
+        if (locRes.ok) {
+          const json = await locRes.json();
+          if (json && json.data && json.data.timestamp && json.data.timestamp > remoteTimestamp) {
+            remoteData = json.data;
+            remoteTimestamp = json.data.timestamp;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!remoteData) {
+      if (!silent) alert('Chưa tìm thấy dữ liệu đồng bộ từ Cloudflare Worker.');
       return;
     }
 
-    // Nếu dữ liệu từ xa MỚI HƠN dữ liệu tại máy hiện tại
-    if (remoteTimestamp > lastSyncTimestampLocal) {
-      console.log('Found newer sync packet from remote:', remoteTimestamp);
+    // Parse remote progress & custom verses
+    const currentMap = getBibleProgressMap();
+    let remoteMap = {};
+    try {
+      remoteMap = typeof remoteData.bible_progress === 'string'
+        ? JSON.parse(remoteData.bible_progress || '{}')
+        : (remoteData.bible_progress || {});
+    } catch (e) {}
+
+    let remoteCustom = [];
+    try {
+      remoteCustom = typeof remoteData.bible_custom_verses === 'string'
+        ? JSON.parse(remoteData.bible_custom_verses || '[]')
+        : (remoteData.bible_custom_verses || []);
+    } catch (e) {}
+
+    const localKeys = Object.keys(currentMap);
+    const remoteKeys = Object.keys(remoteMap);
+    const localCustom = getBibleCustomVerses();
+
+    const hasNewRemoteMastered = remoteKeys.some(k => remoteMap[k]?.mastered && !currentMap[k]?.mastered);
+    const hasNewRemoteCustom = Array.isArray(remoteCustom) && remoteCustom.some(rc => rc && !localCustom.some(lc => lc.id === rc.id));
+    const isNewer = remoteTimestamp > lastSyncTimestampLocal;
+
+    const shouldMerge = isNewer || hasNewRemoteMastered || hasNewRemoteCustom;
+
+    if (shouldMerge) {
+      console.log('Merging sync packet from Cloudflare:', { remoteTimestamp, hasNewRemoteMastered, hasNewRemoteCustom });
       updateSyncStatusUI('syncing');
 
       // HỢP NHẤT TIẾN ĐỘ THUỘC KINH THÁNH (KHÔNG BAO GIỜ MẤT DỮ LIỆU)
-      const currentMap = getBibleProgressMap();
-      let remoteMap = {};
-      try {
-        remoteMap = JSON.parse(remoteData.bible_progress || '{}');
-      } catch (e) {}
-
       const mergedMap = { ...currentMap };
       Object.keys(remoteMap).forEach(k => {
         const rItem = remoteMap[k];
+        if (!rItem) return;
         const cItem = mergedMap[k];
         if (!cItem) {
           mergedMap[k] = rItem;
         } else {
           mergedMap[k] = {
-            status: (rItem.mastered || cItem.mastered) ? 'mastered' : (rItem.status || cItem.status),
+            status: (rItem.mastered || cItem.mastered) ? 'mastered' : (rItem.status || cItem.status || 'learning'),
             mastered: !!(rItem.mastered || cItem.mastered),
             reviewCount: Math.max(rItem.reviewCount || 0, cItem.reviewCount || 0),
             lastReviewed: Math.max(rItem.lastReviewed || 0, cItem.lastReviewed || 0)
@@ -5714,23 +5744,22 @@ async function pullRealtimeAutoSync(silent = true) {
       localStorage.setItem(BIBLE_PROGRESS_KEY, JSON.stringify(mergedMap));
 
       // HỢP NHẤT CÂU KINH THÁNH TỰ THÊM VÀO SCRIPTURE_STORAGE_KEY CHUẨN XÁC
-      let remoteCustom = [];
-      try {
-        remoteCustom = JSON.parse(remoteData.bible_custom_verses || '[]');
-      } catch (e) {}
       if (Array.isArray(remoteCustom) && remoteCustom.length > 0) {
-        const localCustom = getBibleCustomVerses();
         const customMap = new Map();
-        localCustom.forEach(v => customMap.set(v.id, v));
+        localCustom.forEach(v => {
+          if (v) customMap.set(v.id || `${v.bookFloor}_${v.chapter}_${v.verse}`, v);
+        });
         remoteCustom.forEach(v => {
-          const s = sanitizeVerseObject(v);
-          customMap.set(s.id, s);
+          if (v) {
+            const s = sanitizeVerseObject(v);
+            customMap.set(s.id, s);
+          }
         });
         const mergedCustom = Array.from(customMap.values()).sort(sortVersesAscending);
         localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(mergedCustom));
       }
 
-      lastSyncTimestampLocal = remoteTimestamp;
+      lastSyncTimestampLocal = Math.max(remoteTimestamp, lastSyncTimestampLocal, Date.now());
       localStorage.setItem('bible_last_sync_timestamp', String(lastSyncTimestampLocal));
 
       // Refresh lại toàn bộ giao diện học tập
@@ -5750,6 +5779,14 @@ async function pullRealtimeAutoSync(silent = true) {
     } else {
       updateSyncStatusUI('synced');
     }
+
+    // Nếu máy hiện tại có câu nào đã thuộc mà Cloudflare chưa có, tự động đẩy lên để Cloudflare luôn có đủ
+    const hasLocalVersesNotInRemote = localKeys.some(k => currentMap[k]?.mastered && !remoteMap[k]?.mastered);
+    const hasLocalCustomNotInRemote = localCustom.some(lc => !remoteCustom.some(rc => rc.id === lc.id));
+    if (hasLocalVersesNotInRemote || hasLocalCustomNotInRemote) {
+      console.log('Local device has mastered verses not in Cloudflare, syncing up...');
+      dispatchRealtimeAutoSync();
+    }
   } catch (err) {
     console.warn('pullRealtimeAutoSync error:', err);
     updateSyncStatusUI('synced');
@@ -5765,35 +5802,32 @@ function triggerImmediateSync() {
 }
 
 function initRealtimeSyncEngine() {
-  // Lần đầu tải trang: Nếu thiết bị có câu tự thêm hoặc tiến độ, tự động đẩy lên server trước
+  // Lần đầu tải trang: Kéo dữ liệu từ Cloudflare Worker trước
   setTimeout(() => {
-    const localCustom = getBibleCustomVerses();
-    const localProgress = getBibleProgressMap();
-    if (localCustom.length > 0 || Object.keys(localProgress).length > 0) {
-      dispatchRealtimeAutoSync().then(() => {
-        pullRealtimeAutoSync(true);
-      });
-    } else {
-      pullRealtimeAutoSync(true);
-    }
-  }, 300);
+    pullRealtimeAutoSync(true).then(() => {
+      // Sau khi kéo về xong, nếu máy này có câu mà Cloudflare chưa có thì đẩy ngược lên
+      const localCustom = getBibleCustomVerses();
+      const localProgress = getBibleProgressMap();
+      if (localCustom.length > 0 || Object.keys(localProgress).length > 0) {
+        dispatchRealtimeAutoSync();
+      }
+    });
+  }, 200);
 
-  // Chu kỳ tự động kiểm tra mỗi 2 giây trên máy chủ mạng nội bộ LAN (/api/sync)
+  // Chu kỳ tự động kiểm tra định kỳ mỗi 3.5 giây khi tab đang mở (Cloudflare cho 100.000 req/ngày)
   if (realtimeSyncIntervalTimer) clearInterval(realtimeSyncIntervalTimer);
   realtimeSyncIntervalTimer = setInterval(() => {
-    pullRealtimeAutoSync(true);
-  }, 2000);
+    if (!document.hidden) {
+      pullRealtimeAutoSync(true);
+    }
+  }, 3500);
 
   // Khi người dùng chuyển tab hoặc mở lại màn hình điện thoại
   window.addEventListener('focus', () => {
-    const localCustom = getBibleCustomVerses();
-    if (localCustom.length > 0) dispatchRealtimeAutoSync();
     pullRealtimeAutoSync(true);
   });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-      const localCustom = getBibleCustomVerses();
-      if (localCustom.length > 0) dispatchRealtimeAutoSync();
       pullRealtimeAutoSync(true);
     }
   });

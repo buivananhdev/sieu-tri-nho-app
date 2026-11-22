@@ -1,0 +1,7 @@
+name = "supermind-sync"
+main = "worker.js"
+compatibility_date = "2026-11-20"
+
+[[kv_namespaces]]
+binding = "SUPERMIND_KV"
+id = "31dd085652f649da9bca7c765d35460a"
