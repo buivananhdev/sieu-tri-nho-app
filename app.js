@@ -3280,6 +3280,19 @@ const DEFAULT_ACADEMIC_SUBJECTS = [
     statsSummary: '5 Thời Kỳ • 32 Triết Gia Đại Thụ'
   },
   {
+    id: 'deep_thinking',
+    disciplineId: 'humanities',
+    disciplineName: 'Khoa Học Xã Hội & Nhân Văn',
+    name: 'Tư Duy & Nghệ Thuật Đặt Câu Hỏi (Từ Căn Bản Đến Giáo Sư Khủng)',
+    badge: '7 Cấp Độ • 12 Mô Hình • Đấu Trường Socratic',
+    status: 'active',
+    desc: 'Bản lĩnh trí tuệ đỉnh cao: Thang 7 cấp độ câu hỏi Socratic, Tư duy Nguyên lý đầu tiên, Nghịch đảo Munger, Hệ thống bậc 2 và Đấu trường nâng cấp câu hỏi.',
+    icon: 'brain-circuit',
+    color: 'from-purple-600 via-pink-600 to-amber-500',
+    type: 'thinking',
+    statsSummary: '7 Cấp Độ Câu Hỏi • 12 Mô Hình Kinh Điển • Đấu Trường'
+  },
+  {
     id: 'history_world_vn',
     disciplineId: 'humanities',
     disciplineName: 'Khoa Học Xã Hội & Nhân Văn',
@@ -3568,9 +3581,18 @@ function selectSubject(subjectId) {
   } else if (subj.type === 'philosophy' || subj.id === 'philosophy') {
     if (bibleView) bibleView.classList.add('hidden');
     if (philoView) philoView.classList.remove('hidden');
+    if (document.getElementById('subjectThinkingView')) document.getElementById('subjectThinkingView').classList.add('hidden');
     if (customView) customView.classList.add('hidden');
     renderPhilosophyView();
+  } else if (subj.type === 'thinking' || subj.id === 'deep_thinking') {
+    if (bibleView) bibleView.classList.add('hidden');
+    if (philoView) philoView.classList.add('hidden');
+    const thinkingView = document.getElementById('subjectThinkingView');
+    if (thinkingView) thinkingView.classList.remove('hidden');
+    if (customView) customView.classList.add('hidden');
+    if (typeof renderThinkingView === 'function') renderThinkingView();
   } else {
+    if (document.getElementById('subjectThinkingView')) document.getElementById('subjectThinkingView').classList.add('hidden');
     if (bibleView) bibleView.classList.add('hidden');
     if (philoView) philoView.classList.add('hidden');
     if (customView) customView.classList.remove('hidden');
@@ -5404,6 +5426,7 @@ function buildSyncPayload() {
     timestamp: now,
     bible_progress: JSON.stringify(map),
     bible_custom_verses: JSON.stringify(custom),
+    thinking_progress: localStorage.getItem('supermind_thinking_progress_v1') || '{}',
     study_streak: streak
   };
 }
@@ -5757,6 +5780,26 @@ async function pullRealtimeAutoSync(silent = true) {
         });
         const mergedCustom = Array.from(customMap.values()).sort(sortVersesAscending);
         localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(mergedCustom));
+      }
+
+      // HỢP NHẤT TIẾN ĐỘ ĐẠI TƯ DUY (THINKING PROGRESS)
+      if (remoteData.thinking_progress) {
+        try {
+          const remoteThinking = typeof remoteData.thinking_progress === 'string'
+            ? JSON.parse(remoteData.thinking_progress)
+            : remoteData.thinking_progress;
+          const localRaw = localStorage.getItem('supermind_thinking_progress_v1');
+          const localThinking = localRaw ? JSON.parse(localRaw) : {};
+          const mergedThinking = {
+            masteredModels: { ...(localThinking.masteredModels || {}), ...(remoteThinking.masteredModels || {}) },
+            arenaAnswers: { ...(localThinking.arenaAnswers || {}), ...(remoteThinking.arenaAnswers || {}) },
+            score: Math.max(localThinking.score || 0, remoteThinking.score || 0)
+          };
+          localStorage.setItem('supermind_thinking_progress_v1', JSON.stringify(mergedThinking));
+          if (typeof renderThinkingView === 'function' && currentActiveSubjectId === 'deep_thinking') {
+            renderThinkingView();
+          }
+        } catch (e) {}
       }
 
       lastSyncTimestampLocal = Math.max(remoteTimestamp, lastSyncTimestampLocal, Date.now());

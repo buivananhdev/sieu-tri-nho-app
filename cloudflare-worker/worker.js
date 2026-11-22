@@ -105,6 +105,34 @@ export default {
         }
         const mergedCustom = Array.from(customMap.values());
 
+        // 3. Hợp nhất tiến độ Đại Tư Duy (Thinking Progress)
+        let curThinking = {};
+        let incThinking = {};
+        try {
+          if (typeof curData.thinking_progress === 'string') {
+            curThinking = JSON.parse(curData.thinking_progress || '{}');
+          } else if (typeof curData.thinking_progress === 'object' && curData.thinking_progress !== null) {
+            curThinking = curData.thinking_progress;
+          }
+        } catch (e) {}
+
+        try {
+          if (typeof incData.thinking_progress === 'string') {
+            incThinking = JSON.parse(incData.thinking_progress || '{}');
+          } else if (typeof incData.thinking_progress === 'object' && incData.thinking_progress !== null) {
+            incThinking = incData.thinking_progress;
+          }
+        } catch (e) {}
+
+        const mergedMasteredModels = { ...(curThinking.masteredModels || {}), ...(incThinking.masteredModels || {}) };
+        const mergedArenaAnswers = { ...(curThinking.arenaAnswers || {}), ...(incThinking.arenaAnswers || {}) };
+        const mergedThinking = {
+          masteredModels: mergedMasteredModels,
+          arenaAnswers: mergedArenaAnswers,
+          score: Math.max(curThinking.score || 0, incThinking.score || 0),
+          lastUpdated: Date.now()
+        };
+
         const now = Date.now();
         const mergedPayload = {
           app: 'supermind',
@@ -114,6 +142,7 @@ export default {
             bible_progress: JSON.stringify(mergedMap),
             bible_custom_verses: JSON.stringify(mergedCustom),
             study_streak: String(Math.max(parseInt(curData.study_streak || '1', 10), parseInt(incData.study_streak || '1', 10))),
+            thinking_progress: JSON.stringify(mergedThinking),
             timestamp: now
           }
         };
@@ -126,7 +155,8 @@ export default {
           timestamp: mergedPayload.timestamp,
           updated: true,
           masteredCount: Object.values(mergedMap).filter(v => v && v.mastered).length,
-          customCount: mergedCustom.length
+          customCount: mergedCustom.length,
+          thinkingModelsMastered: Object.values(mergedMasteredModels).filter(Boolean).length
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
