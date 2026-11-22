@@ -1,15 +1,19 @@
 // =========================================================================
-// THƯ VIỆN ĐỘNG CƠ TƯ DUY & NGHỆ THUẬT ĐẶT CÂU HỎI (THINKING ENGINE)
-// HỖ TRỢ TRẢI NGHIỆM TƯƠNG TÁC TỪ CĂN BẢN ĐẾN GIÁO SƯ KHỦNG
+// THƯ VIỆN ĐỘNG CƠ TƯ DUY & NGHỆ THUẬT ĐẶT CÂU HỎI (THINKING ENGINE V2)
+// HỖ TRỢ TRẢI NGHIỆM ĐẠI HỌC VIỆN TƯ DUY TOÀN CẦU VỚI 34 BÀI HỌC CHUYÊN SÂU
 // =========================================================================
 
 const THINKING_STORAGE_KEY = 'supermind_thinking_progress_v1';
 
-let currentThinkingSubTab = 'levels'; // 'levels' | 'elevator' | 'models' | 'arena'
+let currentThinkingSubTab = 'curriculum'; // 'curriculum' | 'levels' | 'elevator' | 'arena'
+let currentSelectedTrackId = 'all';
+let currentThinkingSearchQuery = '';
+let currentThinkingStatusFilter = 'all'; // 'all' | 'mastered' | 'unlearned'
 let currentSelectedLevelIndex = 0; // 0 to 6 (Levels 1 to 7)
 let currentSelectedElevatorCaseId = 'case_wealth';
 let currentArenaScenarioIndex = 0;
 let userArenaScore = 0;
+let currentActiveLessonModalId = null;
 
 function getThinkingProgress() {
   try {
@@ -35,14 +39,200 @@ function switchThinkingSubTab(tab) {
   renderThinkingView();
 }
 
+function setThinkingTrackFilter(trackId) {
+  playSound('click');
+  currentSelectedTrackId = trackId;
+  renderThinkingView();
+}
+
+function setThinkingStatusFilter(status) {
+  playSound('click');
+  currentThinkingStatusFilter = status;
+  renderThinkingView();
+}
+
+function handleThinkingSearch(query) {
+  currentThinkingSearchQuery = (query || '').toLowerCase().trim();
+  renderThinkingView();
+}
+
+function toggleMasterLesson(lessonId) {
+  playSound('click');
+  const progress = getThinkingProgress();
+  progress.masteredModels = progress.masteredModels || {};
+  progress.masteredModels[lessonId] = !progress.masteredModels[lessonId];
+  saveThinkingProgress(progress);
+  renderThinkingView();
+  if (currentActiveLessonModalId === lessonId) {
+    openLessonDetailModal(lessonId);
+  }
+}
+
+function openLessonDetailModal(lessonId) {
+  playSound('click');
+  currentActiveLessonModalId = lessonId;
+  const lessons = window.THINKING_MASTER_LESSONS_34 || [];
+  const lesson = lessons.find(l => l.id === lessonId);
+  if (!lesson) return;
+
+  const progress = getThinkingProgress();
+  const isMastered = !!(progress.masteredModels && progress.masteredModels[lessonId]);
+
+  let modalEl = document.getElementById('thinkingLessonModal');
+  if (!modalEl) {
+    modalEl = document.createElement('div');
+    modalEl.id = 'thinkingLessonModal';
+    modalEl.className = 'fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto';
+    document.body.appendChild(modalEl);
+  }
+
+  modalEl.classList.remove('hidden');
+  modalEl.innerHTML = `
+    <div class="relative w-full max-w-4xl bg-slate-900 border border-purple-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto text-slate-200">
+      <!-- TOP ACTION BAR -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">
+            ${lesson.code}
+          </span>
+          <span class="text-xs font-bold text-slate-400">
+            ${lesson.trackName}
+          </span>
+        </div>
+        <button onclick="closeLessonDetailModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- HEADER TITLE -->
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-amber-400">XUẤT XỨ HÀN LÂM CHUẨN XÁC:</span>
+          <span class="text-xs text-slate-300 italic">${lesson.master}</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+          <i data-lucide="${lesson.icon || 'atom'}" class="w-8 h-8 text-purple-400"></i>
+          ${lesson.name}
+        </h2>
+        <div class="text-sm font-semibold text-purple-300 italic">${lesson.origName}</div>
+        <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-400 font-mono">
+          📚 Tài liệu nguồn: ${lesson.academicSource}
+        </div>
+      </div>
+
+      <!-- TIÊN ĐỀ CỐT LÕI -->
+      <div class="p-5 rounded-2xl bg-gradient-to-r from-purple-950/30 to-indigo-950/30 border border-purple-500/40 space-y-2">
+        <div class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i> Tiên Đề & Chân Lý Cốt Lõi (Core Axiom)
+        </div>
+        <div class="text-sm sm:text-base font-semibold text-white leading-relaxed italic">
+          "${lesson.axiom}"
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed pt-1">
+          ${lesson.summary}
+        </p>
+      </div>
+
+      <!-- THUẬT TOÁN 4 BƯỚC THỰC THI -->
+      <div class="space-y-4">
+        <div class="text-sm font-black text-white flex items-center gap-2 uppercase tracking-wide">
+          <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i> Thuật Toán Tư Duy 4 Bước Để Giải Quyết Vấn Đề:
+        </div>
+        <div class="grid grid-cols-1 gap-3">
+          ${lesson.algorithm.map(item => `
+            <div class="p-4 rounded-2xl bg-cardBg border border-slate-800 hover:border-cyan-500/40 transition-all flex items-start gap-4">
+              <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center font-black text-sm shrink-0">
+                ${item.step}
+              </div>
+              <div class="space-y-1">
+                <div class="text-sm font-bold text-white">${item.title}</div>
+                <div class="text-xs text-slate-300 leading-relaxed">${item.desc}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- BỘ CÂU HỎI QUYỀN NĂNG -->
+      <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+        <div class="text-xs font-black text-amber-300 uppercase tracking-wide flex items-center gap-2">
+          <i data-lucide="help-circle" class="w-4 h-4 text-amber-400"></i> Bộ Câu Hỏi Khai Phóng Não Bộ (Killer Questions):
+        </div>
+        <ul class="space-y-2">
+          ${lesson.powerQuestions.map(q => `
+            <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200">
+              <i data-lucide="chevron-right" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+              <span class="font-medium">${q}</span>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <!-- CASE STUDY THỰC CHIẾN -->
+      <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+        <div class="text-xs font-black text-emerald-300 uppercase tracking-wide flex items-center gap-2">
+          <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i> Case Study Thực Chiến Đỉnh Cao: ${lesson.canonicalCase.title}
+        </div>
+        <div class="space-y-2 text-xs leading-relaxed text-slate-300">
+          <div><strong class="text-slate-100">Bối cảnh:</strong> ${lesson.canonicalCase.context}</div>
+          <div><strong class="text-slate-100">Cách thực thi:</strong> ${lesson.canonicalCase.execution}</div>
+          <div><strong class="text-emerald-300">Kết quả:</strong> ${lesson.canonicalCase.result}</div>
+        </div>
+      </div>
+
+      <!-- CẢNH BÁO BẪY & BÀI TẬP -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-red-950/20 border border-red-500/30 space-y-1.5">
+          <div class="text-xs font-bold text-red-300 flex items-center gap-1.5">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-red-400"></i> Cạm Bẫy Trí Não Cần Tránh:
+          </div>
+          <div class="text-xs text-slate-300 leading-relaxed">${lesson.fatalPitfall}</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/30 space-y-1.5">
+          <div class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-4 h-4 text-indigo-400"></i> Bài Tập Phản Xạ Hàng Ngày:
+          </div>
+          <div class="text-xs text-slate-300 leading-relaxed">${lesson.mindsetPractice}</div>
+        </div>
+      </div>
+
+      <!-- FOOTER ACTIONS -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
+        <button onclick="toggleMasterLesson('${lesson.id}')" class="w-full sm:w-auto px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 ${
+          isMastered
+            ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:bg-emerald-400'
+            : 'bg-purple-600 text-white hover:bg-purple-500 shadow-lg shadow-purple-500/25'
+        }">
+          <i data-lucide="${isMastered ? 'check-circle-2' : 'bookmark'}" class="w-4 h-4"></i>
+          <span>${isMastered ? 'ĐÃ NẮM VỮNG VÀ LÀM CHỦ (BẤM ĐỂ HỦY)' : 'ĐÁNH DẤU: TÔI ĐÃ NẮM VỮNG BÀI NÀY'}</span>
+        </button>
+
+        <button onclick="closeLessonDetailModal()" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs sm:text-sm transition-all">
+          Đóng Lại
+        </button>
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeLessonDetailModal() {
+  currentActiveLessonModalId = null;
+  const modalEl = document.getElementById('thinkingLessonModal');
+  if (modalEl) modalEl.classList.add('hidden');
+}
+
 function renderThinkingView() {
   const container = document.getElementById('subjectThinkingView');
   if (!container) return;
 
   const progress = getThinkingProgress();
   const masteredCount = Object.keys(progress.masteredModels || {}).filter(k => progress.masteredModels[k]).length;
-  const totalModels = (window.THINKING_MENTAL_MODELS_12 || []).length;
-  const progressPercent = Math.round((masteredCount / Math.max(totalModels, 1)) * 100);
+  const allLessons = window.THINKING_MASTER_LESSONS_34 || [];
+  const totalLessons = allLessons.length;
+  const progressPercent = Math.round((masteredCount / Math.max(totalLessons, 1)) * 100);
 
   container.innerHTML = `
     <!-- HEADER HERO BANNER -->
@@ -52,43 +242,53 @@ function renderThinkingView() {
 
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
         <div class="space-y-2 max-w-2xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold uppercase tracking-wider">
-            <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i> Đại Học Viện Tư Duy Cấp Cao
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold tracking-wide">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> ĐẠI HỌC VIỆN TƯ DUY & NGHỆ THUẬT ĐẶT CÂU HỎI QUỐC TẾ
           </div>
-          <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-            <span>Tư Duy & Nghệ Thuật Đặt Câu Hỏi</span>
-            <span class="text-xs px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black shadow-md">TỪ CĂN BẢN ➔ GIÁO SƯ KHỦNG</span>
+          <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Khoa Học Tư Duy & Nghệ Thuật Đặt Câu Hỏi
           </h2>
-          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            "Chất lượng cuộc sống của bạn được quyết định bởi chất lượng những CÂU HỎI bạn tự đặt ra cho chính mình." — Khám phá Thang 7 cấp độ câu hỏi, làm chủ 12 mô hình tư duy kinh điển và rèn luyện tại Đấu trường phản biện thực chiến.
+          <div class="text-xs sm:text-sm font-semibold text-purple-300 uppercase tracking-widest">
+            34 Chuyên Đề Hàn Lâm Chuẩn Quốc Tế • Thang 7 Cấp Độ Câu Hỏi Socratic
+          </div>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed pt-1">
+            Tổng hợp tinh hoa tư duy của nhân loại được dịch thuật chuẩn xác từ các tài liệu học thuật gốc tiếng Anh (MIT, Oxford, Stanford, các nhà khoa học Nobel). Mỗi chuyên đề được trang bị một <strong>Thuật toán tư duy 4 bước</strong> để bạn bóc tách và giải quyết bất kỳ vấn đề thực tế nào ngoài đời.
           </p>
         </div>
 
-        <!-- Progress Widget -->
-        <div class="p-4 rounded-2xl bg-slate-950/70 border border-purple-500/30 flex flex-col gap-2 min-w-[220px]">
-          <div class="flex items-center justify-between text-xs">
-            <span class="text-slate-400 font-medium">Mô Hình Đã Làm Chủ:</span>
-            <span class="font-mono font-black text-amber-300">${masteredCount}/${totalModels}</span>
+        <!-- PROGRESS CIRCLE / BOX -->
+        <div class="p-5 rounded-2xl bg-cardBg/90 border border-purple-500/30 flex flex-col items-center justify-center space-y-2 shrink-0 min-w-[200px] text-center shadow-lg">
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tiến Độ Lĩnh Hội Cá Nhân</div>
+          <div class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-purple-300 to-cyan-400">
+            ${masteredCount} / ${totalLessons}
           </div>
-          <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+          <div class="text-[11px] font-semibold text-purple-300">
+            Đã làm chủ ${progressPercent}% giáo trình
           </div>
-          <div class="flex items-center justify-between text-[11px] text-slate-400">
-            <span>Thành thạo: <strong class="text-white">${progressPercent}%</strong></span>
-            <span class="text-purple-300 font-semibold">${progressPercent >= 100 ? '🏆 Bậc Thầy Tư Duy' : '🌱 Đang Tôi Luyện'}</span>
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-1">
+            <div class="bg-gradient-to-r from-purple-500 to-amber-400 h-full transition-all duration-500" style="width: ${progressPercent}%"></div>
           </div>
         </div>
       </div>
 
-      <!-- NAVIGATION SUB-TABS -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none border-t border-slate-800/80 pt-4 relative z-10 text-xs font-bold">
+      <!-- SUB-NAVIGATION TABS (4 TABS) -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none border-t border-slate-800/80 pt-4 relative z-10 text-xs font-bold">
+        <button onclick="switchThinkingSubTab('curriculum')" class="px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
+          currentThinkingSubTab === 'curriculum'
+            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/25 border border-purple-400/50'
+            : 'bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800'
+        }">
+          <i data-lucide="book-open" class="w-4 h-4 text-purple-400"></i>
+          <span>1. Bách Khoa 34 Bài Học Tư Duy (${totalLessons})</span>
+        </button>
+
         <button onclick="switchThinkingSubTab('levels')" class="px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
           currentThinkingSubTab === 'levels'
             ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/25 border border-purple-400/50'
             : 'bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800'
         }">
           <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
-          <span>1. Thang 7 Cấp Độ Đặt Câu Hỏi</span>
+          <span>2. Thang 7 Cấp Độ Đặt Câu Hỏi</span>
         </button>
 
         <button onclick="switchThinkingSubTab('elevator')" class="px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
@@ -96,18 +296,8 @@ function renderThinkingView() {
             ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/25 border border-purple-400/50'
             : 'bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800'
         }">
-          <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
-          <span>2. Đấu Trường Nâng Cấp Câu Hỏi</span>
-        </button>
-
-        <button onclick="switchThinkingSubTab('models')" class="px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
-          currentThinkingSubTab === 'models'
-            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/25 border border-purple-400/50'
-            : 'bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800'
-        }">
-          <i data-lucide="brain" class="w-4 h-4 text-cyan-400"></i>
-          <span>3. Kho 12 Mô Hình Tư Duy Kinh Điển</span>
-          <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-950/40 text-amber-300 font-mono">${masteredCount}/${totalModels}</span>
+          <i data-lucide="arrow-up-right" class="w-4 h-4 text-purple-400"></i>
+          <span>3. Thang Tiến Hóa Câu Hỏi</span>
         </button>
 
         <button onclick="switchThinkingSubTab('arena')" class="px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
@@ -115,168 +305,321 @@ function renderThinkingView() {
             ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/25 border border-purple-400/50'
             : 'bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800'
         }">
-          <i data-lucide="swords" class="w-4 h-4 text-emerald-400"></i>
-          <span>4. Thử Thách Vấn Đáp Phản Biện</span>
+          <i data-lucide="swords" class="w-4 h-4 text-purple-400"></i>
+          <span>4. Đấu Trường Socratic</span>
         </button>
       </div>
     </div>
 
-    <!-- DYNAMIC SUB-VIEW CONTAINER -->
-    <div id="thinkingSubViewContent" class="space-y-6">
-      ${renderThinkingSubViewContent()}
+    <!-- MAIN BODY BASED ON TAB -->
+    <div class="pt-2">
+      ${
+        currentThinkingSubTab === 'curriculum'
+          ? renderThinkingCurriculumTab()
+          : currentThinkingSubTab === 'levels'
+          ? renderThinkingLevelsTab()
+          : currentThinkingSubTab === 'elevator'
+          ? renderThinkingElevatorTab()
+          : renderThinkingArenaTab()
+      }
     </div>
   `;
 
-  lucide.createIcons();
-}
-
-function renderThinkingSubViewContent() {
-  if (currentThinkingSubTab === 'levels') {
-    return renderThinkingLevelsTab();
-  } else if (currentThinkingSubTab === 'elevator') {
-    return renderThinkingElevatorTab();
-  } else if (currentThinkingSubTab === 'models') {
-    return renderThinkingModelsTab();
-  } else if (currentThinkingSubTab === 'arena') {
-    return renderThinkingArenaTab();
+  if (window.lucide) {
+    lucide.createIcons();
   }
-  return '';
 }
 
 // =========================================================================
-// TAB 1: THANG 7 CẤP ĐỘ ĐẶT CÂU HỎI
+// TAB 1: BÁCH KHOA 34 BÀI HỌC TƯ DUY TOÀN DIỆN
 // =========================================================================
-function renderThinkingLevelsTab() {
-  const levels = window.THINKING_LEVELS_7 || [];
-  const current = levels[currentSelectedLevelIndex] || levels[0];
+function renderThinkingCurriculumTab() {
+  const tracks = window.THINKING_TRACKS_7 || [];
+  const allLessons = window.THINKING_MASTER_LESSONS_34 || [];
+  const progress = getThinkingProgress();
+  const masteredMap = progress.masteredModels || {};
+
+  // Lọc theo Chuyên đề (Track)
+  let filtered = allLessons;
+  if (currentSelectedTrackId !== 'all') {
+    filtered = filtered.filter(l => l.trackId === currentSelectedTrackId);
+  }
+
+  // Lọc theo Trạng thái (Status)
+  if (currentThinkingStatusFilter === 'mastered') {
+    filtered = filtered.filter(l => !!masteredMap[l.id]);
+  } else if (currentThinkingStatusFilter === 'unlearned') {
+    filtered = filtered.filter(l => !masteredMap[l.id]);
+  }
+
+  // Lọc theo Tìm kiếm (Search)
+  if (currentThinkingSearchQuery) {
+    const q = currentThinkingSearchQuery;
+    filtered = filtered.filter(l =>
+      l.name.toLowerCase().includes(q) ||
+      l.origName.toLowerCase().includes(q) ||
+      l.master.toLowerCase().includes(q) ||
+      l.code.toLowerCase().includes(q) ||
+      (l.axiom && l.axiom.toLowerCase().includes(q))
+    );
+  }
 
   return `
     <div class="space-y-6">
-      <!-- LEVEL SELECTION STRIP -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-        ${levels.map((lvl, idx) => {
-          const isSelected = idx === currentSelectedLevelIndex;
-          const isMonster = lvl.level === 7;
+      <!-- BỘ LỌC TÌM KIẾM & TRẠNG THÁI -->
+      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-5 rounded-3xl bg-cardBg border border-slate-800 shadow-xl">
+        <!-- Search bar -->
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input
+            type="text"
+            placeholder="Tìm theo tên bài học, mã bài (LOGIC-01), tác giả (Descartes, Munger, Feynman)..."
+            value="${currentThinkingSearchQuery}"
+            oninput="handleThinkingSearch(this.value)"
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/60"
+          />
+        </div>
+
+        <!-- Status filter buttons -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none text-xs font-bold shrink-0">
+          <button onclick="setThinkingStatusFilter('all')" class="px-3.5 py-2 rounded-xl transition-all ${
+            currentThinkingStatusFilter === 'all'
+              ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20'
+              : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+          }">
+            Tất Cả (${allLessons.length})
+          </button>
+          <button onclick="setThinkingStatusFilter('mastered')" class="px-3.5 py-2 rounded-xl transition-all ${
+            currentThinkingStatusFilter === 'mastered'
+              ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20'
+              : 'bg-slate-900 text-slate-400 hover:text-emerald-300 border border-slate-800'
+          }">
+            ✓ Đã Nắm Vững (${Object.keys(masteredMap).filter(k => masteredMap[k]).length})
+          </button>
+          <button onclick="setThinkingStatusFilter('unlearned')" class="px-3.5 py-2 rounded-xl transition-all ${
+            currentThinkingStatusFilter === 'unlearned'
+              ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
+              : 'bg-slate-900 text-slate-400 hover:text-amber-300 border border-slate-800'
+          }">
+            ○ Chưa Nạp (${allLessons.length - Object.keys(masteredMap).filter(k => masteredMap[k]).length})
+          </button>
+        </div>
+      </div>
+
+      <!-- DANH MỤC 7 CHUYÊN ĐỀ (TRACKS PILLS) -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none pb-1 text-xs font-bold">
+        ${tracks.map(t => {
+          const isActive = currentSelectedTrackId === t.id;
           return `
-            <button onclick="selectThinkingLevel(${idx})" class="p-3 rounded-2xl flex flex-col items-center justify-between gap-1.5 text-center transition-all ${
-              isSelected
-                ? 'bg-gradient-to-b from-slate-900 to-slate-950 border-2 ' + (isMonster ? 'border-amber-400 shadow-amber-500/30' : 'border-purple-500 shadow-purple-500/30') + ' shadow-lg scale-105'
-                : 'bg-cardBg/80 hover:bg-slate-900 border border-slate-800 hover:border-slate-700'
+            <button onclick="setThinkingTrackFilter('${t.id}')" class="px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
+              isActive
+                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/25 border border-purple-400/50'
+                : 'bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800'
             }">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black ${
-                isMonster ? 'bg-gradient-to-tr from-amber-400 to-yellow-500 text-slate-950 shadow' : 'bg-slate-800 text-purple-300'
-              }">
-                ${isMonster ? '👑' : lvl.level}
-              </div>
-              <div class="text-[11px] font-bold ${isSelected ? (isMonster ? 'text-amber-300' : 'text-purple-300') : 'text-slate-300'} line-clamp-1">
-                L.${lvl.level}: ${lvl.title.split(':')[1] || lvl.title}
-              </div>
-              <span class="text-[9px] px-1.5 py-0.2 rounded-md ${lvl.bgBadge} font-mono font-semibold">
-                ${lvl.badge.split('•')[1] || lvl.badge}
-              </span>
+              <i data-lucide="${t.icon || 'folder'}" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>${t.name}</span>
             </button>
           `;
         }).join('')}
       </div>
 
-      <!-- ACTIVE LEVEL HERO CARD -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-cardBg border ${current.border} shadow-2xl space-y-6">
-        <!-- Title & Badge -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-5">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${current.color} flex items-center justify-center text-white text-2xl font-black shadow-lg">
-              <i data-lucide="${current.icon}"></i>
-            </div>
-            <div>
-              <div class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <span>${current.subtitle}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-full ${current.bgBadge}">${current.badge}</span>
+      <!-- KẾT QUẢ ĐẾM -->
+      <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+        <div>Hiển thị <strong class="text-white">${filtered.length}</strong> bài học phù hợp</div>
+        <div class="text-[11px] italic">Bấm vào bất kỳ bài nào để mở toàn bộ bài giảng & thuật toán 4 bước chi tiết</div>
+      </div>
+
+      <!-- GRID CÁC BÀI HỌC -->
+      ${filtered.length === 0 ? `
+        <div class="py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-3xl p-8 space-y-3">
+          <i data-lucide="search-x" class="w-12 h-12 text-slate-600 mx-auto"></i>
+          <p class="text-sm font-semibold">Không tìm thấy bài học nào phù hợp với bộ lọc hiện tại.</p>
+          <button onclick="setThinkingTrackFilter('all'); setThinkingStatusFilter('all'); handleThinkingSearch('');" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-bold">
+            Xóa Toàn Bộ Bộ Lọc
+          </button>
+        </div>
+      ` : `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          ${filtered.map(lesson => {
+            const isMastered = !!masteredMap[lesson.id];
+            return `
+              <div class="p-6 rounded-3xl bg-cardBg border ${
+                isMastered
+                  ? 'border-emerald-500/50 shadow-emerald-500/10 bg-slate-900/90'
+                  : 'border-slate-800 hover:border-purple-500/40'
+              } shadow-xl flex flex-col justify-between space-y-5 transition-all group hover:scale-[1.01]">
+                <div class="space-y-4">
+                  <!-- TOP BADGE & CODE -->
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                      ${lesson.code}
+                    </span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      isMastered
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                        : 'bg-slate-800 text-slate-400 border border-slate-700'
+                    }">
+                      ${isMastered ? '✓ ĐÃ NẮM VỮNG' : '○ CHƯA LÀM CHỦ'}
+                    </span>
+                  </div>
+
+                  <!-- TITLE & MASTER -->
+                  <div>
+                    <h4 class="text-base font-black text-white group-hover:text-purple-300 transition-colors flex items-center gap-2">
+                      <i data-lucide="${lesson.icon || 'atom'}" class="w-5 h-5 text-purple-400 shrink-0"></i>
+                      <span>${lesson.name}</span>
+                    </h4>
+                    <div class="text-[11px] font-semibold text-slate-400 italic mt-0.5">
+                      ${lesson.origName}
+                    </div>
+                    <div class="text-[10px] text-amber-300 font-semibold mt-1 flex items-center gap-1">
+                      <i data-lucide="user-check" class="w-3 h-3 text-amber-400"></i> ${lesson.master}
+                    </div>
+                  </div>
+
+                  <!-- AXIOM -->
+                  <div class="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 italic leading-relaxed">
+                    "${lesson.axiom}"
+                  </div>
+
+                  <!-- ALGORITHM PREVIEW -->
+                  <div class="space-y-1.5 text-xs text-slate-400">
+                    <div class="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                      <i data-lucide="cpu" class="w-3 h-3 text-cyan-400"></i> Thuật Toán 4 Bước Thực Thi:
+                    </div>
+                    <div class="space-y-1 text-[11px]">
+                      ${lesson.algorithm.slice(0, 2).map(a => `
+                        <div class="flex items-center gap-1.5 text-slate-300">
+                          <span class="w-4 h-4 rounded bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-[9px] font-bold">${a.step}</span>
+                          <span class="truncate">${a.title}</span>
+                        </div>
+                      `).join('')}
+                      <div class="text-[10px] text-purple-400 italic pl-5">+ 2 bước tiếp theo bên trong...</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="space-y-2 pt-2 border-t border-slate-800/80">
+                  <button onclick="openLessonDetailModal('${lesson.id}')" class="w-full py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                    <span>Mở Toàn Bộ Bài Giảng & Thuật Toán</span>
+                  </button>
+
+                  <button onclick="toggleMasterLesson('${lesson.id}')" class="w-full py-2 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 ${
+                    isMastered
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-red-500/20 hover:text-red-300'
+                      : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  }">
+                    <i data-lucide="${isMastered ? 'check-circle-2' : 'circle'}" class="w-3.5 h-3.5"></i>
+                    <span>${isMastered ? 'Đã Nắm Vững (Bấm Để Bỏ)' : 'Đánh Dấu: Đã Nắm Vững'}</span>
+                  </button>
+                </div>
               </div>
-              <h3 class="text-xl sm:text-2xl font-black text-white mt-0.5">${current.title}</h3>
-            </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+// =========================================================================
+// TAB 2: THANG 7 CẤP ĐỘ CÂU HỎI
+// =========================================================================
+function renderThinkingLevelsTab() {
+  const levels = window.THINKING_LEVELS_7 || [];
+  const currentLevel = levels[currentSelectedLevelIndex] || levels[0];
+
+  return `
+    <div class="space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i data-lucide="layers" class="w-5 h-5 text-purple-400"></i>
+          Thang 7 Cấp Độ Đặt Câu Hỏi (Từ Thụ Động Đến Giáo Sư Khủng)
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">Chọn từng cấp độ để xem tư duy, bộ câu hỏi quyền năng và cách chuyển đổi câu hỏi thực tế.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+        ${levels.map((lvl, idx) => {
+          const isSelected = idx === currentSelectedLevelIndex;
+          return `
+            <button onclick="selectThinkingLevel(${idx})" class="p-3 rounded-2xl border transition-all text-left flex flex-col justify-between ${
+              isSelected
+                ? 'bg-gradient-to-br from-purple-900/50 to-indigo-900/50 border-purple-400 shadow-lg shadow-purple-500/20'
+                : 'bg-cardBg border-slate-800 hover:border-slate-700'
+            }">
+              <div class="flex items-center justify-between gap-1 mb-2">
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${lvl.bgBadge}">${lvl.badge}</span>
+                <i data-lucide="${lvl.icon || 'help-circle'}" class="w-4 h-4 text-slate-400"></i>
+              </div>
+              <div class="text-xs font-bold text-white line-clamp-1">${lvl.title.split(':')[1] || lvl.title}</div>
+            </button>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- ACTIVE LEVEL CARD DETAIL -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-cardBg border border-purple-500/30 shadow-2xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div class="space-y-1">
+            <span class="text-xs font-black px-3 py-1 rounded-full ${currentLevel.bgBadge} border ${currentLevel.border}">
+              ${currentLevel.badge}
+            </span>
+            <h3 class="text-xl sm:text-2xl font-black text-white pt-2">${currentLevel.title}</h3>
+            <div class="text-xs font-semibold text-purple-300 italic">${currentLevel.subtitle}</div>
+          </div>
+          <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 max-w-sm text-xs text-slate-300">
+            <strong class="text-amber-300">Mục tiêu cốt lõi:</strong> ${currentLevel.target}
           </div>
         </div>
 
-        <!-- Target & Mindset -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-1.5">
-            <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wide">
-              <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Mục Tiêu Cốt Lõi
-            </div>
-            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">${current.target}</p>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-1.5">
-            <div class="text-xs font-bold text-cyan-300 flex items-center gap-1.5 uppercase tracking-wide">
-              <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Triết Lý Tư Duy (Core Mindset)
-            </div>
-            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">${current.coreMindset}</p>
-          </div>
-        </div>
-
-        <!-- POWER QUESTIONS TOOLKIT -->
         <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <h4 class="text-sm font-black text-purple-300 flex items-center gap-2 uppercase tracking-wide">
-              <i data-lucide="help-circle" class="w-4 h-4 text-purple-400"></i> Bộ Câu Hỏi Quyền Lực (Power Questions Toolkit)
-            </h4>
-            <span class="text-[11px] text-slate-400">Bấm để sao chép</span>
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i> Tư Duy Cốt Lõi Của Cấp Độ Này:
           </div>
+          <p class="text-sm text-slate-200 leading-relaxed bg-slate-950/70 p-4 rounded-2xl border border-slate-800/80">
+            ${currentLevel.coreMindset}
+          </p>
+        </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            ${current.coreQuestions.map((item, qIdx) => `
-              <div onclick="copyQuestionToClipboard('${item.q.replace(/'/g, "\\'")}')" class="p-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 hover:border-purple-500/40 transition-all cursor-pointer group flex flex-col justify-between space-y-2">
-                <div class="text-xs sm:text-sm font-bold text-white group-hover:text-purple-300 transition-colors flex items-start gap-2">
-                  <span class="text-purple-400 font-mono font-bold">#${qIdx + 1}</span>
-                  <span>"${item.q}"</span>
+        <div class="space-y-3">
+          <div class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="help-circle" class="w-4 h-4 text-purple-400"></i> 4 Câu Hỏi Quyền Năng Đặc Trưng:
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            ${currentLevel.coreQuestions.map(q => `
+              <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800/90 space-y-1 hover:border-purple-500/40 transition-all">
+                <div class="text-sm font-bold text-white flex items-start gap-2">
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-purple-400 shrink-0 mt-0.5"></i>
+                  <span>"${q.q}"</span>
                 </div>
-                <div class="text-[11px] text-slate-400 flex items-center justify-between border-t border-slate-800/60 pt-2">
-                  <span class="italic">💡 ${item.note}</span>
-                  <i data-lucide="copy" class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-purple-400"></i>
-                </div>
+                <div class="text-xs text-slate-400 pl-6">${q.note}</div>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <!-- BEFORE & AFTER TRANSFORMATION -->
-        <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-slate-800 space-y-3">
-          <div class="text-xs font-black text-slate-300 uppercase tracking-wide flex items-center gap-2">
-            <i data-lucide="arrow-right-left" class="w-4 h-4 text-amber-400"></i> Minh Họa Chuyển Hóa (Before ➔ After)
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <div class="p-3.5 rounded-xl bg-red-950/20 border border-red-500/30 space-y-1">
-              <div class="text-[11px] font-bold text-rose-400 flex items-center gap-1.5">
-                <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Câu Hỏi Tầm Thường / Bề Mặt:
-              </div>
-              <p class="text-slate-200 italic">"${current.beforeAfter.weak}"</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">
+            <div class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-emerald-400"></i> Chuyển Đổi Câu Hỏi Trước & Sau:
             </div>
-
-            <div class="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-1">
-              <div class="text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
-                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Nâng Cấp Lên Cấp Độ Này:
-              </div>
-              <p class="text-slate-100 font-medium">"${current.beforeAfter.elevated}"</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- COGNITIVE TRAP & MASTER QUOTE -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
-          <div class="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-start gap-2.5">
-            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
-            <div>
-              <strong class="text-amber-300 block mb-0.5">Bẫy Nhận Thức Cần Tránh:</strong>
-              <span class="text-slate-300 leading-relaxed">${current.cognitiveTrap}</span>
+            <div class="text-xs text-slate-300 space-y-1">
+              <div><strong class="text-red-400">Câu hỏi nông (Trước):</strong> "${currentLevel.beforeAfter.before}"</div>
+              <div><strong class="text-emerald-400">Câu hỏi sâu (Sau):</strong> "${currentLevel.beforeAfter.after}"</div>
+              <div class="text-slate-400 italic pt-1">${currentLevel.beforeAfter.explanation}</div>
             </div>
           </div>
 
-          <div class="p-3.5 rounded-xl bg-purple-950/20 border border-purple-500/30 flex items-start gap-2.5">
-            <i data-lucide="quote" class="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5"></i>
-            <div>
-              <strong class="text-purple-300 block mb-0.5">Lời Vàng Đại Trí Tuệ:</strong>
-              <span class="text-slate-300 italic leading-relaxed">${current.masterQuote}</span>
+          <div class="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-2">
+            <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> Bẫy Nhận Thức & Lời Dặn Của Đại Sư:
+            </div>
+            <div class="text-xs text-slate-300 space-y-1">
+              <div><strong class="text-red-300">Bẫy nhận thức:</strong> ${currentLevel.trap}</div>
+              <div class="italic text-purple-300 pt-1">"${currentLevel.quote}"</div>
             </div>
           </div>
         </div>
@@ -291,103 +634,64 @@ function selectThinkingLevel(idx) {
   renderThinkingView();
 }
 
-function copyQuestionToClipboard(q) {
-  navigator.clipboard.writeText(q).then(() => {
-    playSound('success');
-    alert('Đã sao chép câu hỏi vào bộ nhớ tạm: \n\n"' + q + '"');
-  }).catch(() => {});
-}
-
 // =========================================================================
-// TAB 2: ĐẤU TRƯỜNG NÂNG CẤP CÂU HỎI (THE QUESTION ELEVATOR)
+// TAB 3: THANG TIẾN HÓA CÂU HỎI
 // =========================================================================
 function renderThinkingElevatorTab() {
   const cases = window.THINKING_QUESTION_ELEVATOR_CASES || [];
-  const activeCase = cases.find(c => c.id === currentSelectedElevatorCaseId) || cases[0];
+  const currentCase = cases.find(c => c.id === currentSelectedElevatorCaseId) || cases[0];
 
   return `
     <div class="space-y-6">
-      <!-- INTRO CARD -->
-      <div class="p-5 rounded-2xl bg-gradient-to-r from-purple-950/40 to-slate-900 border border-purple-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h3 class="text-base font-black text-white flex items-center gap-2">
-            <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i> Đấu Trường Nâng Cấp Câu Hỏi (The Question Elevator)
-          </h3>
-          <p class="text-xs text-slate-300 mt-1 max-w-2xl">
-            Nhìn thấy tận mắt một câu hỏi ngây ngô được "phù phép" từng nấc thang tư duy để tiến hóa thành câu hỏi của những bộ óc vĩ đại nhất nhân loại.
-          </p>
-        </div>
-
-        <!-- Case Switchers -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          ${cases.map(c => `
-            <button onclick="selectElevatorCase('${c.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-              c.id === activeCase.id
-                ? 'bg-amber-400 text-slate-950 shadow-md font-black'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-            }">
-              ${c.topic}
-            </button>
-          `).join('')}
-        </div>
+      <div class="border-b border-slate-800 pb-4">
+        <h3 class="text-lg font-black text-white flex items-center gap-2">
+          <i data-lucide="arrow-up-right" class="w-5 h-5 text-purple-400"></i>
+          Thang Tiến Hóa Câu Hỏi Qua 3 Tình Huống Thực Tế
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">Chứng kiến một câu hỏi bình dân tiến hóa qua 7 nấc thang nhận thức để chạm tới tầng Giáo sư.</p>
       </div>
 
-      <!-- CUSTOM QUESTION LAB -->
-      <div class="p-5 rounded-2xl bg-cardBg border border-slate-800 space-y-3">
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center justify-between">
-          <span>⚡ Nhập Câu Hỏi Bất Kỳ Của Bạn Để Phân Tích:</span>
-          <span class="text-slate-500 font-normal lowercase">thử nghiệm tương tác</span>
-        </label>
-        <div class="flex flex-col sm:flex-row gap-2.5">
-          <input type="text" id="customUserQuestionInput" placeholder="Ví dụ: Làm sao để tìm được công việc lương cao? / Làm sao kinh doanh online không phá sản?..." class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-400 shadow-inner">
-          <button onclick="elevateCustomUserQuestion()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:brightness-110 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all">
-            <i data-lucide="zap" class="w-4 h-4"></i> Nâng Cấp Ngay
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none pb-1">
+        ${cases.map(c => `
+          <button onclick="selectElevatorCase('${c.id}')" class="px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 whitespace-nowrap ${
+            c.id === currentSelectedElevatorCaseId
+              ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/25 border border-purple-400'
+              : 'bg-cardBg hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800'
+          }">
+            <i data-lucide="target" class="w-4 h-4 text-purple-300"></i>
+            <span>${c.topic}</span>
           </button>
-        </div>
+        `).join('')}
       </div>
 
-      <!-- EVOLUTION STAIRCASE -->
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="text-xs font-mono font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="trending-up" class="w-4 h-4"></i> Tiến Hóa Qua 7 Nấc Thang: "${activeCase.originalQuestion}"
+      <div class="p-6 rounded-3xl bg-cardBg border border-purple-500/30 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <span class="text-xs font-bold text-purple-300 uppercase tracking-wider">Chủ Đề Thực Chiến:</span>
+            <h4 class="text-xl font-black text-white">${currentCase.topic}</h4>
           </div>
-          <span class="text-[11px] text-slate-400 font-mono">7 Tầng Tư Duy</span>
+          <div class="text-xs text-slate-400 italic max-w-sm text-right">
+            "${currentCase.rawQuestion}" ➔ Tiến hóa qua 7 nấc thang bên dưới:
+          </div>
         </div>
 
-        <div class="space-y-3">
-          ${activeCase.levels.map((lvlItem, idx) => {
-            const isMonster = lvlItem.level === 7;
-            return `
-              <div class="p-4 sm:p-5 rounded-2xl transition-all ${
-                isMonster
-                  ? 'bg-gradient-to-r from-slate-950 via-purple-950/40 to-slate-950 border-2 border-amber-400/60 shadow-xl shadow-amber-500/10'
-                  : 'bg-cardBg border border-slate-800 hover:border-slate-700'
-              } space-y-2">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black ${
-                      isMonster ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-purple-400'
-                    }">
-                      ${isMonster ? '👑' : lvlItem.level}
-                    </span>
-                    <strong class="text-xs font-black ${isMonster ? 'text-amber-300 text-sm' : 'text-slate-300'}">
-                      ${lvlItem.title}
-                    </strong>
-                  </div>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full ${
-                    isMonster ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40 font-black' : 'bg-slate-800 text-slate-400 font-mono'
-                  }">
-                    ${isMonster ? 'ĐỈNH CAO KHAI PHÁ' : 'Tầng ' + lvlItem.level}
+        <div class="space-y-3 pt-2">
+          ${currentCase.levels.map(step => `
+            <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center justify-center font-black text-xs">
+                    ${step.level}
                   </span>
+                  <span class="text-xs font-bold text-purple-300">${step.name}</span>
                 </div>
-
-                <p class="text-xs sm:text-sm ${isMonster ? 'text-white font-semibold' : 'text-slate-200'} pl-8 leading-relaxed">
-                  "${lvlItem.q}"
-                </p>
+                <div class="text-sm font-bold text-white pl-8">"${step.question}"</div>
               </div>
-            `;
-          }).join('')}
+              <div class="text-xs text-slate-400 italic sm:text-right sm:max-w-xs pl-8 sm:pl-0">
+                ${step.shift}
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
     </div>
@@ -400,214 +704,130 @@ function selectElevatorCase(caseId) {
   renderThinkingView();
 }
 
-function elevateCustomUserQuestion() {
-  const input = document.getElementById('customUserQuestionInput');
-  const q = (input ? input.value : '').trim();
-  if (!q) {
-    alert('Vui lòng nhập câu hỏi bạn muốn nâng cấp!');
-    return;
-  }
-
-  playSound('success');
-  alert(`⚡ PHÂN TÍCH NÂNG CẤP CÂU HỎI CỦA BẠN: \n"${q}"\n\n` +
-    `1. Căn Bản (Factual): Xác định rõ sự thật, con số đo lường cụ thể của vấn đề.\n` +
-    `2. Cơ Chế (Mechanism): Áp dụng 5 Whys - Tìm nguyên nhân gốc rễ đằng sau.\n` +
-    `3. Nguyên Lý Đầu Tiên (First Principles): Tước bỏ thói quen xã hội, phân rã về bản chất vật lý tối thiểu.\n` +
-    `4. Nghịch Đảo Munger (Inversion): Làm thế nào để điều này thất bại thảm hại nhất, rồi né tránh triệt để?\n` +
-    `5. Hệ Thống (Second-Order): Và rồi sau đó thì sao? Hậu quả sau 3 năm là gì?\n` +
-    `👑 Cấp Độ Giáo Sư Khủng: Liệu chúng ta có đang hùng hục giải đúng đáp án cho một CÂU HỎI SAI không? Bản chất thực tại sâu nhất ở đây là gì?`
-  );
-}
-
 // =========================================================================
-// TAB 3: KHO 12 MÔ HÌNH TƯ DUY KINH ĐIỂN (MENTAL MODELS)
-// =========================================================================
-function renderThinkingModelsTab() {
-  const models = window.THINKING_MENTAL_MODELS_12 || [];
-  const progress = getThinkingProgress();
-  const masteredMap = progress.masteredModels || {};
-
-  return `
-    <div class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
-        <div>
-          <h3 class="text-lg font-black text-white flex items-center gap-2">
-            <i data-lucide="brain" class="w-5 h-5 text-purple-400"></i> Kho 12 Mô Hình Tư Duy Kinh Điển Của Các Bậc Thầy
-          </h3>
-          <p class="text-xs text-slate-400 mt-0.5">Bấm nút "Đã Nắm Vững" trên từng mô hình để lưu vào hồ sơ trí tuệ cá nhân (tự động đồng bộ Cloudflare).</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        ${models.map(m => {
-          const isMastered = !!masteredMap[m.id];
-          return `
-            <div class="p-5 rounded-3xl bg-cardBg border ${isMastered ? 'border-amber-400/50 shadow-amber-500/10' : 'border-slate-800 hover:border-slate-700'} shadow-xl flex flex-col justify-between space-y-4 transition-all">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr ${m.color} flex items-center justify-center text-white shadow-md">
-                    <i data-lucide="${m.icon}"></i>
-                  </div>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full ${isMastered ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40 font-bold' : 'bg-slate-800 text-slate-400'} font-mono">
-                    ${isMastered ? '👑 ĐÃ NẮM VỮNG' : m.badge}
-                  </span>
-                </div>
-
-                <div>
-                  <h4 class="text-base font-black text-white">${m.name}</h4>
-                  <div class="text-[11px] text-slate-400 font-mono">${m.origName} • ${m.master}</div>
-                </div>
-
-                <p class="text-xs text-slate-300 leading-relaxed">${m.summary}</p>
-
-                <!-- Trigger Question -->
-                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-1">
-                  <span class="text-[10px] font-bold text-amber-300 block uppercase tracking-wider">⚡ Câu Hỏi Kích Hoạt Tư Duy:</span>
-                  <p class="text-xs text-slate-100 italic font-medium">${m.triggerQuestion}</p>
-                </div>
-
-                <!-- How to apply -->
-                <div class="text-[11px] text-slate-300 space-y-1">
-                  <strong class="text-cyan-300 block">🛠️ Cách Áp Dụng:</strong>
-                  <p class="text-slate-400 leading-relaxed">${m.howToApply}</p>
-                </div>
-              </div>
-
-              <!-- Action button -->
-              <div class="border-t border-slate-800 pt-3">
-                <button onclick="toggleMasterMentalModel('${m.id}')" class="w-full py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                  isMastered
-                    ? 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/40 shadow-sm'
-                    : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700'
-                }">
-                  <i data-lucide="${isMastered ? 'check-circle-2' : 'circle'}" class="w-4 h-4"></i>
-                  <span>${isMastered ? 'Đã Nắm Vững (Bấm để hủy)' : 'Đánh Dấu Đã Nắm Vững'}</span>
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-  `;
-}
-
-function toggleMasterMentalModel(modelId) {
-  playSound('click');
-  const progress = getThinkingProgress();
-  if (!progress.masteredModels) progress.masteredModels = {};
-  progress.masteredModels[modelId] = !progress.masteredModels[modelId];
-  saveThinkingProgress(progress);
-  playSound(progress.masteredModels[modelId] ? 'success' : 'click');
-  renderThinkingView();
-}
-
-// =========================================================================
-// TAB 4: ĐẤU TRƯỜNG VẤN ĐÁP PHẢN BIỆN (SOCRATIC ARENA)
+// TAB 4: ĐẤU TRƯỜNG SOCRATIC
 // =========================================================================
 function renderThinkingArenaTab() {
   const scenarios = window.THINKING_PRACTICE_SCENARIOS || [];
-  const activeScen = scenarios[currentArenaScenarioIndex] || scenarios[0];
+  const currentScenario = scenarios[currentArenaScenarioIndex] || scenarios[0];
   const progress = getThinkingProgress();
-  const answered = (progress.arenaAnswers || {})[activeScen.id];
+  const arenaAnswers = progress.arenaAnswers || {};
+  const answeredChoice = arenaAnswers[currentScenario.id];
 
   return `
-    <div class="max-w-3xl mx-auto space-y-6">
-      <!-- Scenario Selector Header -->
+    <div class="space-y-6">
       <div class="flex items-center justify-between border-b border-slate-800 pb-4">
         <div>
-          <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">🎯 Thử Thách Vấn Đáp Socrates #${currentArenaScenarioIndex + 1}/${scenarios.length}</span>
-          <h3 class="text-lg font-black text-white mt-0.5">${activeScen.title}</h3>
+          <h3 class="text-lg font-black text-white flex items-center gap-2">
+            <i data-lucide="swords" class="w-5 h-5 text-purple-400"></i> Đấu Trường Socratic: Nâng Cấp Câu Hỏi
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Đặt mình vào tình huống thực tế và lựa chọn câu hỏi mang tầm vóc Giáo sư.</p>
         </div>
-
-        <div class="flex items-center gap-1.5">
-          ${scenarios.map((s, sIdx) => `
-            <button onclick="selectArenaScenario(${sIdx})" class="w-8 h-8 rounded-xl text-xs font-bold transition-all ${
-              sIdx === currentArenaScenarioIndex
-                ? 'bg-emerald-500 text-slate-950 font-black shadow'
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }">
-              ${sIdx + 1}
-            </button>
-          `).join('')}
+        <div class="text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40">
+          Tình huống ${currentArenaScenarioIndex + 1} / ${scenarios.length}
         </div>
       </div>
 
-      <!-- CONTEXT CARD -->
-      <div class="p-5 rounded-2xl bg-cardBg border border-slate-800 space-y-3">
-        <div class="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-2">
-          <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Tình Huống Thực Tế:
+      <div class="p-6 sm:p-8 rounded-3xl bg-cardBg border border-purple-500/30 shadow-2xl space-y-6">
+        <div class="space-y-2">
+          <span class="text-[11px] font-bold text-amber-300 uppercase tracking-wider">Tình Huống Thử Thách:</span>
+          <h4 class="text-xl font-black text-white">${currentScenario.title}</h4>
+          <p class="text-sm text-slate-300 leading-relaxed bg-slate-950 p-4 rounded-2xl border border-slate-800">
+            ${currentScenario.context}
+          </p>
         </div>
-        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium bg-slate-950/70 p-4 rounded-xl border border-slate-800/80">
-          "${activeScen.context}"
-        </p>
-        <div class="text-xs font-bold text-white pt-2">
-          👉 ${activeScen.questionToAsk}
+
+        <div class="space-y-3">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            Nếu là bạn, bạn sẽ dùng câu hỏi nào để xoay chuyển hoàn toàn tình thế?
+          </div>
+          <div class="space-y-2.5">
+            ${currentScenario.options.map(opt => {
+              const isSelected = answeredChoice === opt.id;
+              const hasAnswered = !!answeredChoice;
+              let btnStyle = 'bg-slate-950 hover:bg-slate-900 border-slate-800 text-slate-300';
+              if (hasAnswered) {
+                if (opt.isBest) {
+                  btnStyle = 'bg-emerald-950/40 border-emerald-500 text-emerald-200 font-bold';
+                } else if (isSelected) {
+                  btnStyle = 'bg-red-950/40 border-red-500 text-red-200';
+                }
+              }
+
+              return `
+                <button
+                  onclick="selectArenaAnswer('${currentScenario.id}', '${opt.id}')"
+                  ${hasAnswered ? 'disabled' : ''}
+                  class="w-full p-4 rounded-2xl border text-left transition-all flex items-start gap-3 ${btnStyle}"
+                >
+                  <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-black text-xs shrink-0 mt-0.5">
+                    ${opt.id}
+                  </span>
+                  <div class="space-y-1">
+                    <div class="text-sm font-semibold">${opt.text}</div>
+                    <div class="text-[11px] text-slate-400 italic">${opt.level}</div>
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </div>
         </div>
-      </div>
 
-      <!-- OPTIONS LIST -->
-      <div class="space-y-3">
-        ${activeScen.options.map((opt, optIdx) => {
-          const isSelected = answered && answered.optIndex === optIdx;
-          return `
-            <div onclick="answerArenaScenario(${optIdx})" class="p-4 rounded-2xl border transition-all cursor-pointer ${
-              answered
-                ? opt.isBest
-                  ? 'bg-emerald-950/30 border-emerald-500/60 shadow-lg'
-                  : isSelected
-                    ? 'bg-rose-950/30 border-rose-500/60'
-                    : 'bg-cardBg border-slate-800 opacity-60'
-                : 'bg-cardBg hover:bg-slate-800/70 border-slate-800 hover:border-emerald-500/40'
-            } space-y-2">
-              <div class="flex items-start gap-3">
-                <span class="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 flex-shrink-0 mt-0.5">
-                  ${String.fromCharCode(65 + optIdx)}
-                </span>
-                <div class="text-xs sm:text-sm text-slate-100 font-medium">
-                  "${opt.text}"
-                </div>
-              </div>
-
-              ${answered ? `
-                <div class="pl-9 pt-2 border-t border-slate-800/60 text-xs ${opt.isBest ? 'text-emerald-300' : 'text-rose-300'}">
-                  <strong>${opt.isBest ? '👑 ĐÁP ÁN BẬC THẦY' : '⚠️ CHƯA ĐẠT CẤP ĐỘ CAO'}:</strong> ${opt.explanation}
-                </div>
-              ` : ''}
+        ${answeredChoice ? `
+          <div class="p-5 rounded-2xl bg-purple-950/30 border border-purple-500/40 space-y-2 animate-fadeIn">
+            <div class="text-xs font-bold text-purple-300 flex items-center gap-1.5 uppercase tracking-wide">
+              <i data-lucide="award" class="w-4 h-4 text-amber-400"></i> Phân Tích Của Bậc Thầy Socratic:
             </div>
-          `;
-        }).join('')}
+            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+              ${currentScenario.explanation}
+            </p>
+          </div>
+        ` : ''}
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+          <button
+            onclick="prevArenaScenario()"
+            ${currentArenaScenarioIndex === 0 ? 'disabled' : ''}
+            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-300 text-xs font-bold transition-all"
+          >
+            ← Tình Huống Trước
+          </button>
+
+          <button
+            onclick="nextArenaScenario()"
+            ${currentArenaScenarioIndex === scenarios.length - 1 ? 'disabled' : ''}
+            class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-30 text-white text-xs font-bold transition-all flex items-center gap-2"
+          >
+            <span>Tình Huống Tiếp Theo</span> →
+          </button>
+        </div>
       </div>
     </div>
   `;
 }
 
-function selectArenaScenario(idx) {
+function selectArenaAnswer(scenarioId, optionId) {
   playSound('click');
-  currentArenaScenarioIndex = idx;
-  renderThinkingView();
-}
-
-function answerArenaScenario(optIdx) {
-  const scenarios = window.THINKING_PRACTICE_SCENARIOS || [];
-  const activeScen = scenarios[currentArenaScenarioIndex];
-  if (!activeScen) return;
-
-  const opt = activeScen.options[optIdx];
   const progress = getThinkingProgress();
-  if (!progress.arenaAnswers) progress.arenaAnswers = {};
-  progress.arenaAnswers[activeScen.id] = { optIndex: optIdx, isBest: !!opt.isBest };
-
+  progress.arenaAnswers = progress.arenaAnswers || {};
+  progress.arenaAnswers[scenarioId] = optionId;
   saveThinkingProgress(progress);
-  playSound(opt.isBest ? 'success' : 'click');
   renderThinkingView();
 }
 
-// Auto initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(renderThinkingView, 150);
-  });
-} else {
-  setTimeout(renderThinkingView, 150);
+function prevArenaScenario() {
+  if (currentArenaScenarioIndex > 0) {
+    playSound('click');
+    currentArenaScenarioIndex--;
+    renderThinkingView();
+  }
+}
+
+function nextArenaScenario() {
+  const scenarios = window.THINKING_PRACTICE_SCENARIOS || [];
+  if (currentArenaScenarioIndex < scenarios.length - 1) {
+    playSound('click');
+    currentArenaScenarioIndex++;
+    renderThinkingView();
+  }
 }
