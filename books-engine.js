@@ -1,14 +1,16 @@
-// ==========================================
-// THƯ VIỆN SÁCH TINH HOA (7 NỐT NHẠC) - UI ENGINE
-// Quản lý hiển thị kệ sách, lọc thể loại và mổ xẻ chi tiết 4 tầng
-// ==========================================
+// =========================================================================
+// THƯ VIỆN SÁCH TINH HOA - BỘ ĐIỀU KHIỂN GIAO DIỆN CHUẨN 100% (7 NỐT NHẠC)
+// Render Kệ Sách, Bộ Lọc Thể Loại, Cẩm Nang Phương Pháp Luận và Bàn Mổ Xẻ 6 Tầng
+// =========================================================================
 
 let currentBookGenre = 'all';
 let currentBookSearchQuery = '';
 let activeDetailBookId = null;
+let isMethodologyGuideOpen = false;
 
 function initBooksLibrary() {
   renderBooksGenresBar();
+  renderBooksMethodologyBanner();
   renderBooksGrid();
 }
 
@@ -37,7 +39,7 @@ function renderBooksGenresBar() {
 function selectBookGenre(genreId) {
   if (typeof playSound === 'function') playSound('click');
   currentBookGenre = genreId;
-  activeDetailBookId = null; // reset detail if open
+  activeDetailBookId = null;
   renderBooksGenresBar();
   renderBooksGrid();
 }
@@ -45,6 +47,96 @@ function selectBookGenre(genreId) {
 function handleBookSearch(query) {
   currentBookSearchQuery = (query || '').trim().toLowerCase();
   renderBooksGrid();
+}
+
+// Toggle Methodology Guide Box
+function toggleMethodologyGuide() {
+  if (typeof playSound === 'function') playSound('click');
+  isMethodologyGuideOpen = !isMethodologyGuideOpen;
+  renderBooksMethodologyBanner();
+}
+
+function renderBooksMethodologyBanner() {
+  const container = document.getElementById('booksMethodologyContainer');
+  if (!container) return;
+
+  const guide = window.BOOKS_METHODOLOGY_GUIDE;
+  if (!guide) return;
+
+  if (!isMethodologyGuideOpen) {
+    container.innerHTML = `
+      <div onclick="toggleMethodologyGuide()" class="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/30 border border-amber-500/30 hover:border-amber-500/60 p-4 sm:p-5 flex items-center justify-between cursor-pointer transition-all shadow-md group">
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg border border-amber-500/30 group-hover:scale-105 transition-transform">
+            <i data-lucide="book-open-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="text-xs sm:text-sm font-bold text-white group-hover:text-amber-300 transition-colors flex items-center gap-2">
+              <span>Cẩm Nang Phương Pháp Luận "7 Nốt Nhạc" Của Các Giáo Sư Đỉnh Cao</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Chuẩn 100%</span>
+            </div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Dựa trên 4 công trình khoa học kinh điển: Syntopical Reading, 3-Pass Method, Zettelkasten và Thuyết Tải Nhận Thức.</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
+          <span>Xem Phương Pháp Luận</span>
+          <i data-lucide="chevron-down" class="w-4 h-4"></i>
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="rounded-3xl bg-slate-900 border-2 border-amber-500/50 p-6 sm:p-8 space-y-6 shadow-2xl relative">
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-1">
+            <div class="text-xs font-black tracking-wider uppercase text-amber-400 flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4"></i> CƠ SỞ KHOA HỌC CHUẨN 100%
+            </div>
+            <h2 class="text-lg sm:text-2xl font-black text-white">${guide.title}</h2>
+            <p class="text-xs sm:text-sm text-slate-300">${guide.subtitle}</p>
+          </div>
+          <button onclick="toggleMethodologyGuide()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center gap-1.5 text-xs font-bold transition-all">
+            <i data-lucide="x" class="w-4 h-4"></i> Đóng Lại
+          </button>
+        </div>
+
+        <!-- 4 Scientific Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${guide.scientificBasis.map((sb, idx) => `
+            <div class="p-4 rounded-2xl bg-black/40 border border-slate-800 space-y-1.5">
+              <div class="flex items-center justify-between text-xs font-bold text-amber-300">
+                <span>#${idx + 1}. ${sb.name}</span>
+              </div>
+              <div class="text-[11px] text-cyan-300 font-medium">${sb.author}</div>
+              <p class="text-xs text-slate-300 leading-relaxed">${sb.summary}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- 7 Canonical Notes Matrix -->
+        <div class="space-y-3 pt-2 border-t border-slate-800">
+          <div class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="music-2" class="w-4 h-4 text-yellow-400"></i> BẢNG MÃ HÓA KHUÔN MẪU ĐÚNG ĐỦ 7 NỐT NHẠC CHO MỌI CUỐN SÁCH:
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            ${guide.the7CanonicalNotesGuide.map(n => `
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-black flex items-center justify-center">
+                    ${n.note}
+                  </span>
+                  <span class="text-xs font-bold text-white">${n.name}</span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">${n.role}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (window.lucide) lucide.createIcons();
 }
 
 // 2. Render Book Grid (Tầng 2)
@@ -56,20 +148,19 @@ function renderBooksGrid() {
 
   if (!listScreen || !gridContainer) return;
 
-  // Ensure list is shown, detail is hidden
   listScreen.classList.remove('hidden');
   if (detailScreen) detailScreen.classList.add('hidden');
 
-  let filtered = MASTER_BOOKS_DATA;
+  let filtered = window.MASTER_BOOKS_DATA || [];
   if (currentBookGenre !== 'all') {
     filtered = filtered.filter(b => b.genreId === currentBookGenre);
   }
   if (currentBookSearchQuery) {
     filtered = filtered.filter(b => 
       b.title.toLowerCase().includes(currentBookSearchQuery) ||
-      b.subTitle.toLowerCase().includes(currentBookSearchQuery) ||
+      b.origTitle.toLowerCase().includes(currentBookSearchQuery) ||
       b.author.toLowerCase().includes(currentBookSearchQuery) ||
-      b.bigIdea.toLowerCase().includes(currentBookSearchQuery)
+      b.axiom.toLowerCase().includes(currentBookSearchQuery)
     );
   }
 
@@ -114,7 +205,7 @@ function renderBooksGrid() {
             <h3 class="text-lg sm:text-xl font-bold text-white group-hover:text-amber-300 transition-colors leading-snug">
               ${book.title}
             </h3>
-            <div class="text-xs text-slate-400 font-medium mt-0.5">${book.author} (${book.subTitle})</div>
+            <div class="text-xs text-slate-400 font-medium mt-0.5 line-clamp-1">${book.author}</div>
           </div>
 
           <!-- Short Desc -->
@@ -122,20 +213,20 @@ function renderBooksGrid() {
             ${book.shortDesc}
           </p>
 
-          <!-- The Big Idea Preview -->
+          <!-- Axiom Preview -->
           <div class="p-3 rounded-xl bg-slate-950/70 border border-amber-500/20 text-xs text-amber-200/90 italic flex items-start gap-2">
             <i data-lucide="quote" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5"></i>
-            <span class="line-clamp-2">"${book.bigIdea}"</span>
+            <span class="line-clamp-2">"${book.axiom}"</span>
           </div>
         </div>
 
         <!-- Bottom Action CTA -->
         <div class="pt-5 mt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
           <span class="text-slate-400 font-medium flex items-center gap-1.5">
-            <i data-lucide="music-2" class="w-3.5 h-3.5 text-yellow-400"></i> ${book.coreNotes.length} Nốt Nhạc Cốt Lõi
+            <i data-lucide="music-2" class="w-3.5 h-3.5 text-yellow-400"></i> Đủ 7 Nốt Nhạc Cốt Lõi
           </span>
           <span class="text-amber-400 font-bold group-hover:text-amber-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-            Mở Mổ Xẻ Sách <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            Mổ Xẻ Sách Chuẩn 100% <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
           </span>
         </div>
       </div>
@@ -145,12 +236,12 @@ function renderBooksGrid() {
   if (window.lucide) lucide.createIcons();
 }
 
-// 3. Render Book Detail (Tầng 3: Mổ Xẻ 4 Tầng)
+// 3. Render Book Detail (Bàn Mổ Xẻ 6 Tầng Sâu Sắc)
 function openBookDetail(bookId) {
   if (typeof playSound === 'function') playSound('click');
   activeDetailBookId = bookId;
 
-  const book = MASTER_BOOKS_DATA.find(b => b.id === bookId);
+  const book = window.MASTER_BOOKS_DATA.find(b => b.id === bookId);
   if (!book) return;
 
   const listScreen = document.getElementById('booksListScreen');
@@ -183,14 +274,17 @@ function renderBookDetailHTML(book) {
     <div class="space-y-8 animate-in fade-in duration-200">
       
       <!-- Top Navigation & Return Bar -->
-      <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+      <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-md">
         <button onclick="closeBookDetail()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-500/40 text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-md">
           <i data-lucide="arrow-left" class="w-4 h-4"></i> Quay Lại Kệ Sách
         </button>
         <div class="flex items-center gap-2">
-          <span class="text-xs text-slate-400 hidden sm:inline">Thời gian nạp tinh hoa:</span>
+          <span class="text-xs text-slate-400 hidden sm:inline">Khung giờ nạp tinh hoa:</span>
           <span class="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center gap-1.5">
             <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${book.readingTime}
+          </span>
+          <span class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold hidden md:flex items-center gap-1.5">
+            <i data-lucide="music-2" class="w-3.5 h-3.5"></i> Đủ Đáng 7 Nốt Nhạc
           </span>
         </div>
       </div>
@@ -206,10 +300,12 @@ function renderBookDetailHTML(book) {
               <span class="px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold">
                 ${book.badge}
               </span>
-              <span class="text-xs text-slate-400 font-semibold">• ${book.genreName} • Xuất bản năm ${book.year}</span>
+              <span class="text-xs text-slate-400 font-semibold">• ${book.genreName} • Năm ${book.year}</span>
             </div>
             <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">${book.title}</h1>
-            <div class="text-sm sm:text-base text-amber-300/90 font-medium">Tác giả: <strong>${book.author}</strong> (${book.subTitle})</div>
+            <div class="text-sm sm:text-base text-amber-300/90 font-medium">Tác giả: <strong>${book.author}</strong></div>
+            <div class="text-xs text-slate-400 italic font-mono">Tên gốc: "${book.origTitle}"</div>
+            <div class="text-xs text-cyan-300/80 pt-0.5">Nguồn học thuật: ${book.academicSource}</div>
             <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed pt-1">
               ${book.shortDesc}
             </p>
@@ -217,95 +313,152 @@ function renderBookDetailHTML(book) {
         </div>
       </div>
 
-      <!-- TẦNG 1: THE BIG IDEA (Ý NIỆM TỐI THƯỢNG) -->
+      <!-- TẦNG 1: TIÊN ĐỀ CHÂN LÝ TUYỆT ĐỐI (AXIOM) -->
       <div class="rounded-3xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/30 border-2 border-amber-500/50 p-6 sm:p-8 shadow-xl relative overflow-hidden">
         <div class="flex items-center gap-2 text-xs font-black text-amber-400 tracking-wider uppercase mb-2">
-          <i data-lucide="crown" class="w-4 h-4"></i> TẦNG 1: Ý NIỆM TỐI THƯỢNG (THE ONE BIG IDEA)
+          <i data-lucide="crown" class="w-4 h-4"></i> TẦNG 1: TIÊN ĐỀ CHÂN LÝ TUYỆT ĐỐI (THE ONE THING)
         </div>
         <h2 class="text-xl sm:text-2xl font-black text-white leading-snug mb-4">
-          "${book.bigIdea}"
+          "${book.axiom}"
         </h2>
-        <div class="p-4 rounded-2xl bg-black/40 border border-amber-500/20 text-xs sm:text-sm text-slate-300 leading-relaxed italic flex items-start gap-3">
+        <div class="p-4 rounded-2xl bg-black/50 border border-amber-500/20 text-xs sm:text-sm text-slate-300 leading-relaxed italic flex items-start gap-3">
           <i data-lucide="quote" class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"></i>
-          <div>${book.bigIdeaQuote}</div>
+          <div>${book.masterQuote}</div>
         </div>
       </div>
 
-      <!-- TẦNG 2: BỘ NỐT NHẠC NGUYÊN LÝ CỐT LÕI -->
+      <!-- TẦNG 2: BỘ ĐỦ ĐÚNG 7 NỐT NHẠC BẤT BIẾN (CHUẨN 100%) -->
       <div class="space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-white">
             <i data-lucide="music-2" class="w-5 h-5 text-yellow-400"></i>
-            <span>TẦNG 2: BỘ ${book.coreNotes.length} NỐT NHẠC BẤT BIẾN (HỌC ĐỂ CHƠI MỌI BÀI HÁT)</span>
+            <span>TẦNG 2: BỘ ĐỦ ĐÚNG 7 NỐT NHẠC BẤT BIẾN (TỪ NỐT 1 ĐẾN NỐT 7)</span>
           </div>
-          <span class="text-xs text-slate-400">Rút xương sống 300 trang</span>
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 font-mono">
+            Khuôn Mẫu 7 Nốt Chuẩn Xác 100%
+          </span>
         </div>
 
         <div class="grid grid-cols-1 gap-4">
-          ${book.coreNotes.map(note => `
+          ${book.the7Notes.map(n => `
             <div class="rounded-2xl bg-cardBg border border-slate-800 p-5 sm:p-7 space-y-3.5 hover:border-amber-500/40 transition-all shadow-lg">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3">
-                  <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-600 text-black font-black text-sm flex items-center justify-center shadow-md flex-shrink-0">
-                    ${note.number}
+                  <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-600 text-black font-black text-sm flex items-center justify-center shadow-md flex-shrink-0">
+                    NỐT ${n.note}
                   </span>
-                  <h3 class="text-base sm:text-lg font-bold text-white">${note.title}</h3>
+                  <h3 class="text-base sm:text-lg font-bold text-white">${n.title}</h3>
                 </div>
               </div>
 
               <!-- Rule Box -->
               <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs sm:text-sm font-semibold text-amber-200">
-                <strong class="text-amber-400">Quy Luật Bất Biến:</strong> ${note.rule}
+                <strong class="text-amber-400">Quy Luật Bất Biến:</strong> ${n.rule}
               </div>
 
               <!-- Explanation -->
               <div class="text-xs sm:text-sm text-slate-300 leading-relaxed space-y-1">
-                <strong class="text-slate-100">Bản Chất:</strong> ${note.explanation}
+                <strong class="text-slate-100">Bản Chất Giải Phẫu:</strong> ${n.explanation}
               </div>
 
-              <!-- Real Example -->
+              <!-- Key Insight -->
               <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 leading-relaxed flex items-start gap-2.5">
-                <i data-lucide="lightbulb" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
-                <div><strong class="text-emerald-400">Ví Dụ Thực Tế Ngoài Đời:</strong> ${note.realExample}</div>
+                <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5"></i>
+                <div><strong class="text-cyan-400">Điểm Đột Phá Khai Sáng:</strong> ${n.keyInsight}</div>
               </div>
             </div>
           `).join('')}
         </div>
       </div>
 
-      <!-- TẦNG 3: THUẬT TOÁN HÀNH ĐỘNG ĐỜI THỰC (IF-THEN) -->
+      <!-- TẦNG 3: THUẬT TOÁN THỰC THI 4 BƯỚC (STEP-BY-STEP ALGORITHM) -->
       <div class="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-4 shadow-xl">
-        <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-white">
-          <i data-lucide="play-circle" class="w-5 h-5 text-emerald-400"></i>
-          <span>TẦNG 3: THUẬT TOÁN HÀNH ĐỘNG ĐỜI THỰC (KHI NÀO DÙNG & DÙNG THẾ NÀO?)</span>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-white">
+            <i data-lucide="play-circle" class="w-5 h-5 text-emerald-400"></i>
+            <span>TẦNG 3: THUẬT TOÁN THỰC THI 4 BƯỚC (HỌC ĐỂ LÀM NGAY)</span>
+          </div>
+          <span class="text-xs text-emerald-400 font-mono">Quy Trình 4 Bước</span>
         </div>
-        <p class="text-xs text-slate-400">Đọc sách mà không biến thành hành vi phản xạ là lãng phí thời gian. Đây là bộ kích hoạt phản xạ trong đời sống:</p>
+        <p class="text-xs text-slate-400">Chuyển hóa toàn bộ lý thuyết sách thành 4 bước hành động cụ thể không thể chối từ:</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-          ${book.actionAlgorithm.map((act, idx) => `
-            <div class="p-4 sm:p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 flex flex-col justify-between">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+          ${book.algorithm.map(alg => `
+            <div class="p-4 sm:p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5 flex flex-col justify-between">
               <div class="space-y-2">
                 <span class="text-[10px] font-black px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                  TÌNH HUỐNG KÍCH HOẠT #${idx + 1}
+                  BƯỚC ${alg.step}
                 </span>
-                <div class="text-xs font-semibold text-slate-200">
-                  <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-400 inline mr-1"></i> ${act.trigger}
+                <div class="text-xs sm:text-sm font-bold text-white">
+                  ${alg.title}
                 </div>
               </div>
-              <div class="p-3 rounded-xl bg-slate-900 border border-emerald-500/30 text-xs text-emerald-300 leading-relaxed font-medium">
-                <strong>Hành động:</strong> ${act.action}
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+                ${alg.desc}
               </div>
             </div>
           `).join('')}
         </div>
       </div>
 
-      <!-- TẦNG 4: MỎ NEO CUNG ĐIỆN KÝ ỨC (MEMORY PALACE ANCHOR) -->
+      <!-- TẦNG 4: BỘ CÂU HỎI SOCRATIC KHAI SÁNG (POWER QUESTIONS) -->
+      <div class="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-white">
+            <i data-lucide="help-circle" class="w-5 h-5 text-purple-400"></i>
+            <span>TẦNG 4: BỘ CÂU HỎI SOCRATIC KHAI SÁNG (TỰ VẤN ĐỈNH CAO)</span>
+          </div>
+          <span class="text-xs text-purple-300 font-mono">4 Câu Hỏi Sát Thủ</span>
+        </div>
+        <p class="text-xs text-slate-400">Đặt đúng câu hỏi là giải quyết được 80% vấn đề. Dùng 4 câu hỏi này để tự chất vấn bản thân:</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+          ${book.powerQuestions.map((q, idx) => `
+            <div class="p-4 rounded-2xl bg-black/40 border border-purple-500/30 space-y-2 flex items-start gap-3">
+              <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">
+                ${idx + 1}
+              </span>
+              <div class="text-xs sm:text-sm text-purple-100 font-semibold leading-relaxed">
+                "${q}"
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- TẦNG 5: CASE STUDY THỰC CHIẾN THẾ GIỚI -->
+      <div class="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-white">
+            <i data-lucide="target" class="w-5 h-5 text-blue-400"></i>
+            <span>TẦNG 5: CASE STUDY THỰC CHIẾN THẾ GIỚI (MINH CHỨNG SỰ THẬT)</span>
+          </div>
+          <span class="text-xs text-blue-300 font-mono">Thực Nghiệm Thực Tế</span>
+        </div>
+
+        <div class="p-5 sm:p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+          <div class="text-sm sm:text-base font-bold text-amber-300 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i> ${book.caseStudy.subject}
+          </div>
+          <div class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <strong class="text-slate-100">Bối cảnh:</strong> ${book.caseStudy.context}
+          </div>
+          <div class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <strong class="text-slate-100">Diễn biến & Kết quả:</strong> ${book.caseStudy.outcome}
+          </div>
+          <div class="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-xs sm:text-sm text-blue-200 font-semibold flex items-start gap-2">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5"></i>
+            <div><strong class="text-blue-300">Bài Học Xương Máu:</strong> ${book.caseStudy.lesson}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TẦNG 6: MỎ NEO CUNG ĐIỆN KÝ ỨC (MEMORY PALACE ANCHOR) -->
       <div class="rounded-3xl bg-gradient-to-r from-purple-950/30 via-slate-900 to-indigo-950/30 border border-purple-500/40 p-6 sm:p-8 space-y-4 shadow-xl">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-white">
             <i data-lucide="castle" class="w-5 h-5 text-purple-400"></i>
-            <span>TẦNG 4: MỎ NEO GHI NHỚ VĨNH VIỄN (CUNG ĐIỆN KÝ ỨC)</span>
+            <span>TẦNG 6: MỎ NEO GHI NHỚ VĨNH VIỄN (CUNG ĐIỆN KÝ ỨC)</span>
           </div>
           <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-mono">Nhớ Cả Đời</span>
         </div>
@@ -340,7 +493,7 @@ function renderBookDetailHTML(book) {
           <i data-lucide="arrow-left" class="w-4 h-4"></i> Hoàn Thành & Quay Lại Kệ Sách
         </button>
         <div class="text-xs text-slate-400 text-center sm:text-right">
-          Đã hoàn thành nạp tinh hoa cuốn <strong>${book.title}</strong> trong 15-20 phút.
+          Đã hoàn thành nạp tinh hoa cuốn <strong>${book.title}</strong> chuẩn 100% trong 15-20 phút.
         </div>
       </div>
 
