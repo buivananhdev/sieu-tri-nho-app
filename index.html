@@ -62,17 +62,20 @@
         </div>
 
         <!-- Navigation Tabs (Desktop) - 4 TRỤ CỘT CHUẨN MỰC TỐI GIẢN -->
-        <nav class="hidden md:flex items-center gap-2 text-sm font-semibold">
-          <button onclick="switchTab('overview')" class="nav-tab active flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all" data-tab="overview">
+        <nav class="hidden md:flex items-center gap-1.5 lg:gap-2 text-sm font-semibold">
+          <button onclick="switchTab('overview')" class="nav-tab active flex items-center gap-2 px-3 py-2 rounded-xl transition-all" data-tab="overview">
             <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i> Tổng Quan
           </button>
-          <button onclick="switchTab('subjects')" class="nav-tab flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all" data-tab="subjects">
+          <button onclick="switchTab('books')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-xl transition-all" data-tab="books">
+            <i data-lucide="library" class="w-4 h-4 text-emerald-400"></i> Thư Viện Sách
+          </button>
+          <button onclick="switchTab('subjects')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-xl transition-all" data-tab="subjects">
             <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-400"></i> Bách Khoa Môn Học
           </button>
-          <button onclick="switchTab('methods')" class="nav-tab flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all" data-tab="methods">
+          <button onclick="switchTab('methods')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-xl transition-all" data-tab="methods">
             <i data-lucide="brain" class="w-4 h-4 text-purple-400"></i> Phương Pháp Trí Não
           </button>
-          <button onclick="switchTab('practice')" class="nav-tab flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all" data-tab="practice">
+          <button onclick="switchTab('practice')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-xl transition-all" data-tab="practice">
             <i data-lucide="swords" class="w-4 h-4 text-emerald-400"></i> Đấu Trường & Luyện Tập
           </button>
         </nav>
@@ -94,6 +97,9 @@
   <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-slate-800 bg-darkBg/95 backdrop-blur-xl py-2 px-2 text-[11px] font-bold shadow-2xl safe-area-bottom">
     <button onclick="switchTab('overview')" class="mobile-nav-btn flex flex-col items-center gap-1 py-1 text-brand-400" data-tab="overview">
       <i data-lucide="compass" class="w-5 h-5"></i> Tổng Quan
+    </button>
+    <button onclick="switchTab('books')" class="mobile-nav-btn flex flex-col items-center gap-1 py-1 text-slate-400" data-tab="books">
+      <i data-lucide="library" class="w-5 h-5 text-emerald-400"></i> Sách Tinh Hoa
     </button>
     <button onclick="switchTab('subjects')" class="mobile-nav-btn flex flex-col items-center gap-1 py-1 text-slate-400" data-tab="subjects">
       <i data-lucide="graduation-cap" class="w-5 h-5 text-amber-400"></i> Môn Học
@@ -234,6 +240,26 @@
 
       </div>
 
+      
+      <!-- Master Books Library CTA Strip -->
+      <div class="rounded-2xl bg-gradient-to-r from-cardBg via-slate-900 to-emerald-950/40 border border-slate-800 hover:border-emerald-500/40 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-gradient-to-tr from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 font-bold shadow-md">
+            <i data-lucide="library" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="font-bold text-white flex items-center gap-2">
+              Thư Viện Sách Tinh Hoa (7 Nốt Nhạc)
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">15-30 Phút/Cuốn</span>
+            </div>
+            <div class="text-slate-300 text-xs mt-0.5">Bóc tách bộ khung xương bất biến của các cuốn sách vĩ đại thế giới (Cha Giàu Cha Nghèo, Tư Duy Nhanh Chậm, Atomic Habits...).</div>
+          </div>
+        </div>
+        <button onclick="switchTab('books')" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold text-sm border border-slate-700 transition-all shadow-md flex items-center gap-1.5 whitespace-nowrap">
+          Vào Thư Viện Sách <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
       <!-- Personal Subjects CTA Strip -->
       <div class="rounded-2xl bg-gradient-to-r from-cardBg via-slate-900 to-amber-950/40 border border-slate-800 hover:border-amber-500/40 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all">
         <div class="flex items-center gap-4">
@@ -252,6 +278,70 @@
           Vào Kho Môn Học <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </button>
       </div>
+    </section>
+
+    <!-- TAB: THƯ VIỆN SÁCH TINH HOA (7 NỐT NHẠC) -->
+    <section id="tab-books" class="tab-content hidden space-y-8">
+      
+      <!-- SCREEN 1: KỆ SÁCH & BỘ LỌC THỂ LOẠI -->
+      <div id="booksListScreen" class="space-y-6">
+        
+        <!-- Header & Stats Overview -->
+        <div class="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 border border-slate-800 p-6 sm:p-8 shadow-xl space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-black tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i> BÁCH KHOA TINH HOA THẾ GIỚI
+                </span>
+                <span id="booksCountBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-mono">
+                  5 Cuốn Kinh Điển
+                </span>
+              </div>
+              <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                <i data-lucide="library" class="w-7 h-7 text-emerald-400"></i> Thư Viện Sách (7 Nốt Nhạc)
+              </h1>
+              <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                Phương pháp đọc sách của các Giáo sư: Không đọc lan man 300 trang. Bóc tách bộ khung xương bất biến ("7 nốt nhạc") để nắm trọn vẹn tinh hoa của tác giả và áp dụng thực chiến chỉ trong <strong>15 - 30 phút</strong>.
+              </p>
+            </div>
+
+            <!-- Search box -->
+            <div class="w-full lg:w-80 relative flex-shrink-0">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input 
+                type="text" 
+                id="booksSearchInput" 
+                oninput="handleBookSearch(this.value)" 
+                placeholder="Tìm tên sách, tác giả, ý niệm..." 
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-amber-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-500 transition-all shadow-inner"
+              >
+            </div>
+          </div>
+
+          <!-- Genre Filter Pills -->
+          <div class="pt-2 border-t border-slate-800/80">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <i data-lucide="filter" class="w-3.5 h-3.5 text-amber-400"></i> Chọn Thể Loại Để Xem Sách:
+            </div>
+            <div id="booksGenreFilterBar" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+              <!-- Rendered dynamically by books-engine.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Books Cards Grid -->
+        <div id="booksCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Rendered dynamically by books-engine.js -->
+        </div>
+
+      </div>
+
+      <!-- SCREEN 2: BÀN MỔ XẺ CHI TIẾT SÁCH (4 TẦNG) -->
+      <div id="bookDetailScreen" class="hidden space-y-8">
+        <!-- Rendered dynamically by books-engine.js -->
+      </div>
+
     </section>
 
     <!-- TAB: SUBJECTS HUB & SCRIPTURE TOWER (AS A SUBJECT) -->
@@ -2297,7 +2387,9 @@
   <script src="thinking-engine.js"></script>
   <script src="qrcode.min.js"></script>
   <script src="peerjs.min.js"></script>
-  <script src="app.js?v=20261122_stem1"></script>
+  <script src="books-data.js"></script>
+  <script src="books-engine.js"></script>
+  <script src="app.js?v=20261123_books1"></script>
 
     <!-- MODAL: ĐỒNG BỘ TIẾN ĐỘ HỌC TẬP (MÁY TÍNH ⇄ ĐIỆN THOẠI) -->
     <div id="syncBackupModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">

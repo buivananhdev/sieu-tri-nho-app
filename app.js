@@ -428,6 +428,10 @@ function switchTab(tabId) {
     initChineseHub();
   }
 
+  if (targetTabId === 'books' && typeof initBooksLibrary === 'function') {
+    initBooksLibrary();
+  }
+
   // Trigger subtab activations if mapped
   if (subSection === 'memory' || subSection === 'intelligence') {
     switchMethodsSubTab(subSection);
