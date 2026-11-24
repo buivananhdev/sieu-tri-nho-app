@@ -14,8 +14,11 @@ let currentReadingLessonId = 'read_1';
 let currentDailyDayNumber = 1;
 
 // Vocabulary Thematic Filter & Status Filter State
-let currentVocabPackId = 'pack_daily_life';
+let currentVocabPackId = 'all'; // 'all' or pack id
 let currentVocabStatusFilter = 'all'; // 'all', 'mastered', 'learning'
+let currentVocabSearchQuery = '';
+let currentVocabLevelFilter = 'all'; // 'all', 'A1', 'A2', 'B1', 'B2', 'C1'
+let englishAudioMode = 'auto'; // 'auto', 'mobile_hd', 'browser_speech'
 
 // Listening Filters
 let currentListeningCategoryFilter = 'all'; // 'all', 'daily', 'career', 'tech', 'finance'
@@ -202,30 +205,162 @@ function renderEnglishSubNav(activeView) {
   }).join('');
 }
 
-// --- 3. AUDIO TTS HELPER (MOBILE OPTIMIZED) ---
+// --- 3. AUDIO TTS HELPER (BULLETPROOF MOBILE & DESKTOP DUAL ENGINE) ---
+let currentTtsAudioElement = null;
+let isMobileAudioUnlocked = false;
+
+function unlockMobileAudio() {
+  if (isMobileAudioUnlocked) return;
+  isMobileAudioUnlocked = true;
+  try {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const silentUtterance = new SpeechSynthesisUtterance(' ');
+      silentUtterance.volume = 0.01;
+      silentUtterance.rate = 2.0;
+      window.speechSynthesis.speak(silentUtterance);
+    }
+    const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+    silentAudio.play().catch(() => {});
+  } catch (e) {
+    // Ignore
+  }
+}
+if (typeof document !== 'undefined') {
+  document.addEventListener('touchstart', unlockMobileAudio, { once: true, passive: true });
+  document.addEventListener('click', unlockMobileAudio, { once: true, passive: true });
+}
+
+function stopEnglishSpeech() {
+  if (currentTtsAudioElement) {
+    currentTtsAudioElement.pause();
+    currentTtsAudioElement.currentTime = 0;
+    currentTtsAudioElement = null;
+  }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function playMobileHdAudio(text, onEnd = null) {
+  try {
+    stopEnglishSpeech();
+    const cleanText = (text || '').trim();
+    if (!cleanText) return;
+
+    // Type 2 = Authentic American pronunciation (Webster/American Heritage standard)
+    const encoded = encodeURIComponent(cleanText);
+    const primaryUrl = 'https://dict.youdao.com/dictvoice?audio=' + encoded + '&type=2';
+    const secondaryUrl = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en-US&q=' + encoded;
+
+    const audio = new Audio(primaryUrl);
+    currentTtsAudioElement = audio;
+
+    if (onEnd) {
+      audio.onended = onEnd;
+    }
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(err => {
+        console.warn('Primary audio stream failed, falling back to secondary stream:', err);
+        const fallbackAudio = new Audio(secondaryUrl);
+        currentTtsAudioElement = fallbackAudio;
+        if (onEnd) fallbackAudio.onended = onEnd;
+        fallbackAudio.play().catch(e => console.error('All mobile audio streams failed:', e));
+      });
+    }
+  } catch (err) {
+    console.error('playMobileHdAudio error:', err);
+  }
+}
+
 function speakEnglish(text, rate = null) {
-  if (!('speechSynthesis' in window)) {
-    alert('Trình duyệt của bạn không hỗ trợ tính năng Web Speech Synthesis.');
+  unlockMobileAudio();
+  if (!text) return;
+
+  const isMobile = typeof navigator !== 'undefined' && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768);
+
+  // If user selected mobile HD audio or on mobile with long text (which freezes speech synthesis)
+  if (englishAudioMode === 'mobile_hd' || (englishAudioMode === 'auto' && isMobile && text.length > 80)) {
+    playMobileHdAudio(text);
     return;
   }
 
-  window.speechSynthesis.cancel(); // Stop prior speech
+  // Try SpeechSynthesis with safe mobile fallback
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
 
-  // Crucial for iOS Safari & Mobile Chrome audio unlock
-  if (window.speechSynthesis.paused) {
-    window.speechSynthesis.resume();
+      // Do NOT cancel immediately if not speaking (iOS Safari bug)
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = englishTtsAccent || 'en-US';
+      utterance.rate = rate || englishTtsSpeed || 1.0;
+
+      // Prevent garbage collection on mobile
+      window._activeSpeechUtterance = utterance;
+
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const preferredVoice = voices.find(v => (v.lang === 'en-US' || v.lang.includes('en-US')) && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Ava')));
+        if (preferredVoice) utterance.voice = preferredVoice;
+      }
+
+      let speechStarted = false;
+      utterance.onstart = () => {
+        speechStarted = true;
+      };
+
+      utterance.onerror = (e) => {
+        console.warn('SpeechSynthesis error, falling back to Mobile HD Audio:', e);
+        playMobileHdAudio(text);
+      };
+
+      // Watchdog fallback for mobile silence bug: if utterance doesn't start in 400ms, use HTML5 audio
+      setTimeout(() => {
+        if (!speechStarted && isMobile) {
+          console.log('Mobile SpeechSynthesis watchdog triggered -> playing HD audio');
+          playMobileHdAudio(text);
+        }
+      }, 400);
+
+      window.speechSynthesis.speak(utterance);
+      return;
+    } catch (e) {
+      console.warn('SpeechSynthesis exception, falling back:', e);
+      playMobileHdAudio(text);
+      return;
+    }
   }
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = englishTtsAccent || 'en-US';
-  utterance.rate = rate || englishTtsSpeed || 1.0;
+  // If no SpeechSynthesis at all
+  playMobileHdAudio(text);
+}
 
-  // Attempt to select an authentic US voice
-  const voices = window.speechSynthesis.getVoices();
-  const preferredVoice = voices.find(v => v.lang.includes('en-US') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha')));
-  if (preferredVoice) utterance.voice = preferredVoice;
+function testMobileAudio() {
+  if (typeof playSound === 'function') playSound('click');
+  playMobileHdAudio('Hello! Welcome to the English Mastery Operating System. Your audio is working perfectly on this phone.');
+  alert('🔊 Đang phát âm thanh mẫu giọng Mỹ: "Hello! Welcome to English Mastery OS...". Nếu bạn nghe thấy, âm thanh trên điện thoại của bạn đã hoạt động 100%!');
+}
 
-  window.speechSynthesis.speak(utterance);
+function toggleEnglishAudioMode() {
+  if (typeof playSound === 'function') playSound('click');
+  if (englishAudioMode === 'auto') {
+    englishAudioMode = 'mobile_hd';
+    alert('🔊 Đã chuyển sang chế độ: Chuẩn Di Động HD (Sử dụng luồng âm thanh trực tiếp, 100% không lo lỗi trình duyệt điện thoại).');
+  } else if (englishAudioMode === 'mobile_hd') {
+    englishAudioMode = 'browser_speech';
+    alert('🔊 Đã chuyển sang chế độ: Giọng Trình Duyệt (Web Speech API).');
+  } else {
+    englishAudioMode = 'auto';
+    alert('🔊 Đã chuyển sang chế độ: Tự Động Thông Minh (Khuyên Dùng - Tự động thích ứng trên mọi điện thoại & máy tính).');
+  }
+  renderEnglishSubView(currentEnglishSubView);
 }
 
 // --- 4. VIEW 1: DASHBOARD HTML ---
@@ -529,119 +664,335 @@ function selectEnglishDistrict(districtId) {
   renderEnglishSubView('palace');
 }
 
-// --- 6. VIEW 3: VOCABULARY BY THEME & STATUS (CÓ TÍNH NĂNG ĐÃ THUỘC) ---
+// --- 6. VIEW 3: VOCABULARY INTELLIGENCE (KHO TỪ VỰNG TOÀN DIỆN TRỌN BỘ 12 CHỦ ĐỀ) ---
 function renderEnglishVocabHTML() {
   const packs = window.VOCABULARY_THEMATIC_PACKS || [];
-  const currentPack = packs.find(p => p.id === currentVocabPackId) || packs[0];
   const data = getStoredEnglishData();
   const masteredList = data.masteredWords || [];
 
-  // Filter words
-  let displayedWords = currentPack.words;
-  if (currentVocabStatusFilter === 'mastered') {
-    displayedWords = displayedWords.filter(w => masteredList.includes(w.id));
-  } else if (currentVocabStatusFilter === 'learning') {
-    displayedWords = displayedWords.filter(w => !masteredList.includes(w.id));
+  // Flatten all words across all packs
+  let allWords = [];
+  packs.forEach(p => {
+    (p.words || []).forEach(w => {
+      allWords.push({ ...w, packId: p.id, packName: p.name, packIcon: p.icon });
+    });
+  });
+
+  const totalWordsCount = allWords.length;
+  const totalMasteredCount = allWords.filter(w => masteredList.includes(w.id)).length;
+  const totalLearningCount = totalWordsCount - totalMasteredCount;
+  const masterPercent = totalWordsCount > 0 ? Math.round((totalMasteredCount / totalWordsCount) * 100) : 0;
+
+  // Filter by pack
+  let filtered = allWords;
+  if (currentVocabPackId !== 'all') {
+    filtered = filtered.filter(w => w.packId === currentVocabPackId);
   }
+
+  // Filter by CEFR Level
+  if (currentVocabLevelFilter !== 'all') {
+    filtered = filtered.filter(w => w.level === currentVocabLevelFilter);
+  }
+
+  // Filter by search query
+  if (currentVocabSearchQuery.trim()) {
+    const q = currentVocabSearchQuery.trim().toLowerCase();
+    filtered = filtered.filter(w => 
+      w.word.toLowerCase().includes(q) || 
+      (w.vn && w.vn.toLowerCase().includes(q)) ||
+      (w.ipa && w.ipa.toLowerCase().includes(q)) ||
+      (w.collocations && w.collocations.toLowerCase().includes(q))
+    );
+  }
+
+  // Filter by status
+  if (currentVocabStatusFilter === 'mastered') {
+    filtered = filtered.filter(w => masteredList.includes(w.id));
+  } else if (currentVocabStatusFilter === 'learning') {
+    filtered = filtered.filter(w => !masteredList.includes(w.id));
+  }
+
+  const levels = [
+    { id: 'all', label: 'Tất Cả Cấp Độ' },
+    { id: 'A2', label: 'A2 Căn Bản' },
+    { id: 'B1', label: 'B1 Trung Cấp' },
+    { id: 'B2', label: 'B2 Trung Cao' },
+    { id: 'C1', label: 'C1 Cao Cấp' }
+  ];
 
   return `
     <div class="space-y-6 animate-in fade-in duration-200">
       
-      <!-- Top Banner -->
-      <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-2">
-        <div class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="book-a" class="w-4 h-4"></i> ENGINE 2: TỪ VỰNG TOÀN DIỆN THEO CHỦ ĐỀ
-        </div>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Kho Từ Vựng Giao Tiếp Đời Thường & Chuyên Ngành</h2>
-        <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Đầy đủ từ vựng then chốt, phiên âm IPA, cụm từ Collocations và ví dụ ứng dụng. Bạn có thể bấm nút <strong>"Đã Thuộc"</strong> để đưa từ vào kho ký ức vĩnh viễn.
-        </p>
-      </div>
+      <!-- Top Banner & Metrics -->
+      <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <div class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="book-a" class="w-4 h-4"></i> ENGINE 2: TRỌN BỘ TỪ VỰNG TOÀN DIỆN 12 CHỦ ĐỀ
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-white mt-1">Kho Từ Vựng Giao Tiếp, Công Sở & Chuyên Ngành</h2>
+          </div>
 
-      <!-- Theme Selector Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        ${packs.map(p => {
-          const isSelected = p.id === currentVocabPackId;
-          const cls = isSelected
-            ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold shadow-lg shadow-amber-500/20 border-amber-400'
-            : 'bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800';
-
-          return `
-            <button onclick="selectVocabPack('${p.id}')" class="px-4 py-2.5 rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap min-h-[44px] ${cls}">
-              <i data-lucide="${p.icon}" class="w-4 h-4"></i>
-              <span>${p.name}</span>
+          <!-- Quick Audio Test on Mobile -->
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button onclick="testMobileAudio()" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all min-h-[44px]">
+              <i data-lucide="volume-2" class="w-4 h-4"></i>
+              <span>Thử Loa Điện Thoại</span>
             </button>
-          `;
-        }).join('')}
+            <button onclick="toggleEnglishAudioMode()" title="Đổi chế độ âm thanh" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all min-h-[44px]">
+              <i data-lucide="settings-2" class="w-4 h-4 text-cyan-400"></i>
+              <span class="hidden sm:inline">${englishAudioMode === 'auto' ? 'Tự Động' : (englishAudioMode === 'mobile_hd' ? 'Chuẩn Di Động' : 'Web Speech')}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Overview Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-800/80">
+          <div class="p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400">
+              <i data-lucide="layers" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-[11px] text-slate-400 font-medium">Tổng Kho Từ</div>
+              <div class="text-lg font-black text-white">${totalWordsCount} từ</div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+              <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-[11px] text-slate-400 font-medium">Đã Thuộc Vĩnh Viễn</div>
+              <div class="text-lg font-black text-emerald-400">${totalMasteredCount} (${masterPercent}%)</div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-cyan-500/20 text-cyan-400">
+              <i data-lucide="loader" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-[11px] text-slate-400 font-medium">Đang Nạp Trí Nhớ</div>
+              <div class="text-lg font-black text-cyan-400">${totalLearningCount} từ</div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-purple-500/20 text-purple-400">
+              <i data-lucide="award" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-[11px] text-slate-400 font-medium">Đang Hiển Thị</div>
+              <div class="text-lg font-black text-purple-300">${filtered.length} từ</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Status Filter Bar -->
-      <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs">
-        <div class="flex items-center gap-1.5">
-          <span class="text-slate-400 font-medium">Trạng thái:</span>
-          <button onclick="setVocabStatusFilter('all')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'all' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'text-slate-400'}">Tất Cả (${currentPack.words.length})</button>
-          <button onclick="setVocabStatusFilter('mastered')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'mastered' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'text-slate-400'}">Đã Thuộc (${currentPack.words.filter(w => masteredList.includes(w.id)).length})</button>
-          <button onclick="setVocabStatusFilter('learning')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'learning' ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'text-slate-400'}">Đang Nạp</button>
+      <!-- Search & Filters Container -->
+      <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+        <!-- Live Search Input -->
+        <div class="relative">
+          <i data-lucide="search" class="w-5 h-5 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+          <input 
+            type="text" 
+            id="vocabSearchInput"
+            value="${currentVocabSearchQuery}" 
+            oninput="onVocabSearch(this.value)" 
+            placeholder="Tìm kiếm từ tiếng Anh, phiên âm IPA, collocations hoặc nghĩa tiếng Việt..." 
+            class="w-full pl-12 pr-10 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs sm:text-sm focus:outline-none focus:border-amber-500 transition-all font-sans min-h-[44px]"
+          />
+          ${currentVocabSearchQuery ? `
+            <button onclick="clearVocabSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-white">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          ` : ''}
         </div>
-        <span class="text-slate-500 font-mono hidden sm:inline">Bấm tích xanh để lưu vào ký ức vĩnh viễn</span>
+
+        <!-- CEFR Level Filters -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+          <span class="text-slate-400 font-bold whitespace-nowrap flex items-center gap-1">
+            <i data-lucide="filter" class="w-3.5 h-3.5 text-amber-400"></i> Cấp độ:
+          </span>
+          ${levels.map(lvl => {
+            const isLvlActive = currentVocabLevelFilter === lvl.id;
+            return `
+              <button onclick="setVocabLevelFilter('${lvl.id}')" class="px-3 py-1.5 rounded-lg border font-semibold transition-all whitespace-nowrap min-h-[36px] ${
+                isLvlActive 
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm' 
+                  : 'bg-slate-950 text-slate-400 hover:text-white border-slate-800'
+              }">
+                ${lvl.label}
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- 12 Thematic Packs Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none text-xs">
+          <!-- All Packs Pill -->
+          <button onclick="selectVocabPack('all')" class="px-3.5 py-2 rounded-xl border font-bold transition-all flex items-center gap-1.5 whitespace-nowrap min-h-[40px] ${
+            currentVocabPackId === 'all'
+              ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white border-amber-400 shadow-md'
+              : 'bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800'
+          }">
+            <i data-lucide="globe" class="w-4 h-4"></i>
+            <span>Tất Cả 12 Chủ Đề (${allWords.length})</span>
+          </button>
+
+          ${packs.map(p => {
+            const isSelected = p.id === currentVocabPackId;
+            const count = (p.words || []).length;
+            const cls = isSelected
+              ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold shadow-md border-amber-400'
+              : 'bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800';
+
+            return `
+              <button onclick="selectVocabPack('${p.id}')" class="px-3.5 py-2 rounded-xl border text-xs transition-all flex items-center gap-1.5 whitespace-nowrap min-h-[40px] ${cls}">
+                <i data-lucide="${p.icon}" class="w-3.5 h-3.5"></i>
+                <span>${p.name} (${count})</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- Status Filter Bar -->
+        <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-400 font-medium">Trạng thái:</span>
+            <button onclick="setVocabStatusFilter('all')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'all' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'text-slate-400 hover:text-white'}">
+              Tất Cả (${filtered.length})
+            </button>
+            <button onclick="setVocabStatusFilter('mastered')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'mastered' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'text-slate-400 hover:text-white'}">
+              Đã Thuộc (${filtered.filter(w => masteredList.includes(w.id)).length})
+            </button>
+            <button onclick="setVocabStatusFilter('learning')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'learning' ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'text-slate-400 hover:text-white'}">
+              Đang Nạp (${filtered.filter(w => !masteredList.includes(w.id)).length})
+            </button>
+          </div>
+
+          <div class="text-[11px] text-slate-500 hidden md:flex items-center gap-1">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-cyan-400"></i> Bấm loa để nghe giọng Mỹ chuẩn. Bấm tích xanh khi đã thuộc.
+          </div>
+        </div>
       </div>
 
       <!-- Words Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        ${displayedWords.map(w => {
-          const isMastered = masteredList.includes(w.id);
+      ${filtered.length === 0 ? `
+        <div class="p-12 text-center rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
+          <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+            <i data-lucide="search-x" class="w-6 h-6"></i>
+          </div>
+          <h4 class="text-base font-bold text-white">Không tìm thấy từ vựng phù hợp</h4>
+          <p class="text-xs text-slate-400 max-w-md mx-auto">
+            Không có từ nào khớp với từ khóa "${currentVocabSearchQuery}" hoặc bộ lọc cấp độ hiện tại. Hãy thử tìm từ khác hoặc bấm xóa lọc.
+          </p>
+          <button onclick="clearVocabSearch()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold transition-all">
+            Xóa Lọc & Xem Tất Cả
+          </button>
+        </div>
+      ` : `
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${filtered.map(w => {
+            const isMastered = masteredList.includes(w.id);
 
-          return `
-            <div class="p-5 rounded-2xl bg-slate-900 border ${isMastered ? 'border-emerald-500/50 shadow-emerald-950/20' : 'border-slate-800'} space-y-3 shadow-lg flex flex-col justify-between transition-all">
-              <div class="space-y-2">
-                <div class="flex items-start justify-between gap-2">
-                  <div>
-                    <span class="text-[10px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                      ${w.pos}
-                    </span>
-                    <h4 class="text-xl font-black text-white mt-1">${w.word}</h4>
-                    <span class="text-xs text-cyan-400 font-mono">${w.ipa}</span>
+            return `
+              <div class="p-5 rounded-2xl bg-slate-900 border ${isMastered ? 'border-emerald-500/50 shadow-emerald-950/20' : 'border-slate-800'} space-y-3 shadow-lg flex flex-col justify-between transition-all hover:border-slate-700">
+                <div class="space-y-2">
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-[10px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
+                          ${w.pos}
+                        </span>
+                        ${w.level ? `
+                          <span class="text-[10px] font-black px-2 py-0.5 rounded bg-blue-500/20 text-cyan-300 border border-blue-500/30">
+                            ${w.level}
+                          </span>
+                        ` : ''}
+                        ${w.packName ? `
+                          <span class="text-[9px] text-slate-400 truncate max-w-[120px]">
+                            ${w.packName}
+                          </span>
+                        ` : ''}
+                      </div>
+
+                      <h4 class="text-xl font-black text-white mt-1.5 tracking-tight">${w.word}</h4>
+                      <span class="text-xs text-cyan-400 font-mono">${w.ipa}</span>
+                    </div>
+
+                    <!-- Audio & Mastered Action -->
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                      <button onclick="speakEnglish('${w.word.replace(/'/g, "\\'")}')" title="Nghe phát âm (chuẩn Mỹ)" class="p-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 text-cyan-300 border border-blue-500/30 transition-all min-h-[42px] min-w-[42px] flex items-center justify-center">
+                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                      </button>
+                      <button onclick="toggleWordMastered('${w.id}')" title="${isMastered ? 'Đã thuộc vĩnh viễn' : 'Đánh dấu đã thuộc'}" class="p-2.5 rounded-xl border transition-all min-h-[42px] min-w-[42px] flex items-center justify-center ${
+                        isMastered ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-sm shadow-emerald-500/20' : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'
+                      }">
+                        <i data-lucide="${isMastered ? 'check-check' : 'check'}" class="w-4 h-4"></i>
+                      </button>
+                    </div>
                   </div>
 
-                  <!-- Audio & Mastered Action -->
-                  <div class="flex items-center gap-1.5">
-                    <button onclick="speakEnglish('${w.word}')" title="Nghe phát âm" class="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 text-cyan-300 border border-blue-500/30 transition-all min-h-[40px] min-w-[40px] flex items-center justify-center">
-                      <i data-lucide="volume-2" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="toggleWordMastered('${w.id}')" title="${isMastered ? 'Đã thuộc' : 'Đánh dấu đã thuộc'}" class="p-2 rounded-xl border transition-all min-h-[40px] min-w-[40px] flex items-center justify-center ${
-                      isMastered ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'
-                    }">
-                      <i data-lucide="${isMastered ? 'check-check' : 'check'}" class="w-4 h-4"></i>
-                    </button>
+                  <div class="text-xs font-bold text-slate-200 leading-snug">
+                    ➔ ${w.vn}
                   </div>
+
+                  <!-- Collocation -->
+                  ${w.collocations ? `
+                    <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 text-xs text-slate-300">
+                      <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-0.5">Cụm từ Collocation:</span>
+                      <span class="font-medium text-slate-200">${w.collocations}</span>
+                    </div>
+                  ` : ''}
                 </div>
 
-                <div class="text-xs font-bold text-slate-200">
-                  ➔ ${w.vn}
-                </div>
-
-                <!-- Collocation -->
-                <div class="p-2 rounded-xl bg-slate-950 border border-slate-800/80 text-xs text-slate-300">
-                  <span class="text-[10px] font-bold text-amber-400">Collocations:</span> ${w.collocations}
+                <!-- Example Sentence -->
+                <div class="pt-2 border-t border-slate-800/80 flex items-start justify-between gap-2">
+                  <p class="text-[11px] text-slate-400 italic font-serif leading-relaxed">
+                    "${w.example}"
+                  </p>
+                  <button onclick="speakEnglish('${w.example.replace(/'/g, "\\'")}')" title="Nghe câu ví dụ" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-300 flex-shrink-0 min-h-[32px] min-w-[32px] flex items-center justify-center">
+                    <i data-lucide="volume-1" class="w-3.5 h-3.5"></i>
+                  </button>
                 </div>
               </div>
-
-              <!-- Example -->
-              <div class="pt-2 border-t border-slate-800/80 flex items-start justify-between gap-2">
-                <p class="text-[11px] text-slate-400 italic font-serif">
-                  "${w.example}"
-                </p>
-                <button onclick="speakEnglish('${w.example.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex-shrink-0">
-                  <i data-lucide="volume-1" class="w-3.5 h-3.5"></i>
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
+            `;
+          }).join('')}
+        </div>
+      `}
 
     </div>
   `;
+}
+
+function onVocabSearch(query) {
+  currentVocabSearchQuery = query;
+  // Re-render vocab view without full scroll
+  const container = document.getElementById('englishOSContentContainer');
+  if (container) {
+    container.innerHTML = renderEnglishVocabHTML();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    // Keep focus in input
+    const input = document.getElementById('vocabSearchInput');
+    if (input) {
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+  }
+}
+
+function clearVocabSearch() {
+  currentVocabSearchQuery = '';
+  currentVocabLevelFilter = 'all';
+  renderEnglishSubView('vocab');
+}
+
+function setVocabLevelFilter(level) {
+  if (typeof playSound === 'function') playSound('click');
+  currentVocabLevelFilter = level;
+  renderEnglishSubView('vocab');
 }
 
 function selectVocabPack(packId) {
@@ -865,7 +1216,7 @@ function renderEnglishListeningHTML() {
             <button onclick="speakEnglish('${currentLesson.audioText.replace(/'/g, "\\'")}', ${englishTtsSpeed})" class="flex-1 sm:flex-none px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all min-h-[44px]">
               <i data-lucide="play" class="w-4 h-4 fill-current"></i> Nghe Toàn Đoạn (Giọng Mỹ)
             </button>
-            <button onclick="window.speechSynthesis.cancel()" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all min-h-[44px]">
+            <button onclick="stopEnglishSpeech()" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all min-h-[44px]">
               Dừng Lại
             </button>
           </div>
