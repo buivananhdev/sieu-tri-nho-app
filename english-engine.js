@@ -14,10 +14,10 @@ let currentReadingLessonId = 'read_1';
 let currentDailyDayNumber = 1;
 
 // Vocabulary Thematic Filter & Status Filter State
-let currentVocabPackId = 'all'; // 'all' or pack id
-let currentVocabStatusFilter = 'all'; // 'all', 'mastered', 'learning'
-let currentVocabSearchQuery = '';
-let currentVocabLevelFilter = 'all'; // 'all', 'A1', 'A2', 'B1', 'B2', 'C1'
+let currentEnglishVocabPackId = 'all'; // 'all' or pack id
+let currentEnglishVocabStatusFilter = 'all'; // 'all', 'mastered', 'learning'
+let currentEnglishVocabSearchQuery = '';
+let currentEnglishVocabLevelFilter = 'all'; // 'all', 'A1', 'A2', 'B1', 'B2', 'C1'
 let englishAudioMode = 'auto'; // 'auto', 'mobile_hd', 'browser_speech'
 
 // Listening Filters
@@ -685,18 +685,18 @@ function renderEnglishVocabHTML() {
 
   // Filter by pack
   let filtered = allWords;
-  if (currentVocabPackId !== 'all') {
-    filtered = filtered.filter(w => w.packId === currentVocabPackId);
+  if (currentEnglishVocabPackId !== 'all') {
+    filtered = filtered.filter(w => w.packId === currentEnglishVocabPackId);
   }
 
   // Filter by CEFR Level
-  if (currentVocabLevelFilter !== 'all') {
-    filtered = filtered.filter(w => w.level === currentVocabLevelFilter);
+  if (currentEnglishVocabLevelFilter !== 'all') {
+    filtered = filtered.filter(w => w.level === currentEnglishVocabLevelFilter);
   }
 
   // Filter by search query
-  if (currentVocabSearchQuery.trim()) {
-    const q = currentVocabSearchQuery.trim().toLowerCase();
+  if (currentEnglishVocabSearchQuery.trim()) {
+    const q = currentEnglishVocabSearchQuery.trim().toLowerCase();
     filtered = filtered.filter(w => 
       w.word.toLowerCase().includes(q) || 
       (w.vn && w.vn.toLowerCase().includes(q)) ||
@@ -706,9 +706,9 @@ function renderEnglishVocabHTML() {
   }
 
   // Filter by status
-  if (currentVocabStatusFilter === 'mastered') {
+  if (currentEnglishVocabStatusFilter === 'mastered') {
     filtered = filtered.filter(w => masteredList.includes(w.id));
-  } else if (currentVocabStatusFilter === 'learning') {
+  } else if (currentEnglishVocabStatusFilter === 'learning') {
     filtered = filtered.filter(w => !masteredList.includes(w.id));
   }
 
@@ -798,13 +798,13 @@ function renderEnglishVocabHTML() {
           <input 
             type="text" 
             id="vocabSearchInput"
-            value="${currentVocabSearchQuery}" 
-            oninput="onVocabSearch(this.value)" 
+            value="${currentEnglishVocabSearchQuery}" 
+            oninput="onEnglishVocabSearch(this.value)" 
             placeholder="Tìm kiếm từ tiếng Anh, phiên âm IPA, collocations hoặc nghĩa tiếng Việt..." 
             class="w-full pl-12 pr-10 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs sm:text-sm focus:outline-none focus:border-amber-500 transition-all font-sans min-h-[44px]"
           />
-          ${currentVocabSearchQuery ? `
-            <button onclick="clearVocabSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-white">
+          ${currentEnglishVocabSearchQuery ? `
+            <button onclick="clearEnglishVocabSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-white">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
           ` : ''}
@@ -816,9 +816,9 @@ function renderEnglishVocabHTML() {
             <i data-lucide="filter" class="w-3.5 h-3.5 text-amber-400"></i> Cấp độ:
           </span>
           ${levels.map(lvl => {
-            const isLvlActive = currentVocabLevelFilter === lvl.id;
+            const isLvlActive = currentEnglishVocabLevelFilter === lvl.id;
             return `
-              <button onclick="setVocabLevelFilter('${lvl.id}')" class="px-3 py-1.5 rounded-lg border font-semibold transition-all whitespace-nowrap min-h-[36px] ${
+              <button onclick="setEnglishVocabLevelFilter('${lvl.id}')" class="px-3 py-1.5 rounded-lg border font-semibold transition-all whitespace-nowrap min-h-[36px] ${
                 isLvlActive 
                   ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm' 
                   : 'bg-slate-950 text-slate-400 hover:text-white border-slate-800'
@@ -832,8 +832,8 @@ function renderEnglishVocabHTML() {
         <!-- 12 Thematic Packs Pills -->
         <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none text-xs">
           <!-- All Packs Pill -->
-          <button onclick="selectVocabPack('all')" class="px-3.5 py-2 rounded-xl border font-bold transition-all flex items-center gap-1.5 whitespace-nowrap min-h-[40px] ${
-            currentVocabPackId === 'all'
+          <button onclick="selectEnglishVocabPack('all')" class="px-3.5 py-2 rounded-xl border font-bold transition-all flex items-center gap-1.5 whitespace-nowrap min-h-[40px] ${
+            currentEnglishVocabPackId === 'all'
               ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white border-amber-400 shadow-md'
               : 'bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800'
           }">
@@ -842,14 +842,14 @@ function renderEnglishVocabHTML() {
           </button>
 
           ${packs.map(p => {
-            const isSelected = p.id === currentVocabPackId;
+            const isSelected = p.id === currentEnglishVocabPackId;
             const count = (p.words || []).length;
             const cls = isSelected
               ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold shadow-md border-amber-400'
               : 'bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800';
 
             return `
-              <button onclick="selectVocabPack('${p.id}')" class="px-3.5 py-2 rounded-xl border text-xs transition-all flex items-center gap-1.5 whitespace-nowrap min-h-[40px] ${cls}">
+              <button onclick="selectEnglishVocabPack('${p.id}')" class="px-3.5 py-2 rounded-xl border text-xs transition-all flex items-center gap-1.5 whitespace-nowrap min-h-[40px] ${cls}">
                 <i data-lucide="${p.icon}" class="w-3.5 h-3.5"></i>
                 <span>${p.name} (${count})</span>
               </button>
@@ -861,13 +861,13 @@ function renderEnglishVocabHTML() {
         <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
           <div class="flex items-center gap-1.5">
             <span class="text-slate-400 font-medium">Trạng thái:</span>
-            <button onclick="setVocabStatusFilter('all')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'all' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'text-slate-400 hover:text-white'}">
+            <button onclick="setEnglishVocabStatusFilter('all')" class="px-3 py-1 rounded-lg ${currentEnglishVocabStatusFilter === 'all' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'text-slate-400 hover:text-white'}">
               Tất Cả (${filtered.length})
             </button>
-            <button onclick="setVocabStatusFilter('mastered')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'mastered' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'text-slate-400 hover:text-white'}">
+            <button onclick="setEnglishVocabStatusFilter('mastered')" class="px-3 py-1 rounded-lg ${currentEnglishVocabStatusFilter === 'mastered' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'text-slate-400 hover:text-white'}">
               Đã Thuộc (${filtered.filter(w => masteredList.includes(w.id)).length})
             </button>
-            <button onclick="setVocabStatusFilter('learning')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'learning' ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'text-slate-400 hover:text-white'}">
+            <button onclick="setEnglishVocabStatusFilter('learning')" class="px-3 py-1 rounded-lg ${currentEnglishVocabStatusFilter === 'learning' ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'text-slate-400 hover:text-white'}">
               Đang Nạp (${filtered.filter(w => !masteredList.includes(w.id)).length})
             </button>
           </div>
@@ -886,9 +886,9 @@ function renderEnglishVocabHTML() {
           </div>
           <h4 class="text-base font-bold text-white">Không tìm thấy từ vựng phù hợp</h4>
           <p class="text-xs text-slate-400 max-w-md mx-auto">
-            Không có từ nào khớp với từ khóa "${currentVocabSearchQuery}" hoặc bộ lọc cấp độ hiện tại. Hãy thử tìm từ khác hoặc bấm xóa lọc.
+            Không có từ nào khớp với từ khóa "${currentEnglishVocabSearchQuery}" hoặc bộ lọc cấp độ hiện tại. Hãy thử tìm từ khác hoặc bấm xóa lọc.
           </p>
-          <button onclick="clearVocabSearch()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold transition-all">
+          <button onclick="clearEnglishVocabSearch()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold transition-all">
             Xóa Lọc & Xem Tất Cả
           </button>
         </div>
@@ -967,8 +967,8 @@ function renderEnglishVocabHTML() {
   `;
 }
 
-function onVocabSearch(query) {
-  currentVocabSearchQuery = query;
+function onEnglishVocabSearch(query) {
+  currentEnglishVocabSearchQuery = query;
   // Re-render vocab view without full scroll
   const container = document.getElementById('englishOSContentContainer');
   if (container) {
@@ -983,27 +983,27 @@ function onVocabSearch(query) {
   }
 }
 
-function clearVocabSearch() {
-  currentVocabSearchQuery = '';
-  currentVocabLevelFilter = 'all';
+function clearEnglishVocabSearch() {
+  currentEnglishVocabSearchQuery = '';
+  currentEnglishVocabLevelFilter = 'all';
   renderEnglishSubView('vocab');
 }
 
-function setVocabLevelFilter(level) {
+function setEnglishVocabLevelFilter(level) {
   if (typeof playSound === 'function') playSound('click');
-  currentVocabLevelFilter = level;
+  currentEnglishVocabLevelFilter = level;
   renderEnglishSubView('vocab');
 }
 
-function selectVocabPack(packId) {
+function selectEnglishVocabPack(packId) {
   if (typeof playSound === 'function') playSound('click');
-  currentVocabPackId = packId;
+  currentEnglishVocabPackId = packId;
   renderEnglishSubView('vocab');
 }
 
-function setVocabStatusFilter(filter) {
+function setEnglishVocabStatusFilter(filter) {
   if (typeof playSound === 'function') playSound('click');
-  currentVocabStatusFilter = filter;
+  currentEnglishVocabStatusFilter = filter;
   renderEnglishSubView('vocab');
 }
 
