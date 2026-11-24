@@ -487,6 +487,42 @@ function renderBookDetailHTML(book) {
         ` : ''}
       </div>
 
+      
+      <!-- CỐT TRUYỆN CỐT LÕI 60 GIÂY (DÙNG ĐỂ KỂ CHUYỆN & THUYẾT PHỤC) -->
+      ${book.coreNarrative60s ? `
+        <div class="rounded-3xl bg-gradient-to-br from-amber-950/30 via-slate-900 to-yellow-950/20 border border-amber-500/40 p-6 sm:p-8 space-y-4 shadow-xl relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 text-xs font-black text-amber-400 tracking-wider uppercase">
+              <span class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center">
+                <i data-lucide="mic" class="w-4 h-4"></i>
+              </span>
+              <span>CỐT TRUYỆN CỐT LÕI 60 GIÂY (DÙNG ĐỂ KỂ CHUYỆN & THUYẾT PHỤC)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono flex items-center gap-1">
+                <i data-lucide="timer" class="w-3.5 h-3.5"></i> Thuyết phục trong 60s
+              </span>
+              <button onclick="copyBookNarrative('${book.id}')" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-500/50 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao Chép
+              </button>
+            </div>
+          </div>
+
+          <div class="p-5 sm:p-6 rounded-2xl bg-black/40 border border-amber-500/20 space-y-3">
+            <div class="text-xs text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-4 h-4"></i> Khung Kể Chuyện Tóm Lược Toàn Bộ Cuốn Sách:
+            </div>
+            <p class="text-sm sm:text-base text-slate-100 font-serif leading-relaxed italic border-l-2 border-amber-500/60 pl-4 py-1">
+              "${book.coreNarrative60s}"
+            </p>
+            <div class="text-[11px] text-slate-400 flex items-center gap-2 pt-1 border-t border-slate-800">
+              <i data-lucide="info" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Dùng cốt truyện này khi giao tiếp, thuyết trình hoặc đàm phán để truyền cảm hứng và giải thích bản chất cuốn sách mà không cần liệt kê máy móc.</span>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
       <!-- TẦNG 2: BỘ ĐỦ ĐÚNG 7 NỐT NHẠC BẤT BIẾN -->
       <div class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -530,6 +566,127 @@ function renderBookDetailHTML(book) {
           `).join('')}
         </div>
       </div>
+
+      
+      <!-- BỘ GIẢI PHẪU GỐC RỄ THỰC TẾ (XÓA BỎ MỌI LỖ HỔNG KIẾN THỨC) -->
+      ${book.rootReality ? `
+        <div class="rounded-3xl bg-slate-900 border-2 border-cyan-500/40 p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div class="space-y-1">
+              <div class="text-xs font-black tracking-wider uppercase text-cyan-400 flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4"></i> BỘ GIẢI PHẪU GỐC RỄ THỰC TẾ (4 TRỤ CỘT BẤT BIẾN)
+              </div>
+              <h2 class="text-lg sm:text-2xl font-black text-white">Xóa Bỏ Hoàn Toàn Mọi Lỗ Hổng Kiến Thức & Ảo Tưởng Nông Cạn</h2>
+            </div>
+            <span class="text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold flex items-center gap-1.5 self-start sm:self-auto">
+              <i data-lucide="binary" class="w-3.5 h-3.5"></i> Chuẩn Xác Thực Nghiệm 100%
+            </span>
+          </div>
+
+          <!-- 4 Pillars Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            
+            <!-- TRỤ CỘT 1: DỮ LIỆU LỊCH SỬ & BẰNG CHỨNG THỰC NGHIỆM -->
+            <div class="rounded-2xl bg-slate-950/80 border border-emerald-500/30 p-5 space-y-3.5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                  <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center justify-center font-black">1</span>
+                  <i data-lucide="database" class="w-4 h-4"></i> Bằng Chứng Thực Nghiệm & Dữ Liệu Lịch Sử
+                </div>
+                <div class="space-y-2.5 pt-1">
+                  ${(book.rootReality.empiricalBasis || []).map(item => `
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 leading-relaxed flex items-start gap-2.5">
+                      <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+                      <span>${item}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="text-[11px] text-emerald-300/80 italic font-mono pt-2 border-t border-slate-900">
+                ✓ Được kiểm chứng qua dữ liệu thực nghiệm và thống kê lịch sử, không phải phỏng đoán lý thuyết.
+              </div>
+            </div>
+
+            <!-- TRỤ CỘT 2: CHUỖI MẮT XÍCH NHÂN - QUẢ TUYỆT ĐỐI -->
+            <div class="rounded-2xl bg-slate-950/80 border border-cyan-500/30 p-5 space-y-3.5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-wider">
+                  <span class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center font-black">2</span>
+                  <i data-lucide="git-commit" class="w-4 h-4"></i> Chuỗi Mắt Xích Nhân - Quả (Logic Từ Con Số 0)
+                </div>
+                <div class="space-y-2 pt-1">
+                  ${(book.rootReality.causalChain || []).map((step, idx) => `
+                    <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex items-start gap-2.5">
+                      <span class="w-5 h-5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">${idx + 1}</span>
+                      <div class="space-y-0.5">
+                        <strong class="text-white">${step.cause}</strong>
+                        <div class="text-slate-400 text-[11px] leading-relaxed">➔ <em>Cơ chế:</em> ${step.mechanism}</div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="text-[11px] text-cyan-300/80 italic font-mono pt-2 border-t border-slate-900">
+                ✓ Từng mắt xích nhân quả giải thích tường tận gốc rễ vấn đề, không nhảy cóc logic.
+              </div>
+            </div>
+
+            <!-- TRỤ CỘT 3: ĐIỀU KIỆN BIÊN & RANH GIỚI THẤT BẠI -->
+            <div class="rounded-2xl bg-slate-950/80 border border-rose-500/30 p-5 space-y-3.5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-xs font-bold text-rose-400 uppercase tracking-wider">
+                  <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center justify-center font-black">3</span>
+                  <i data-lucide="alert-triangle" class="w-4 h-4"></i> Ranh Giới Thất Bại: Khi Nào Nguyên Lý Này Sai?
+                </div>
+                <div class="space-y-2.5 pt-1">
+                  ${(book.rootReality.boundaryConditions || []).map(b => `
+                    <div class="p-3 rounded-xl bg-rose-950/20 border border-rose-500/20 text-xs text-rose-200 leading-relaxed flex items-start gap-2.5">
+                      <i data-lucide="x-circle" class="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5"></i>
+                      <span>${b}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="text-[11px] text-rose-300/80 italic font-mono pt-2 border-t border-slate-900">
+                ⚠️ Nhận diện rõ ranh giới để không bao giờ áp dụng giáo điều mù quáng.
+              </div>
+            </div>
+
+            <!-- TRỤ CỘT 4: KIỂM CHỨNG PHẢN BIỆN & TỔNG HÒA 360° -->
+            <div class="rounded-2xl bg-slate-950/80 border border-purple-500/30 p-5 space-y-3.5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase tracking-wider">
+                  <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center justify-center font-black">4</span>
+                  <i data-lucide="scale" class="w-4 h-4"></i> Kiểm Chứng Đối Lập (Ai Làm Ngược Lại Mà Vẫn Thắng?)
+                </div>
+                <div class="space-y-3 pt-1">
+                  <div class="p-3 rounded-xl bg-purple-950/30 border border-purple-500/20 text-xs space-y-1">
+                    <div class="text-purple-300 font-bold flex items-center gap-1.5">
+                      <i data-lucide="swords" class="w-3.5 h-3.5 text-purple-400"></i> ${book.rootReality.counterPerspective.model}
+                    </div>
+                    <div class="text-slate-300 leading-relaxed">
+                      ${book.rootReality.counterPerspective.contrarianInsight}
+                    </div>
+                  </div>
+
+                  <div class="p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/30 text-xs space-y-1">
+                    <div class="text-amber-300 font-bold flex items-center gap-1.5">
+                      <i data-lucide="compass" class="w-3.5 h-3.5 text-amber-400"></i> Bài Học Tổng Hòa 360 Độ (Loại Bỏ Lỗ Hổng):
+                    </div>
+                    <div class="text-slate-200 leading-relaxed">
+                      ${book.rootReality.counterPerspective.synthesisResolution}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-[11px] text-purple-300/80 italic font-mono pt-2 border-t border-slate-900">
+                ✨ Làm chủ cả hai mặt đối lập để sở hữu góc nhìn đa chiều của bậc thầy.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      ` : ''}
 
       <!-- TẦNG 3: THUẬT TOÁN THỰC THI 4 BƯỚC -->
       <div class="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-4 shadow-xl">
@@ -996,4 +1153,21 @@ function handleSaveCustomBookForm(e) {
   document.getElementById('customBookPalace').value = '';
 
   alert(`Đã thêm thành công cuốn sách "${title}" vào Thư Viện Sách 7 Nốt Nhạc của bạn!`);
+}
+
+
+function copyBookNarrative(bookId) {
+  const allBooks = getAllBooks();
+  const book = allBooks.find(b => b.id === bookId);
+  if (!book || !book.coreNarrative60s) return;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(book.coreNarrative60s).then(() => {
+      alert('Đã sao chép Cốt Truyện 60 Giây vào bộ nhớ tạm! Bạn có thể dùng để luyện tập kể chuyện hoặc thuyết trình.');
+    }).catch(e => {
+      prompt('Hãy sao chép cốt truyện dưới đây:', book.coreNarrative60s);
+    });
+  } else {
+    prompt('Hãy sao chép cốt truyện dưới đây:', book.coreNarrative60s);
+  }
 }

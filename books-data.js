@@ -193,7 +193,36 @@ window.MASTER_BOOKS_DATA = [
         hint: 'Hình dung đồ vật đặt trên bàn phòng khách.',
         answer: 'Chiếc ví da vàng 2 van nước: Van vàng bên trái tự động rót tiền vào (Tài sản), van thủng bên phải rỉ nước làm rơi tiền ra sàn (Tiêu sản).'
       }
-    ]
+    ],
+
+    // CỐT TRUYỆN CỐT LÕI 60 GIÂY (DÙNG ĐỂ KỂ CHUYỆN & THUYẾT PHỤC)
+    coreNarrative60s: 'Hãy tưởng tượng một cậu bé 9 tuổi đứng giữa hai người cha: Một người là Tiến sĩ, Giám đốc Sở Giáo dục, luôn dặn con "Hãy học thật giỏi để kiếm việc làm an toàn và mua căn nhà trả góp"; người kia chưa học hết lớp 8 nhưng làm chủ chuỗi cửa hàng, luôn dạy "Đừng bao giờ nói tôi không có tiền, hãy tìm cách để dòng tiền mua nó cho con". Suốt 30 năm, người cha học rộng tài cao rơi vào bế tắc nợ nần và thuế khóa dù lương rất cao — một tù nhân của "Vòng Chuột Chạy" vì lầm tưởng căn nhà ở là tài sản lớn nhất. Trong khi đó, người cha ít học xây dựng đế chế tự do tài chính nhờ đúng một chân lý thép: Tài sản là thứ đút tiền vào túi, tiêu sản là thứ rút tiền ra khỏi túi; và người giàu không bao giờ bán mạng vì tiền, mà bắt hệ thống tài sản và luật pháp cật lực phục vụ mình. Bí mật giàu có không nằm ở bằng cấp hay tiền lương, mà nằm ở tỷ lệ dòng tiền bạn giữ lại để nuôi dưỡng cột tài sản độc lập.',
+
+    // BỘ GIẢI PHẪU GỐC RỄ THỰC TẾ (XÓA BỎ MỌI LỖ HỔNG KIẾN THỨC)
+    rootReality: {
+      empiricalBasis: [
+        'Dữ liệu thực nghiệm Cục Dự trữ Liên bang Mỹ (Federal Reserve SCF Report): Tầng lớp trung lưu dành tới 65-70% tổng tài sản ròng dưới dạng bất động sản nhà ở chính. Trong khủng hoảng tài chính 2008, khi giá nhà sụt giảm 33%, hàng triệu hộ gia đình trung lưu bốc hơi toàn bộ gia sản vì nhầm lẫn căn nhà đang ở là tài sản sinh lời.',
+        'Bối cảnh lịch sử thuế khóa: Đạo luật Cải cách Thuế năm 1986 (Tax Reform Act of 1986 - TRA86) tại Mỹ xóa bỏ hầu hết lỗ hổng trốn thuế cá nhân, nhưng vẫn bảo lưu chính sách khấu trừ chi phí và khấu hao tài sản cho các Pháp nhân Doanh nghiệp và Bất động sản tạo dòng tiền nhằm thúc đẩy kinh tế.'
+      ],
+      causalChain: [
+        { cause: 'Giáo dục truyền thống định hướng làm thuê', mechanism: 'Dạy kỹ năng chuyên môn kỹ thuật để nhận lương cố định, bỏ qua hoàn toàn kiến thức quản trị dòng tiền, kế toán và luật pháp.' },
+        { cause: 'Nhận thu nhập từ lương (Cột E/S)', mechanism: 'Chịu mức thuế suất lũy tiến cá nhân cao nhất (20-37%) khấu trừ tại nguồn trước khi nhận được tiền.' },
+        { cause: 'Hiệu ứng Hedonic Treadmill & Diderot', mechanism: 'Lương tăng thúc đẩy nhu cầu nâng cấp xe, mua nhà to bằng đòn bẩy nợ dài hạn 20-30 năm.' },
+        { cause: 'Căn nhà sinh hoạt trở thành Tiêu sản ròng', mechanism: 'Mỗi tháng đòi hỏi chi phí bắt buộc: Lãi vay + Thuế tài sản + Phí bảo trì + Bảo hiểm, hoàn toàn không sinh ra dòng tiền dương.' },
+        { cause: 'Bị giam cầm vào Vòng Chuột Chạy (Rat Race)', mechanism: 'Chi phí cố định cao buộc người lao động phải tiếp tục bán thời gian và sức khỏe, đánh mất quyền chủ động sự nghiệp.' },
+        { cause: 'Đột phá nhờ Cột Tài Sản (Cột B/I)', mechanism: 'Chuyển tiền vào tài sản tự sinh lời (BĐS cho thuê, cổ tức) -> Dòng tiền thụ động vượt chi phí sinh hoạt -> Giải phóng sức lao động.' }
+      ],
+      boundaryConditions: [
+        'Kịch bản Lãi suất tăng sốc (High Interest Rate Shock): Khi lãi suất vay tăng vọt (như chu kỳ 2022-2024), các nhà đầu tư bất động sản lạm dụng đòn bẩy nợ (Good Debt) theo kiểu Kiyosaki sẽ bị dòng tiền âm bóp nghẹt, dẫn tới vỡ nợ hàng loạt.',
+        'Khủng hoảng thanh khoản (Liquidity Crunch): Bất động sản và doanh nghiệp tư nhân có tính thanh khoản rất chậm. Khi thị trường đóng băng, nếu không có quỹ dự phòng tiền mặt lớn, nhà đầu tư buộc phải bán tống bán tháo tài sản ở mức chiết khấu 40-50%.',
+        'Cổ phiếu tăng trưởng không trả cổ tức (Tech Growth Stocks): Định nghĩa "tài sản phải đút tiền vào túi hàng tháng" của Kiyosaki hoàn toàn thất bại khi giải thích sự bùng nổ của Apple, Google, Amazon, Microsoft hay Nvidia — những công ty giữ lại lợi nhuận để tái đầu tư mở rộng quy mô, tạo ra mức tăng trưởng vốn hàng trăm lần.'
+      ],
+      counterPerspective: {
+        model: 'Trường phái Giá trị & Biên Độ An Toàn (Warren Buffett & Charlie Munger)',
+        contrarianInsight: 'Buffett cực kỳ dị ứng với đòn bẩy nợ cao: "Nếu bạn thông minh, bạn không cần nợ; nếu bạn ngu ngốc, nợ sẽ giết chết bạn". Buffett không mua bất động sản cho thuê rải rác mà tập trung mua lại những doanh nghiệp tuyệt vời có con hào kinh tế vững chắc (Economic Moat) với dòng tiền tự do khổng lồ.',
+        synthesisResolution: 'Hấp thụ tư duy giải phóng dòng tiền và phân biệt Tài sản/Tiêu sản của Kiyosaki, nhưng TUYỆT ĐỐI KHÔNG lạm dụng đòn bẩy nợ vô tội vạ. Kết hợp nguyên tắc "Biên độ an toàn" của Buffett: Luôn dự trữ tối thiểu 12 tháng thanh khoản và chỉ đầu tư vào những tài sản có con hào cạnh tranh bền vững.'
+      }
+    },
   },
 
   // 2. TÂM LÝ HỌC VỀ TIỀN
@@ -339,7 +368,35 @@ window.MASTER_BOOKS_DATA = [
         hint: 'Hình ảnh giữa đại dương đặt bên cửa sổ.',
         answer: 'Tảng băng trôi khổng lồ: Phần chóp nổi là tiêu xài hào nhoáng, phần thân chìm khổng lồ dưới biển là tài sản tự do vững chãi.'
       }
-    ]
+    ],
+
+    // CỐT TRUYỆN CỐT LÕI 60 GIÂY (DÙNG ĐỂ KỂ CHUYỆN & THUYẾT PHỤC)
+    coreNarrative60s: 'Hãy lắng nghe câu chuyện về hai người đàn ông: Ronald Read là một người gác cổng và thợ lau kính trạm xăng tại vùng quê nước Mỹ, lương tháng ít ỏi, sống giản dị trong căn nhà nhỏ; Richard Fuscone là một chuyên gia tài chính kỳ cựu tốt nghiệp Harvard, từng là phó chủ tịch tập đoàn đầu tư Merrill Lynch, kiếm hàng triệu USD mỗi năm và sở hữu biệt thự 11 phòng ngủ. Năm 2008, Fuscone tuyên bố phá sản hoàn toàn vì vay nợ đầu cơ và phô trương tài sản. Trong khi đó, khi Ronald Read qua đời năm 2014, cả thế giới rúng động khi biết ông để lại khối tài sản hơn 8 triệu USD, quyên góp phần lớn cho thư viện và bệnh viện địa phương. Làm thế nào một người quét rác lại đánh bại một thiên tài Harvard? Câu trả lời là: Tài chính không phải là cuộc đua IQ hay công thức Excel, mà là một trận chiến tâm lý. Ronald Read giàu có vì biết thế nào là ĐỦ và kiên trì để thời gian làm việc; còn Fuscone sụp đổ vì lòng tham không đáy và nỗi ám ảnh phải chứng minh sự giàu sang với thiên hạ.',
+
+    // BỘ GIẢI PHẪU GỐC RỄ THỰC TẾ (XÓA BỎ MỌI LỖ HỔNG KIẾN THỨC)
+    rootReality: {
+      empiricalBasis: [
+        'Nghiên cứu của Dalbar QAIB (Quantitative Analysis of Investor Behavior): Trong giai đoạn 30 năm (1990-2020), chỉ số S&P 500 tăng trưởng bình quân 10.7%/năm, nhưng nhà đầu tư cá nhân bình quân chỉ đạt lợi suất 5.9%/năm. Sự chênh lệch 4.8% mỗi năm này không phải do thiếu thông tin mà hoàn toàn do lỗi tâm lý: Bán tháo trong hoảng loạn khi thị trường chạm đáy và hưng phấn đu đỉnh khi thị trường quá nóng.',
+        'Số liệu tài sản của Warren Buffett: Hơn 99% tổng tài sản của Buffett được tạo ra sau sinh nhật lần thứ 50 của ông, và hơn 95% được tạo ra sau tuổi 65. Yếu tố quyết định là 75 năm bền bỉ liên tục không rời bỏ cuộc chơi.'
+      ],
+      causalChain: [
+        { cause: 'Trực giác coi tiền bạc như môn vật lý', mechanism: 'Kỳ vọng thị trường vận hành theo quy luật toán học logic, bỏ qua biến số cảm xúc của hàng triệu người tham gia.' },
+        { cause: 'So sánh xã hội (Social Comparison)', mechanism: 'Thấy người xung quanh khoe nhà, xe và lợi nhuận ngắn hạn -> Kích hoạt nỗi sợ bị bỏ lại phía sau (FOMO).' },
+        { cause: 'Liên tục dời cột gôn (Moving the Goalposts)', mechanism: 'Khi đạt được 10 tỷ lại muốn 50 tỷ -> Chấp nhận gia tăng tỷ lệ rủi ro để giữ vững vị thế xã hội ảo.' },
+        { cause: 'Đòn bẩy cảm xúc và hoảng loạn thị trường', mechanism: 'Khi biến cố bất định xuất hiện (Thiên nga đen) -> Áp lực trả lãi vay và nỗi sợ mất trắng ép nhà đầu tư bán tháo đúng đáy.' },
+        { cause: 'Nguyên lý tồn tại bền bỉ (Survival / Room for Error)', mechanism: 'Chấp nhận lợi suất trung bình nhưng duy trì qua nhiều thập kỷ mà không bị loại bỏ -> Sức mạnh lãi kép bùng nổ theo cấp số nhân.' }
+      ],
+      boundaryConditions: [
+        'Giữ tiền mặt quá mức trong siêu lạm phát (Hyperinflation Risk): Chiến lược "ngủ ngon" bằng cách ôm tiền mặt quá nhiều của Housel sẽ bị lạm phát ăn mòn sức mua trầm trọng trong các giai đoạn cung tiền tăng phi mã (như thập niên 1970 hoặc 2020-2022).',
+        'Giai đoạn đầu tích lũy vốn của người trẻ (Early Capital Accumulation): Với người có số vốn khởi điểm quá nhỏ (10-20 triệu), việc quá cẩn trọng phòng thủ sẽ khiến quy mô tài sản tăng trưởng quá chậm. Cần phải chấp nhận mức độ rủi ro tính toán được để gia tăng thu nhập kỹ năng chuyên môn trước.',
+        'Môi trường kinh tế trì trệ kiểu Nhật Bản (Japan Lost Decades 1990-2020): Nếu thị trường chứng khoán đi ngang suốt 30 năm, chỉ số thụ động không tự sinh ra phép màu nếu không có sự lựa chọn tài sản thông minh.'
+      ],
+      counterPerspective: {
+        model: 'Trường phái Tấn Công Tập Trung & Đầu Cơ Đột Phá (George Soros & Peter Thiel)',
+        contrarianInsight: 'Peter Thiel lập luận trong "Zero to One": Bạn không thể tạo ra những đột phá vĩ đại cho nhân loại nếu chỉ chơi bài phòng thủ an toàn và đa dạng hóa thụ động. Đôi khi bạn phải đặt cược tập trung cực lớn vào một phát kiến độc quyền làm thay đổi thế giới.',
+        synthesisResolution: 'Phân bổ tài sản theo mô hình Quả Tạ (Barbell Strategy của Nassim Taleb): Dành 80-90% danh mục theo nguyên lý bền bỉ, an toàn, ngủ ngon của Morgan Housel (để đảm bảo bạn không bao giờ bị tiêu diệt), và dành 10-20% cho những canh bạc đổi mới mạo hiểm có tiềm năng sinh lời bất đối xứng.'
+      }
+    },
   },
 
   // 3. TƯ DUY NHANH VÀ CHẬM
@@ -485,7 +542,35 @@ window.MASTER_BOOKS_DATA = [
         hint: 'Tưởng tượng về tương lai 1 năm sau.',
         answer: 'Giả định rằng dự án đã thất bại thảm hại trong tương lai, sau đó yêu cầu mọi người viết ra tất cả những nguyên nhân sâu xa dẫn đến thảm họa đó để phòng ngừa trước.'
       }
-    ]
+    ],
+
+    // CỐT TRUYỆN CỐT LÕI 60 GIÂY (DÙNG ĐỂ KỂ CHUYỆN & THUYẾT PHỤC)
+    coreNarrative60s: 'Hãy tưởng tượng bên trong bộ não bạn có hai nhân vật cùng ngồi trước vô lăng: Người thứ nhất là một tay đua siêu tốc liều lĩnh (Hệ thống 1), phản xạ trong chớp mắt, thích phán xét ngay lập tức và luôn bị cảm xúc đánh lừa; người thứ hai là một giáo sư thông thái đeo kính (Hệ thống 2), tính toán cực kỳ logic và chính xác, nhưng lại vô cùng lười biếng và thích ngủ gật. Suốt cả ngày, tay đua siêu tốc tự ý lái xe và liên tục lao vào các cạm bẫy: Nó tin sái cổ những câu chuyện nghe có vẻ êm tai dù thiếu dữ kiện (WYSIATI), bị trói chặt vào con số đầu tiên mà người bán hàng đưa ra (Hiệu ứng Mỏ neo), và đau đớn gồng lỗ đến phá sản chỉ vì sợ thừa nhận mất mát (Tâm lý Sợ lỗ). Giáo sư thông thái chỉ thỉnh thoảng mở mắt thức dậy khi tay đua đã gây ra thảm họa. Daniel Kahneman cảnh báo: Bạn không thông minh và duy lý như bạn tưởng. Muốn làm chủ số phận, bạn phải học cách kéo phanh tay, ép tay đua dừng lại 10 giây để đánh thức vị giáo sư logic trước mỗi ngã rẽ cuộc đời.',
+
+    // BỘ GIẢI PHẪU GỐC RỄ THỰC TẾ (XÓA BỎ MỌI LỖ HỔNG KIẾN THỨC)
+    rootReality: {
+      empiricalBasis: [
+        'Thí nghiệm Bài toán Linda (The Linda Problem): Khi được mô tả Linda là một phụ nữ 31 tuổi thông minh, quan tâm đến công bằng xã hội, hơn 85% người tham gia (kể cả các sinh viên kinh tế Stanford) chọn phương án "Linda là nhân viên ngân hàng VÀ tham gia phong trào nữ quyền" nhiều hơn phương án "Linda là nhân viên ngân hàng". Đây là bằng chứng toán học thực nghiệm về Ngụy biện Liên kết (Conjunction Fallacy) vi phạm xác suất cơ bản.',
+        'Nghiên cứu về Thẩm phán tuyên án (Danziger et al., 2011, PNAS): Phân tích hơn 1.000 quyết định ân xá tại Israel cho thấy tỷ lệ tù nhân được ân xá đạt 65% ngay sau giờ ăn sáng của thẩm phán, nhưng giảm dần về 0% ngay trước giờ ăn trưa khi Hệ thống 2 của thẩm phán bị kiệt quệ năng lượng (Ego Depletion).'
+      ],
+      causalChain: [
+        { cause: 'Tiến hóa sinh học tối ưu hóa sinh tồn', mechanism: 'Tổ tiên cần phản xạ chạy trốn thú dữ trong 0.1 giây mà không cần suy nghĩ logic -> Định hình nên Hệ thống 1 phản xạ nhanh, tiết kiệm calo.' },
+        { cause: 'Cơ chế kích hoạt định kiến có sẵn (Heuristics)', mechanism: 'Khi đối mặt bài toán phức tạp, não tự động thay thế bằng một câu hỏi đơn giản và cảm tính hơn (Attribute Substitution).' },
+        { cause: 'Ảo tưởng nhất quán WYSIATI', mechanism: 'Não gom các mẩu tin rời rạc tạo thành câu chuyện có vẻ hợp lý -> Cảm nhận sự mạch lạc khiến mức độ tự tin tăng vọt bất chấp thiếu dữ liệu nền tảng (Base Rate).' },
+        { cause: 'Tâm lý Ghét Mất Mát (Loss Aversion)', mechanism: 'Tỷ lệ trọng số tâm lý 2.5:1 khiến nỗi đau mất 1 đồng lớn gấp đôi niềm vui kiếm 1 đồng -> Dẫn đến hành vi gồng lỗ liều lĩnh và chốt lời non.' },
+        { cause: 'Lười biếng nhận thức của Hệ thống 2', mechanism: 'Hệ thống 2 không kiểm tra lại các giả định vì tốn đường glucose của não bộ -> Sai lầm lặp đi lặp lại có tính hệ thống.' }
+      ],
+      boundaryConditions: [
+        'Môi trường có tính quy luật cao và phản hồi tức thì (High-Validity Environments): Nhà nghiên cứu Gary Klein (đối trọng của Kahneman) chứng minh rằng trong những môi trường như cứu hỏa, đại kiện tướng cờ vua hay phẫu thuật cấp cứu, trực giác của Hệ thống 1 (Naturalistic Decision Making) lại chính xác và cứu mạng người vượt trội so với việc ngồi phân tích chậm chạp của Hệ thống 2.',
+        'Chi phí cơ hội của việc phân tích quá mức (Analysis Paralysis): Đánh thức Hệ thống 2 cho mọi quyết định vụn vặt (chọn món ăn, mua chiếc áo) sẽ gây kiệt sức tinh thần, giảm năng suất làm việc cốt lõi.',
+        'Môi trường hỗn loạn bất định cực đoan (Radical Uncertainty): Trong những biến cố chưa từng có tiền lệ trong lịch sử, cả số liệu thống kê của Hệ thống 2 cũng không có khả năng dự đoán tương lai.'
+      ],
+      counterPerspective: {
+        model: 'Trường phái Trực Giác Tự Nhiên & Đơn Giản Hóa Thông Minh (Gerd Gigerenzer & Gary Klein)',
+        contrarianInsight: 'Gerd Gigerenzer (Viện Max Planck) phản biện Kahneman: Các thiên kiến nhận thức không phải là khuyết tật của não bộ, mà là "Sự khôn ngoan thích ứng" (Ecological Rationality). Các quy tắc suy nghiệm ngón tay cái đơn giản (Fast & Frugal Heuristics) thường đưa ra quyết định thực tế tốt hơn các mô hình thống kê phức tạp vốn rất dễ bị hiện tượng quá khớp (Overfitting).',
+        synthesisResolution: 'Phân loại quyết định theo Khung Cynefin: Với các vấn đề lặp lại, có quy luật rõ ràng -> Tận dụng kinh nghiệm trực giác Hệ thống 1 kết hợp phản xạ nhanh. Với các quyết định chiến lược một chiều, không thể hoàn tác (đầu tư tài chính lớn, chọn bạn đời, ký hợp đồng sinh tử) -> Bắt buộc dừng lại, lập ma trận và kích hoạt Hệ thống 2 đa chiều.'
+      }
+    },
   },
 
   // 4. ATOMIC HABITS
@@ -631,7 +716,35 @@ window.MASTER_BOOKS_DATA = [
         hint: 'Sự khác biệt giữa sự cố ngẫu nhiên và sự hình thành thói quen xấu.',
         answer: 'Bỏ lỡ một buổi tập là sự cố ngoài ý muốn; nhưng bỏ lỡ lần thứ hai liên tiếp là khởi đầu của một thói quen xấu mới. Bắt buộc phải duy trì chuỗi dù chỉ làm 2 phút.'
       }
-    ]
+    ],
+
+    // CỐT TRUYỆN CỐT LÕI 60 GIÂY (DÙNG ĐỂ KỂ CHUYỆN & THUYẾT PHỤC)
+    coreNarrative60s: 'Hãy nhìn vào một khối băng lạnh giá đặt trong căn phòng -10°C: Bạn tăng nhiệt độ lên -9°C, -5°C, rồi -1°C. Nhiệt độ đã tăng 9 bậc, bạn tốn rất nhiều củi lửa nhưng tảng băng vẫn cứng đơ không suy chuyển. Người thiếu kiên nhẫn sẽ nản lòng gào lên: "Nỗ lực của tôi vô nghĩa!". Nhưng khi nhiệt độ chạm ngưỡng 0°C, chỉ cần tăng thêm đúng 1 độ duy nhất, cả khối băng khổng lồ bỗng nhiên nứt toác và tan chảy thành dòng nước. James Clear chỉ ra rằng sự thay đổi cuộc đời con người cũng diễn ra y hệt như vậy. Hầu hết mọi người bỏ cuộc giữa chừng trong "Thung lũng Thất vọng" vì đòi hỏi kết quả tức thì. Bí mật của những vĩ nhân không phải là ý chí thép hay mục tiêu trên trời, mà là họ xây dựng một hệ thống thói quen nguyên tử vi mô: Tốt hơn 1% mỗi ngày, sau một năm bạn tiến bộ gấp 37 lần; và thay vì đặt mục tiêu chạy marathon, họ chỉ rèn luyện bản sắc của một người không bao giờ lười biếng bước chân ra khỏi giường.',
+
+    // BỘ GIẢI PHẪU GỐC RỄ THỰC TẾ (XÓA BỎ MỌI LỖ HỔNG KIẾN THỨC)
+    rootReality: {
+      empiricalBasis: [
+        'Nghiên cứu của GS. Wendy Wood (Đại học Nam California - USC): Khoảng 43% mọi hành vi hàng ngày của con người được thực hiện một cách hoàn toàn tự động theo thói quen trong cùng một bối cảnh môi trường mà không cần đến sự chỉ đạo của ý thức.',
+        'Mô hình Trầm cảm có điều kiện và Vòng lặp Dopamine (Wolfram Schultz - Đại học Cambridge): Dopamine không được tiết ra nhiều nhất khi bạn nhận được phần thưởng, mà nó bùng nổ mạnh nhất tại thời điểm bạn dự đoán tín hiệu chuẩn bị nhận phần thưởng. Thao túng tín hiệu này là chìa khóa điều khiển hành vi.'
+      ],
+      causalChain: [
+        { cause: 'Ý chí hữu hạn của vỏ não trước trán', mechanism: 'Ý chí (Willpower) là một nguồn tài nguyên sinh học tiêu hao đường nhanh chóng, không thể duy trì liên tục suốt cả ngày.' },
+        { cause: 'Ma sát môi trường (Friction)', mechanism: 'Mỗi một rào cản nhỏ (ví dụ phải tìm chìa khóa tủ, phải tải ứng dụng) đều làm tăng sức cản hành động, khiến não chọn phương án lười biếng.' },
+        { cause: 'Cơ chế Vòng lặp Phản xạ (Cue -> Craving -> Response -> Reward)', mechanism: 'Não tự động tạo rãnh thần kinh Myelin hóa khi một chuỗi hành động mang lại dopamine thỏa mãn tức thì.' },
+        { cause: 'Quy tắc 2 Phút & Đòn bẩy Quán tính', mechanism: 'Vượt qua sức ỳ ban đầu bằng hành động siêu nhỏ -> Kích hoạt đà quán tính tâm lý để tiếp tục duy trì hoạt động.' },
+        { cause: 'Tái lập trình Bản Sắc (Identity Shift)', mechanism: 'Mỗi hành vi vi mô là một lá phiếu bầu cho niềm tin mới -> Khi bản sắc thay đổi, thói quen trở thành một phần tự nhiên của con người.' }
+      ],
+      boundaryConditions: [
+        'Chiến lược sai hướng (Direction vs Speed): Nếu bạn tối ưu hóa thói quen 1% mỗi ngày trên một công việc lỗi thời hoặc một thị trường đang chết, thói quen tốt chỉ giúp bạn tiến nhanh hơn tới vực thẳm. Chiến lược lựa chọn (Decision Making) luôn đi trước Tối ưu hóa (Execution).',
+        'Môi trường có tính xáo trộn liên tục (Dynamic Disruption): Với những người làm việc trong môi trường khẩn cấp, lịch trình thay đổi từng giờ (như bác sĩ cấp cứu, nhà sáng lập startup đang xoay trục), việc duy trì thói quen cứng nhắc theo giờ giấc cố định sẽ gây áp lực tâm lý tiêu cực.',
+        'Định luật Lợi tức Giảm dần (Diminishing Marginal Returns): Ở trình độ nhập môn, cải thiện 1% mang lại đột phá lớn; nhưng ở trình độ thế giới đỉnh cao, cải thiện 1% đòi hỏi nguồn lực gấp 10 lần và cần những đột phá kiến trúc toàn diện chứ không chỉ là thói quen vi mô.'
+      ],
+      counterPerspective: {
+        model: 'Trường phái Tấn Công Đột Phá & Nhảy Vọt Lượng Tử (Blitzscaling & Quantum Leap)',
+        contrarianInsight: 'Reid Hoffman (nhà sáng lập LinkedIn) và Peter Thiel lập luận: Trong thế giới kinh doanh công nghệ bùng nổ, sự cải tiến vi mô 1% của Kaizen sẽ bị nghiền nát bởi những kẻ dám thực hiện bước nhảy vọt 10x (Blitzscaling) chấp nhận hỗn loạn và thiếu hoàn hảo để chiếm lĩnh thị trường.',
+        synthesisResolution: 'Sử dụng tư duy Đột phá 10x để chọn đúng chiến trường chiến lược (Strategy), sau đó dùng Atomic Habits để tối ưu hóa kỷ luật vận hành hàng ngày (Execution). Bản sắc vững vàng bên trong giúp bạn bình thản thực thi những bước nhảy vọt bên ngoài.'
+      }
+    },
   },
 
   // 5. BINH PHÁP TÔN TỬ
@@ -777,6 +890,34 @@ window.MASTER_BOOKS_DATA = [
         hint: 'Hình ảnh đặt trên bàn trà ở thư phòng.',
         answer: 'Bàn cờ tướng bằng đồng cổ: Quân cờ đối phương tự động hạ vũ khí xếp hàng quỳ phục trước một chén trà cổ đang bốc khói nghi ngút mà không tốn một giọt máu.'
       }
-    ]
+    ],
+
+    // CỐT TRUYỆN CỐT LÕI 60 GIÂY (DÙNG ĐỂ KỂ CHUYỆN & THUYẾT PHỤC)
+    coreNarrative60s: 'Hãy hình dung một vị đại tướng quân đứng trên đỉnh núi cao nhìn xuống hai đạo quân đang chuẩn bị giao chiến dưới thung lũng: Một vị tướng trẻ háo hức rút gươm, gào thét thúc giục vạn binh mã xông thẳng vào cổng thành kiên cố của địch để chứng minh lòng quả cảm; nhưng vị đại tướng thông thái khẽ lắc đầu, hạ lệnh đóng chặt doanh trại, cho quân đào kênh dẫn nước cắt đứt đường tiếp tế lương thực và tung tin giả khiến nội bộ quân địch nghi kỵ, tự xé lẻ đội hình. Đến ngày thứ bảy, đối phương kiệt quệ tự mở cổng thành ra hàng mà hai bên không phải tốn một mũi tên. Tôn Tử mỉm cười nói: "Đánh trăm trận thắng cả trăm trận chưa phải là bậc thánh nhân; bắt quân địch tự khuất phục mà không cần giao tranh mới là đỉnh cao tối thượng". Bí mật của Binh Pháp 2500 năm tuổi không phải là xúi giục chém giết, mà là nghệ thuật nhìn thấu lòng người, né chỗ mạnh, đánh chỗ yếu và định đoạt chiến thắng từ trong phòng mưu lược trước khi mặt trời mọc.',
+
+    // BỘ GIẢI PHẪU GỐC RỄ THỰC TẾ (XÓA BỎ MỌI LỖ HỔNG KIẾN THỨC)
+    rootReality: {
+      empiricalBasis: [
+        'Chiến dịch Bách Cử (Trận Bách Cử năm 506 TCN): Tôn Vũ và Ngô Hạp Lư chỉ dùng 3 vạn quân Ngô đã đánh tan 20 vạn quân Sở bằng cách liên tục điều động quân Sở chạy theo mồi nhử dọc bờ sông Hán Thủy, làm tiêu hao thể lực của địch rồi mới bất ngờ tập kích vào chỗ yếu.',
+        'Nghiên cứu Quân sự Lịch sử của B.H. Liddell Hart (Strategy - The Indirect Approach): Phân tích hơn 280 chiến dịch quân sự lớn từ thời cổ đại đến Thế chiến II cho thấy trong 274 chiến dịch, chiến thắng quyết định đạt được thông qua "Chiến lược Tiếp cận Gián tiếp" (né tránh phòng tuyến chính diện) chứ không phải các cuộc tấn công trực diện đẫm máu.'
+      ],
+      causalChain: [
+        { cause: 'Chi phí hao tổn khổng lồ của xung đột đối đầu', mechanism: 'Khởi chiến tiêu tốn tài chính, hậu cần và nhân mạng theo cấp số nhân -> Kể cả khi thắng trận trực diện cũng rơi vào cảnh kiệt quệ (Pyrrhic Victory).' },
+        { cause: 'Nguyên lý Tiên Thắng Hậu Cầu Chiến', mechanism: 'Đo lường 5 yếu tố cốt lõi (Đạo, Thiên, Địa, Tướng, Pháp) -> Chỉ ra đòn khi xác suất chiến thắng đạt mức áp đảo 90-100%.' },
+        { cause: 'Tỵ Thực Kích Hư (Tránh chỗ cứng, đánh chỗ mềm)', mechanism: 'Chỗ kiên cố của đối thủ được bảo vệ bằng tài nguyên lớn nhất; chỗ sơ hở bị bỏ ngỏ -> Dồn lực tập trung vào điểm yếu tạo ra lợi thế cạnh tranh áp đảo.' },
+        { cause: 'Binh Bất Yếm Trá (Kiểm soát nhận thức đối phương)', mechanism: 'Thao túng thông tin tình báo khiến đối phương phán đoán sai lầm -> Buộc họ tự đưa quân vào thế bất lợi mà không hề hay biết.' },
+        { cause: 'Bất Chiến Tự Nhiên Thành', mechanism: 'Cắt đứt nguồn lực và ý chí chiến đấu của đối thủ -> Khiến họ đầu hàng hoặc rút lui trong hòa bình, bảo toàn nguyên vẹn tài nguyên.' }
+      ],
+      boundaryConditions: [
+        'Cuộc chiến ý thức hệ và sinh tồn tuyệt đối (Existential War / Total War): Khi đối đầu với những kẻ cuồng tín hoặc mối đe dọa sinh tử không thể thỏa hiệp (như phát xít trong Thế chiến II), các đòn ngoại giao "bất chiến tự nhiên thành" hay mưu lược gián tiếp sẽ thất bại; khi đó bắt buộc phải dùng sức mạnh hỏa lực trực diện áp đảo để tiêu diệt.',
+        'Chi phí thông tin tình báo sai lệch: Binh pháp Tôn Tử dựa trên tiền đề "Biết người biết ta". Nếu hệ thống tình báo bị đối phương tương kế tựu kế tung hỏa mù, các phép tính trong phòng tham mưu sẽ trở thành thảm họa.',
+        'Xây dựng văn hóa nội bộ doanh nghiệp: Triết lý "Binh bất yếm trá" (lừa dối và ngụy trang) tuyệt đối không được áp dụng với cấp dưới, đồng đội hoặc gia đình vì nó sẽ phá hủy lòng tin căn bản (Psychological Safety) của tổ chức.'
+      ],
+      counterPerspective: {
+        model: 'Trường phái Tập Trung Hỏa Lực Trực Diện (Carl von Clausewitz - Bàn Về Chiến Tranh)',
+        contrarianInsight: 'Clausewitz (nhà tư tưởng quân sự Phổ) nhấn mạnh: Bản chất của chiến tranh là sự va chạm tàn bạo của ý chí và bạo lực. Clausewitz chỉ trích những mưu mẹo vòng vo và khẳng định con đường ngắn nhất, chắc chắn nhất để kết thúc chiến tranh là tập trung lực lượng hỏa lực hủy diệt trung tâm trọng lực (Center of Gravity) của kẻ thù trong một trận đánh quyết định.',
+        synthesisResolution: 'Dùng Tôn Tử trong Giai đoạn Thiết Kế Thế Trận (chuẩn bị, né tránh tổn thất, thao túng định vị thị trường, tạo ra lợi thế bất đối xứng); nhưng khi thời cơ chín muồi để tung đòn kết liễu, hãy dùng sự quyết liệt và hỏa lực tập trung của Clausewitz để không cho đối thủ cơ hội hồi sinh.'
+      }
+    }
   }
 ];
