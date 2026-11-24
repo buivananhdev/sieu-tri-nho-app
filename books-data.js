@@ -70,7 +70,7 @@ window.MASTER_BOOKS_DATA = [
     axiom: 'Người nghèo và tầng lớp trung lưu bán thời gian và sức lao động để đổi lấy tiền. Người giàu xây dựng hệ thống tài sản để bắt tiền bạc làm việc cật lực cho mình.',
     masterQuote: 'Người nghèo nói: "Tôi không có tiền để mua thứ đó." Người giàu tự vấn: "Làm thế nào để tôi có thể tạo ra dòng tiền sở hữu thứ đó?" — Câu khẳng định đóng chặt bộ não, câu hỏi kích hoạt tư duy tài chính.',
 
-    // TẦNG 2: HỆ THỐNG ĐỦ ĐÚNG 7 NỐT NHẠC BẤT BIẾN (TỪ NỐT 1 ĐẾN NỐT 7)
+    // TẦNG 2: HỆ THỐNG ĐỦ ĐÚNG 7 NỐT NHẠC BẤT BIẾN
     the7Notes: [
       {
         note: 1,
@@ -123,7 +123,7 @@ window.MASTER_BOOKS_DATA = [
       }
     ],
 
-    // TẦNG 3: THUẬT TOÁN THỰC THI 4 BƯỚC (STEP-BY-STEP ALGORITHM)
+    // TẦNG 3: THUẬT TOÁN THỰC THI 4 BƯỚC
     algorithm: [
       {
         step: 1,
@@ -147,7 +147,7 @@ window.MASTER_BOOKS_DATA = [
       }
     ],
 
-    // TẦNG 4: BỘ CÂU HỎI SOCRATIC KHAI SÁNG (POWER QUESTIONS)
+    // TẦNG 4: BỘ CÂU HỎI SOCRATIC KHAI SÁNG
     powerQuestions: [
       'Nếu ngày mai bạn mất việc hoặc ngừng làm việc hoàn toàn, bạn và gia đình có thể sống sót được bao nhiêu tháng bằng dòng tiền hiện tại?',
       'Thứ đắt tiền nhất bạn vừa mua tháng trước là một Tài sản đút tiền vào túi bạn, hay một Tiêu sản đang âm thầm móc túi bạn mỗi ngày?',
@@ -163,13 +163,37 @@ window.MASTER_BOOKS_DATA = [
       lesson: 'Sự giàu có thực sự được đo bằng Thời Gian bạn có thể sống tự do, chứ không đo bằng con số thu nhập trên giấy.'
     },
 
-    // TẦNG 6: MỎ NEO CUNG ĐIỆN KÝ ỨC (MEMORY PALACE ANCHOR)
+    // TẦNG 6: MỎ NEO CUNG ĐIỆN KÝ ỨC
     memoryPalaceAnchor: {
       symbol: 'Chiếc Ví Da Vàng Hai Van Nước',
       visualDescription: 'Một chiếc ví da màu vàng rực rỡ đặt trên bàn làm việc. Bên trái là van nước bằng vàng tự động phun tiền ào ào vào ngăn ví (Tài sản). Bên phải là đáy ví thủng rò rỉ làm tiền rơi vãi xuống sàn (Tiêu sản).',
       lociLocation: 'Đặt tại Mặt Bàn Làm Việc ở Cung Điện Phòng Khách của bạn.',
       sensoryCue: 'Cảm nhận sức nặng của thỏi vàng trong tay và nghe tiếng đồng xu vàng rơi leng keng vui tai.'
-    }
+    },
+
+    // FLASH RECALL DRILL CARDS (TRUY HỒI CHỦ ĐỘNG ĐO LƯỜNG THẤU HIỂU)
+    recallCards: [
+      {
+        question: 'Sự khác biệt sinh tử giữa "Tài Sản" và "Tiêu Sản" theo định nghĩa của Robert Kiyosaki là gì?',
+        hint: 'Nghĩ về hướng đi của dòng tiền (vào túi hay ra khỏi túi).',
+        answer: 'Tài sản là thứ đút tiền vào túi bạn (bất động sản cho thuê, cổ phiếu chia cổ tức, bản quyền). Tiêu sản là thứ rút tiền ra khỏi túi bạn (nhà mua trả góp để ở, xe hơi cá nhân, đồ hiệu tiêu dùng).'
+      },
+      {
+        question: 'Bản chất của cạm bẫy "Vòng Chuột Chạy" (The Rat Race) là gì và vì sao tăng lương không giải quyết được?',
+        hint: 'Mối quan hệ giữa tăng thu nhập và nâng cấp mức sống chi tiêu.',
+        answer: 'Khi lương tăng, người ta có xu hướng nâng cấp chi phí sinh hoạt và vay nợ nhiều hơn, khiến chi phí tăng bằng hoặc vượt tốc độ tăng lương. Người lao động bị trói chặt vào chiếc lồng quay: Đi làm ➔ Nhận lương ➔ Trả nợ ➔ Tiếp tục đi làm.'
+      },
+      {
+        question: 'Quy tắc "Trả cho mình trước tiên" (Pay Yourself First) được thực thi như thế nào?',
+        hint: 'Thời điểm và tỷ lệ trích dòng tiền vào Cột Tài Sản.',
+        answer: 'Vào ngày nhận thu nhập, trích ngay tối thiểu 20% chuyển thẳng vào Cột Tài Sản để mua tài sản sinh lời trước, sau đó mới xoay xở chi tiêu trong số còn lại. Tuyệt đối không chi tiêu hết rồi mới tiết kiệm phần thừa.'
+      },
+      {
+        question: 'Biểu tượng Mỏ Neo Ký Ức để khóa chặt cuốn sách này vào Cung Điện là gì?',
+        hint: 'Hình dung đồ vật đặt trên bàn phòng khách.',
+        answer: 'Chiếc ví da vàng 2 van nước: Van vàng bên trái tự động rót tiền vào (Tài sản), van thủng bên phải rỉ nước làm rơi tiền ra sàn (Tiêu sản).'
+      }
+    ]
   },
 
   // 2. TÂM LÝ HỌC VỀ TIỀN
@@ -291,7 +315,31 @@ window.MASTER_BOOKS_DATA = [
       visualDescription: 'Một tảng băng trôi hùng vĩ giữa biển khơi. Phần nổi trên mặt nước chỉ là chiếc siêu xe bóng bẩy (tiêu xài). Nhưng phần thân khổng lồ chìm sâu dưới đáy đại dương mới là khối tài sản tự do đích thực nâng đỡ toàn bộ tảng băng.',
       lociLocation: 'Đặt bên Khung Cửa Sổ Hướng Biển trong Cung Điện Ký Ức.',
       sensoryCue: 'Cảm nhận làn gió biển mát rượi và cảm giác thanh thản, tự do tuyệt đối không ai lay chuyển được.'
-    }
+    },
+
+    // FLASH RECALL DRILL CARDS
+    recallCards: [
+      {
+        question: 'Vì sao Morgan Housel khẳng định thành công tài chính không phụ thuộc vào IQ mà phụ thuộc vào kỹ năng mềm?',
+        hint: 'Nghĩ về sự khác nhau giữa công thức toán học và cảm xúc con người.',
+        answer: 'Vì các quyết định tiền bạc ngoài đời thực bị chi phối bởi cảm xúc (tham lam, sợ hãi, ghen tị, tự ái). Một người có IQ thiên tài vẫn phá sản nếu không kiềm chế được lòng tham.'
+      },
+      {
+        question: 'Sự khác biệt cốt tử giữa "Rich" (Giàu sang) và "Wealth" (Giàu có) là gì?',
+        hint: 'Cái nhìn thấy được bằng mắt vs Cái vô hình.',
+        answer: '"Rich" là thu nhập hiện tại và những thứ bạn đã tiêu xài phô trương (xe sang, đồ hiệu). "Wealth" là những tài sản chưa bị tiêu xài, mang lại quyền tự do làm chủ thời gian của chính mình.'
+      },
+      {
+        question: 'Bí mật thực sự lớn nhất tạo nên khối tài sản của Warren Buffett là gì?',
+        hint: 'Không phải là tỷ suất sinh lời cao nhất, mà là yếu tố nào?',
+        answer: 'Yếu tố Thời Gian & Bền Bỉ. Hơn 99% tài sản của Buffett được tạo ra sau tuổi 50 nhờ duy trì lợi suất trung bình ổn định liên tục suốt hơn 75 năm mà không bao giờ bị phá sản.'
+      },
+      {
+        question: 'Biểu tượng Mỏ Neo Cung Điện để nhớ cuốn sách này là gì?',
+        hint: 'Hình ảnh giữa đại dương đặt bên cửa sổ.',
+        answer: 'Tảng băng trôi khổng lồ: Phần chóp nổi là tiêu xài hào nhoáng, phần thân chìm khổng lồ dưới biển là tài sản tự do vững chãi.'
+      }
+    ]
   },
 
   // 3. TƯ DUY NHANH VÀ CHẬM
@@ -413,7 +461,31 @@ window.MASTER_BOOKS_DATA = [
       visualDescription: 'Một chú thỏ trắng chạy nhanh như chớp (Hệ thống 1) đang lao vun vút về phía mép vực thẳm, nhưng bị một Cụ Rùa thông thái đeo kính cận (Hệ thống 2) từ tốn giẫm chân lên dây cương ghì chặt lại.',
       lociLocation: 'Đặt trước Chiếc Gương Lớn ở Sảnh Chính Cung Điện Ký Ức.',
       sensoryCue: 'Nghe tiếng gió rít bên tai của chú thỏ và cảm nhận sự vững chãi, chậm rãi của bàn chân cụ rùa.'
-    }
+    },
+
+    // FLASH RECALL DRILL CARDS
+    recallCards: [
+      {
+        question: 'Đặc tính khác nhau cơ bản giữa Hệ Thống 1 và Hệ Thống 2 là gì?',
+        hint: 'Nghĩ về tốc độ, cảm xúc, năng lượng tiêu hao.',
+        answer: 'Hệ thống 1: Nhanh, tự động, cảm tính, tiêu tốn ít năng lượng. Hệ thống 2: Chậm, logic, nỗ lực tính toán, nhưng lười biếng. Sai lầm xảy ra khi Hệ thống 1 trả lời thay cho Hệ thống 2.'
+      },
+      {
+        question: 'Ảo tưởng WYSIATI (What You See Is All There Is) đánh lừa não bộ như thế nào?',
+        hint: 'Não chỉ dùng thông tin hiện có để làm gì?',
+        answer: 'Não bộ chỉ sử dụng những dữ kiện trước mắt để dệt nên một câu chuyện mạch lạc và coi đó là sự thật tuyệt đối, phớt lờ hoàn toàn những dữ kiện còn thiếu hoặc chưa nhìn thấy.'
+      },
+      {
+        question: 'Lý thuyết Triển vọng giải thích tại sao con người ghét mất mát (Loss Aversion)?',
+        hint: 'So sánh mức độ đau đớn khi mất tiền vs niềm vui khi nhận tiền.',
+        answer: 'Nỗi đau đớn khi mất mát tài sản lớn gấp 2 đến 2.5 lần niềm vui khi nhận được tài sản tương đương, khiến con người hay gồng lỗ mù quáng và sợ hãi rủi ro quá mức.'
+      },
+      {
+        question: 'Kỹ thuật "Khám nghiệm trước tử thi" (Premortem) được thực hiện như thế nào trước khi ra quyết định?',
+        hint: 'Tưởng tượng về tương lai 1 năm sau.',
+        answer: 'Giả định rằng dự án đã thất bại thảm hại trong tương lai, sau đó yêu cầu mọi người viết ra tất cả những nguyên nhân sâu xa dẫn đến thảm họa đó để phòng ngừa trước.'
+      }
+    ]
   },
 
   // 4. ATOMIC HABITS
@@ -535,7 +607,31 @@ window.MASTER_BOOKS_DATA = [
       visualDescription: 'Một viên kim cương nhỏ xíu cỡ hạt bụi (Atomic) nhưng phát ra ánh hào quang rực rỡ. Mỗi ngày một hạt bụi kim cương mới bay tới dính vào, sau 365 ngày nó nở bừng thành một ngọn tháp kim cương khổng lồ chiếu sáng rực rỡ.',
       lociLocation: 'Đặt trên Chiếc Đèn Chùm Trung Tâm trong Cung Điện Ký Ức.',
       sensoryCue: 'Cảm nhận ánh sáng lấp lánh chiếu rọi khắp căn phòng và độ sắc bén hoàn hảo của viên kim cương.'
-    }
+    },
+
+    // FLASH RECALL DRILL CARDS
+    recallCards: [
+      {
+        question: 'Tại sao thói quen dựa trên Bản Sắc (Identity-Based Habits) lại vượt trội hơn thói quen dựa trên Mục Tiêu?',
+        hint: 'Nghĩ về câu: "Tôi không phải là người hút thuốc" vs "Tôi đang cố bỏ thuốc".',
+        answer: 'Mục tiêu chỉ là kết quả tạm thời bên ngoài. Bản sắc là niềm tin cốt lõi về con người bạn muốn trở thành. Khi một hành vi ăn sâu vào bản sắc, nó trở thành phản xạ tự nhiên không cần tốn ý chí đấu tranh.'
+      },
+      {
+        question: 'Bốn quy luật cốt lõi để tạo dựng thói quen tốt là gì?',
+        hint: 'Tín hiệu ➔ Cơn thèm ➔ Phản hồi ➔ Phần thưởng.',
+        answer: '1. Khiến nó Rõ ràng (Cue). 2. Khiến nó Hấp dẫn (Craving). 3. Khiến nó Dễ dàng (Response). 4. Khiến nó Thỏa mãn (Reward).'
+      },
+      {
+        question: 'Quy tắc 2 Phút (The Two-Minute Rule) giải quyết vấn đề trì hoãn như thế nào?',
+        hint: 'Thu nhỏ thói quen lúc bắt đầu.',
+        answer: 'Bắt đầu thói quen mới bằng phiên bản dưới 2 phút (chỉ đọc 1 trang, chỉ xỏ giày). Mục tiêu không phải là hoàn thành việc lớn, mà là thành thạo kỹ năng "Xuất hiện" để tạo đà quán tính.'
+      },
+      {
+        question: 'Quy tắc "Không bao giờ bỏ lỡ 2 lần liên tiếp" (Never Miss Twice) có ý nghĩa sống còn gì?',
+        hint: 'Sự khác biệt giữa sự cố ngẫu nhiên và sự hình thành thói quen xấu.',
+        answer: 'Bỏ lỡ một buổi tập là sự cố ngoài ý muốn; nhưng bỏ lỡ lần thứ hai liên tiếp là khởi đầu của một thói quen xấu mới. Bắt buộc phải duy trì chuỗi dù chỉ làm 2 phút.'
+      }
+    ]
   },
 
   // 5. BINH PHÁP TÔN TỬ
@@ -657,6 +753,30 @@ window.MASTER_BOOKS_DATA = [
       visualDescription: 'Một bàn cờ tướng bằng đồng cổ sáng bóng. Quân cờ đối phương tự động hạ vũ khí xếp hàng ngay ngắn trước một chén trà cổ đang bốc khói nghi ngút mà không tốn một giọt máu.',
       lociLocation: 'Đặt trên Bàn Trà ở Thư Phòng Cung Điện Ký Ức.',
       sensoryCue: 'Cảm nhận mùi thơm thanh tao của lá trà cổ thụ và sự tĩnh lặng tuyệt đối của một bậc kỳ tài định đoạt thiên hạ.'
-    }
+    },
+
+    // FLASH RECALL DRILL CARDS
+    recallCards: [
+      {
+        question: 'Ý nghĩa cốt tử của nguyên lý "Tiên Thắng Hậu Cầu Chiến" là gì?',
+        hint: 'Thời điểm định đoạt chiến thắng (trước hay sau khi nổ súng).',
+        answer: 'Chiến thắng phải được tính toán và chuẩn bị chu toàn trong phòng tham mưu đến mức chắc chắn 100% trước khi ra trận. Kẻ tầm thường lao vào chiến đấu rồi mới cầu may mong tìm được thắng lợi.'
+      },
+      {
+        question: 'Nguyên lý "Tỵ Thực Kích Hư" (Tránh chỗ thực, đánh chỗ hư) khuyên ta điều gì trong cạnh tranh?',
+        hint: 'Cách xử lý khi đối đầu với kẻ mạnh.',
+        answer: 'Tuyệt đối không đối đầu trực diện vào sở trường kiên cố nhất của đối thủ. Hãy né tránh điểm mạnh của họ và dồn toàn lực đánh vào thị trường ngách hoặc điểm yếu sơ hở mà họ bỏ ngỏ.'
+      },
+      {
+        question: 'Năm yếu tố "Ngũ Sự" để đo lường cục diện trước khi xuất binh là gì?',
+        hint: 'Đạo, Thiên, Địa...',
+        answer: '1. Đạo (Lòng dân, sự đồng lòng). 2. Thiên (Thời cơ, thời thế). 3. Địa (Địa thế, không gian). 4. Tướng (Năng lực, đạo đức lãnh đạo). 5. Pháp (Kỷ luật, tổ chức hậu cần).'
+      },
+      {
+        question: 'Biểu tượng Mỏ Neo Cung Điện để nhớ Binh Pháp Tôn Tử là gì?',
+        hint: 'Hình ảnh đặt trên bàn trà ở thư phòng.',
+        answer: 'Bàn cờ tướng bằng đồng cổ: Quân cờ đối phương tự động hạ vũ khí xếp hàng quỳ phục trước một chén trà cổ đang bốc khói nghi ngút mà không tốn một giọt máu.'
+      }
+    ]
   }
 ];

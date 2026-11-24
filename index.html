@@ -306,16 +306,21 @@
               </p>
             </div>
 
-            <!-- Search box -->
-            <div class="w-full lg:w-80 relative flex-shrink-0">
-              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input 
-                type="text" 
-                id="booksSearchInput" 
-                oninput="handleBookSearch(this.value)" 
-                placeholder="Tìm tên sách, tác giả, ý niệm..." 
-                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-amber-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-500 transition-all shadow-inner"
-              >
+            <!-- Action & Search Box -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
+              <button onclick="openAddCustomBookModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 whitespace-nowrap transition-all">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> + Thêm Sách Mới
+              </button>
+              <div class="w-full sm:w-72 relative flex-shrink-0">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input 
+                  type="text" 
+                  id="booksSearchInput" 
+                  oninput="handleBookSearch(this.value)" 
+                  placeholder="Tìm tên sách, tác giả, ý niệm..." 
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-amber-500 focus:outline-none text-xs sm:text-sm text-white placeholder-slate-500 transition-all shadow-inner"
+                >
+              </div>
             </div>
           </div>
 
@@ -325,6 +330,16 @@
               <i data-lucide="filter" class="w-3.5 h-3.5 text-amber-400"></i> Chọn Thể Loại Để Xem Sách:
             </div>
             <div id="booksGenreFilterBar" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+              <!-- Rendered dynamically by books-engine.js -->
+            </div>
+          </div>
+
+          <!-- Mastery Status Filter Bar -->
+          <div class="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-400"></i> Phân Loại Trạng Thái Học:
+            </div>
+            <div id="booksMasteryStatsBar">
               <!-- Rendered dynamically by books-engine.js -->
             </div>
           </div>
@@ -340,8 +355,13 @@
 
       </div>
 
-      <!-- SCREEN 2: BÀN MỔ XẺ CHI TIẾT SÁCH (4 TẦNG) -->
+      <!-- SCREEN 2: BÀN MỔ XẺ CHI TIẾT SÁCH (6 TẦNG CHUẨN 100%) -->
       <div id="bookDetailScreen" class="hidden space-y-8">
+        <!-- Rendered dynamically by books-engine.js -->
+      </div>
+
+      <!-- SCREEN 3: BÀI KIỂM TRA PHẢN XẠ THẤU HIỂU (ACTIVE RECALL DRILL) -->
+      <div id="bookRecallDrillScreen" class="hidden space-y-8">
         <!-- Rendered dynamically by books-engine.js -->
       </div>
 
@@ -2689,6 +2709,95 @@
           Đóng
         </button>
       </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: + THÊM SÁCH MỚI BÓC TÁCH 7 NỐT NHẠC -->
+  <div id="addCustomBookModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">
+    <div class="bg-cardBg border border-amber-500/40 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center text-black font-black text-lg shadow-lg">
+            <i data-lucide="book-plus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>+ Thêm Sách Mới (Chuẩn 7 Nốt Nhạc)</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Cá Nhân</span>
+            </h3>
+            <p class="text-xs text-slate-400">Tự nạp bất kỳ cuốn sách nào bạn đọc ngoài đời và bóc tách tinh hoa</p>
+          </div>
+        </div>
+        <button onclick="closeAddCustomBookModal()" class="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Form) -->
+      <form onsubmit="handleSaveCustomBookForm(event)" class="p-6 overflow-y-auto space-y-4 flex-grow text-xs sm:text-sm">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-slate-200">Tên Cuốn Sách <span class="text-amber-400">*</span></label>
+            <input type="text" id="customBookTitle" required placeholder="Ví dụ: Chiến Lược Đại Dương Xanh" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs">
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-slate-200">Tác Giả & Năm Xuất Bản</label>
+            <input type="text" id="customBookAuthor" placeholder="Ví dụ: W. Chan Kim & Renée Mauborgne" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-slate-200">Thể Loại</label>
+            <select id="customBookGenre" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs">
+              <option value="finance">Tài Chính & Kinh Tế</option>
+              <option value="psychology">Tâm Lý & Nhận Thức</option>
+              <option value="habits">Thói Quen & Hiệu Suất</option>
+              <option value="strategy">Chiến Lược & Mưu Lược</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-slate-200">Năm</label>
+            <input type="text" id="customBookYear" placeholder="2024" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-amber-400">Tiên Đề Chân Lý Tuyệt Đối (The Big Idea) <span class="text-amber-400">*</span></label>
+          <textarea id="customBookAxiom" required rows="2" placeholder="Nếu tác giả chỉ được nói đúng 1 câu duy nhất trước khi chết, họ sẽ nói câu gì?" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs leading-relaxed"></textarea>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-slate-200">7 Nốt Nhạc Cốt Lõi (Mỗi dòng là 1 Nốt Nhạc)</label>
+          <textarea id="customBookNotes" rows="4" placeholder="Dòng 1: Nốt 1 - Bối cảnh & Vấn đề nhức nhối&#10;Dòng 2: Nốt 2 - Ý niệm tối thượng&#10;Dòng 3: Nốt 3 - Cái bẫy thường gặp&#10;Dòng 4: Nốt 4 - Nguyên lý #1&#10;Dòng 5: Nốt 5 - Nguyên lý #2&#10;Dòng 6: Nốt 6 - Khung chiến lược&#10;Dòng 7: Nốt 7 - Giới hạn phản biện" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs leading-relaxed font-mono"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-slate-200">Thuật Toán Hành Động Đời Thực</label>
+            <input type="text" id="customBookAction" placeholder="Ví dụ: Khi gặp đối thủ mạnh, né giao tranh trực diện" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs">
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-slate-200">Mỏ Neo Cung Điện Ký Ức</label>
+            <input type="text" id="customBookPalace" placeholder="Ví dụ: Con thuyền buồm đỏ đặt trên kệ sách" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 focus:outline-none text-white text-xs">
+          </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="pt-3 border-t border-slate-800 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeAddCustomBookModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
+            Hủy Bỏ
+          </button>
+          <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-black font-extrabold text-xs shadow-lg transition-all flex items-center gap-1.5">
+            <i data-lucide="save" class="w-4 h-4"></i> Lưu Sách Vào Thư Viện
+          </button>
+        </div>
+
+      </form>
     </div>
   </div>
 
