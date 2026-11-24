@@ -428,6 +428,10 @@ function switchTab(tabId) {
     initChineseHub();
   }
 
+  if (targetTabId === 'english' && typeof initEnglishOS === 'function') {
+    initEnglishOS();
+  }
+
   if (targetTabId === 'books' && typeof initBooksLibrary === 'function') {
     initBooksLibrary();
   }
@@ -3221,14 +3225,14 @@ const DEFAULT_ACADEMIC_SUBJECTS = [
     id: 'english_oxford',
     disciplineId: 'languages',
     disciplineName: 'Ngôn Ngữ & Ngoại Ngữ',
-    name: 'Tiếng Anh Toàn Diện (Oxford & Academic)',
-    badge: 'IPA • 3000 Từ Cốt Lõi • Collocations',
-    status: 'ready',
-    desc: 'Áp dụng Kỹ thuật Âm Thanh Tương Tự (Sound-alike) và Cung Điện Không Gian để ghi nhớ 3000 từ vựng học thuật.',
+    name: 'Tiếng Anh Toàn Diện (ENGLISH MASTERY OS)',
+    badge: '10 Engine • London Memory Palace • 4 Kỹ Năng',
+    status: 'active',
+    desc: 'Hệ điều hành học tập và phát triển năng lực tiếng Anh toàn diện: London Memory Palace, 44 IPA, 15 Trụ cột Ngữ pháp, Listening, Speaking, Reading, Writing và Trí tuệ thích ứng.',
     icon: 'globe-2',
-    color: 'from-blue-600 to-cyan-600',
-    type: 'custom',
-    statsSummary: '3000 Từ Oxford • 44 Âm IPA',
+    color: 'from-blue-600 via-indigo-600 to-cyan-500',
+    type: 'english_link',
+    statsSummary: '10 Engine • London Memory Palace • 4 Kỹ Năng',
     topics: [
       { title: 'Chủ đề 1: Giao Tiếp & Ẩm Thực Cốt Lõi (30 từ)', notes: 'Cung điện Bếp ăn' },
       { title: 'Chủ đề 2: Du Lịch & Sân Bay Quốc Tế (40 từ)', notes: 'Cung điện Ga hàng không' }
@@ -3669,6 +3673,10 @@ const _orig_openSubjectDetail = openSubjectDetail;
 openSubjectDetail = function(subjectId) {
   if (subjectId === 'chinese_mastery') {
     switchTab('chinese');
+    return;
+  }
+  if (subjectId === 'english_oxford') {
+    switchTab('english');
     return;
   }
   _orig_openSubjectDetail(subjectId);

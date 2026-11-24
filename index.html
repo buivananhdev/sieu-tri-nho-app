@@ -78,6 +78,9 @@
           <button onclick="switchTab('practice')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-xl transition-all" data-tab="practice">
             <i data-lucide="swords" class="w-4 h-4 text-emerald-400"></i> Đấu Trường & Luyện Tập
           </button>
+          <button onclick="switchTab('english')" class="nav-tab flex items-center gap-2 px-3 py-2 rounded-xl transition-all" data-tab="english">
+            <i data-lucide="globe-2" class="w-4 h-4 text-cyan-400"></i> Tiếng Anh OS
+          </button>
         </nav>
 
         <!-- Right action: Sound toggle & GitHub Link -->
@@ -2215,6 +2218,43 @@
 
     </section>
 
+
+    <!-- TAB 9: ENGLISH MASTERY OS (10 ENGINES & 12 SUB-VIEWS) -->
+    <section id="tab-english" class="tab-content hidden space-y-6">
+      
+      <!-- Top Action Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-md">
+        <div class="flex items-center gap-3">
+          <button onclick="switchTab('overview')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 hover:border-cyan-500/40 text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-md">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Quay Lại Tổng Quan
+          </button>
+          <span class="text-xs text-slate-400 font-mono hidden sm:inline">
+            Hệ Điều Hành: <strong class="text-cyan-400">ENGLISH MASTERY OS</strong> • 10 Engine Cốt Lõi
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="switchEnglishSubView('reviews')" class="px-3.5 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
+            <i data-lucide="brain-circuit" class="w-4 h-4"></i> Hàng Đợi Ôn Tập (SRS)
+          </button>
+          <button onclick="switchEnglishSubView('lessons')" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md transition-all">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i> Buổi Học 35m
+          </button>
+        </div>
+      </div>
+
+      <!-- 12 Sub-views Nav Bar -->
+      <div id="englishOSSubNavBar" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <!-- Rendered by english-engine.js -->
+      </div>
+
+      <!-- Main Dynamic Content Container -->
+      <div id="englishOSContentContainer" class="space-y-6">
+        <!-- Rendered by english-engine.js -->
+      </div>
+
+    </section>
+
   </main>
 
   <!-- MODAL FOR DETAILED ARTICLE / METHOD POPUP -->
@@ -2412,6 +2452,8 @@
   <script src="peerjs.min.js"></script>
   <script src="books-data.js"></script>
   <script src="books-engine.js"></script>
+  <script src="english-data.js"></script>
+  <script src="english-engine.js"></script>
   <script src="app.js?v=20261123_books1"></script>
 
     <!-- MODAL: ĐỒNG BỘ TIẾN ĐỘ HỌC TẬP (MÁY TÍNH ⇄ ĐIỆN THOẠI) -->
