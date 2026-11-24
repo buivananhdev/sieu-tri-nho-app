@@ -1,11 +1,11 @@
 // =========================================================================
-// ENGLISH MASTERY OS - FOUNDATIONAL INTELLIGENCE DATABASE
+// ENGLISH MASTERY OS - EXPANDED FOUNDATIONAL DATABASE (V2)
 // Hệ điều hành học tập & phát triển năng lực tiếng Anh toàn diện 10 Engine
-// Input -> Understanding -> Encoding -> Retrieval -> Application -> Feedback -> Optimization
+// Đầy đủ Ngữ pháp thực tế, Từ vựng theo chủ đề, Bài nghe phân cấp & Điểm danh đọc
 // =========================================================================
 
 window.ENGLISH_OS_CONFIG = {
-  version: '1.0.0',
+  version: '2.0.0',
   defaultSchedule: {
     sessionsPerWeek: 4,
     days: ['Monday', 'Tuesday', 'Thursday', 'Saturday'],
@@ -28,11 +28,11 @@ window.ENGLISH_OS_CONFIG = {
 };
 
 // -------------------------------------------------------------------------
-// ENGINE 1: LONDON MEMORY PALACE (Cung Điện Trí Nhớ Không Gian London)
+// ENGINE 1: LONDON MEMORY PALACE (Cung Điện Trí Nhớ London)
 // -------------------------------------------------------------------------
 window.LONDON_MEMORY_PALACE = {
   name: 'London Memory Palace City',
-  description: 'Thành phố trí nhớ London chia thành 6 khu vực chủ đề kinh điển với các địa điểm nổi tiếng thế giới để mã hóa không gian từ vựng, ngữ pháp và tình huống hội thoại.',
+  description: 'Thành phố trí nhớ London chia thành 6 khu vực chủ đề kinh điển với các địa danh nổi tiếng thế giới để mã hóa không gian từ vựng, ngữ pháp và tình huống hội thoại.',
   districts: [
     {
       id: 'kings_cross',
@@ -278,292 +278,438 @@ window.LONDON_MEMORY_PALACE = {
 };
 
 // -------------------------------------------------------------------------
-// ENGINE 2: VOCABULARY INTELLIGENCE (Mạng Lưới Từ Vựng & Gốc Từ)
+// ENGINE 2: VOCABULARY INTELLIGENCE (Kho Từ Vựng Toàn Diện Theo Chủ Đề)
 // -------------------------------------------------------------------------
-window.VOCABULARY_INTELLIGENCE_DATA = {
-  rootFamilies: [
-    {
-      root: 'VELOP / VOLV',
-      meaning: 'Cuộn lại, bao bọc, mở ra (to roll, unroll, unfold)',
-      origin: 'Latin / Old French',
-      family: [
-        { word: 'develop', pos: 'v', ipa: '/dɪˈveləp/', def: 'Phát triển, mở rộng, tiến triển' },
-        { word: 'development', pos: 'n', ipa: '/dɪˈveləpmənt/', def: 'Sự phát triển, khu đô thị mới' },
-        { word: 'developer', pos: 'n', ipa: '/dɪˈveləpər/', def: 'Lập trình viên, nhà phát triển bất động sản' },
-        { word: 'developing', pos: 'adj', ipa: '/dɪˈveləpɪŋ/', def: 'Đang phát triển (nền kinh tế)' },
-        { word: 'undeveloped', pos: 'adj', ipa: '/ˌʌndɪˈveləpt/', def: 'Chưa khai phá, chưa phát triển' }
-      ],
-      collocations: ['develop a skill', 'develop a relationship', 'economic development', 'software developer'],
-      sampleSentence: 'Consistent deliberate practice helps you develop fluency in conversational English.'
-    },
-    {
-      root: 'STRUCT',
-      meaning: 'Xây dựng, lắp ráp (to build, assemble)',
-      origin: 'Latin (struere)',
-      family: [
-        { word: 'construct', pos: 'v', ipa: '/kənˈstrʌkt/', def: 'Xây dựng, kiến tạo' },
-        { word: 'structure', pos: 'n', ipa: '/ˈstrʌktʃər/', def: 'Cấu trúc, kết cấu' },
-        { word: 'instruction', pos: 'n', ipa: '/ɪnˈstrʌkʃn/', def: 'Lời hướng dẫn, sự chỉ đạo' },
-        { word: 'destructive', pos: 'adj', ipa: '/dɪˈstrʌktɪv/', def: 'Có tính phá hoại, hủy diệt' },
-        { word: 'infrastructure', pos: 'n', ipa: '/ˈɪnfrəstrʌktʃər/', def: 'Cơ sở hạ tầng' }
-      ],
-      collocations: ['sentence structure', 'constructive feedback', 'social infrastructure'],
-      sampleSentence: 'Understanding grammatical structure is essential before constructing complex sentences.'
-    },
-    {
-      root: 'PORT',
-      meaning: 'Mang, vác, chở (to carry, bear)',
-      origin: 'Latin (portare)',
-      family: [
-        { word: 'transport', pos: 'v / n', ipa: '/ˈtrænspɔːt/', def: 'Vận chuyển, giao thông vận tải' },
-        { word: 'import', pos: 'v / n', ipa: '/ˈɪmpɔːt/', def: 'Nhập khẩu, mang vào' },
-        { word: 'export', pos: 'v / n', ipa: '/ˈekspɔːt/', def: 'Xuất khẩu, gửi ra ngoài' },
-        { word: 'portable', pos: 'adj', ipa: '/ˈpɔːtəbl/', def: 'Di động, dễ mang theo' },
-        { word: 'opportunity', pos: 'n', ipa: '/ˌɒpəˈtjuːnəti/', def: 'Cơ hội (thuyền vào cảng thuận lợi)' }
-      ],
-      collocations: ['public transport', 'golden opportunity', 'portable device'],
-      sampleSentence: 'Reading books provides a portable opportunity to explore the greatest minds in history.'
-    }
-  ],
-  idiomsEssential: [
-    {
-      idiom: 'hit the nail on the head',
-      meaning: 'Nói trúng phóc, chỉ ra đúng bản chất cốt lõi của vấn đề',
-      context: 'Khi phân tích một ý tưởng hoặc giải thích nguyên nhân',
-      example: 'His explanation of the financial crisis really hit the nail on the head.'
-    },
-    {
-      idiom: 'bite the bullet',
-      meaning: 'Cắn răng chịu đựng, dũng cảm làm một việc khó khăn mà không trốn tránh',
-      context: 'Khi đối mặt với thử thách hoặc quyết định sinh tử',
-      example: 'I decided to bite the bullet and practice speaking English in front of the whole class.'
-    },
-    {
-      idiom: 'break the ice',
-      meaning: 'Phá vỡ bầu không khí gượng gạo ban đầu trong giao tiếp',
-      context: 'Bắt đầu cuộc trò chuyện với người mới quen',
-      example: 'He told a lighthearted joke to break the ice before starting the formal presentation.'
-    }
-  ]
-};
-
-// -------------------------------------------------------------------------
-// ENGINE 3: PHONETIC AND PRONUNCIATION (Âm Vị Học 44 IPA & Lỗi Người Việt)
-// -------------------------------------------------------------------------
-window.PHONETIC_IPA_DATA = {
-  vowels: {
-    monophthongs: [
-      { ipa: '/iː/', type: 'Long Vowel', example: 'see, feel, machine', vnMistake: 'Người Việt hay phát âm ngắn như /ɪ/ trong "sit", thiếu độ căng của khóe miệng kéo dài.' },
-      { ipa: '/ɪ/', type: 'Short Vowel', example: 'sit, hit, myth', vnMistake: 'Hay đọc thành "i" tiếng Việt sắc nhọn thay vì thả lỏng quai hàm.' },
-      { ipa: '/ʊ/', type: 'Short Vowel', example: 'good, put, book', vnMistake: 'Hay đọc thành "u" tiếng Việt tròn môi quá mức.' },
-      { ipa: '/uː/', type: 'Long Vowel', example: 'two, blue, goose', vnMistake: 'Cần chu môi tròn và kéo dài âm.' },
-      { ipa: '/e/', type: 'Short Vowel', example: 'bed, head, said', vnMistake: 'Tương đối chuẩn, mở miệng tự nhiên.' },
-      { ipa: '/ə/', type: 'Schwa (The King of English)', example: 'about, banana, computer', vnMistake: 'Lỗi chí mạng nhất của người Việt: Đọc rõ các âm không nhấn thay vì lướt nhẹ thành âm /ə/ yếu.' },
-      { ipa: '/ɜː/', type: 'Long Vowel', example: 'bird, learn, word', vnMistake: 'Hay bỏ qua việc uốn lưỡi nhẹ về sau.' },
-      { ipa: '/ɔː/', type: 'Long Vowel', example: 'door, saw, walk', vnMistake: 'Kéo dài và tròn môi sâu trong họng.' },
-      { ipa: '/æ/', type: 'Short Vowel (A bẹt)', example: 'cat, apple, black', vnMistake: 'Hay đọc thành "a" hoặc "e", trong khi chuẩn phải mở rộng quai hàm hạ cằm tối đa.' },
-      { ipa: '/ʌ/', type: 'Short Vowel', example: 'cup, sun, love', vnMistake: 'Âm "á" ngắn, dứt khoát không kéo dài.' },
-      { ipa: '/ɑː/', type: 'Long Vowel', example: 'car, father, calm', vnMistake: 'Mở sâu trong vòm họng.' },
-      { ipa: '/ɒ/', type: 'Short Vowel', example: 'hot, rock, stop', vnMistake: 'Âm "o" tròn ngắn trong British English.' }
-    ],
-    diphthongs: [
-      { ipa: '/eɪ/', example: 'face, day, break', tip: 'Trượt mượt mà từ /e/ sang /ɪ/.' },
-      { ipa: '/aɪ/', example: 'price, high, try', tip: 'Mở rộng /a/ rồi khép nhẹ về /ɪ/.' },
-      { ipa: '/ɔɪ/', example: 'choice, boy, noise', tip: 'Tròn môi /ɔ/ rồi kéo sang /ɪ/.' },
-      { ipa: '/aʊ/', example: 'mouth, now, town', tip: 'Mở /a/ rồi chu môi về /ʊ/.' },
-      { ipa: '/əʊ/', example: 'go, home, slow', tip: 'Bắt đầu từ âm schwa rồi khép về /ʊ/.' },
-      { ipa: '/ɪə/', example: 'near, here, deer', tip: 'Trượt từ /ɪ/ sang /ə/.' },
-      { ipa: '/eə/', example: 'square, fair, care', tip: 'Mở /e/ rồi đưa về /ə/.' },
-      { ipa: '/ʊə/', example: 'poor, tour, cure', tip: 'Âm trượt từ /ʊ/ về /ə/.' }
+window.VOCABULARY_THEMATIC_PACKS = [
+  {
+    id: 'pack_daily_life',
+    name: 'Giao Tiếp & Sinh Hoạt Thường Ngày',
+    icon: 'coffee',
+    badge: 'Đời Sống • Giao Tiếp • Bắt Buộc',
+    color: 'from-amber-600 to-yellow-600',
+    words: [
+      { id: 'w_commute', word: 'commute', pos: 'v / n', ipa: '/kəˈmjuːt/', vn: 'Đi lại hàng ngày giữa nhà và nơi làm việc', collocations: 'daily commute, long commute', example: 'It takes me 40 minutes to commute to the office by metro.' },
+      { id: 'w_errand', word: 'errand', pos: 'noun', ipa: '/ˈerənd/', vn: 'Việc vặt cần chạy ra ngoài làm (đi chợ, gửi bưu điện, đón con)', collocations: 'run an errand, have errands to do', example: 'I need to run a few errands before the supermarkets close.' },
+      { id: 'w_groceries', word: 'groceries', pos: 'noun pl.', ipa: '/ˈɡrəʊsəriz/', vn: 'Thực phẩm và hàng bách hóa sinh hoạt', collocations: 'buy groceries, grocery store', example: 'She spent fifty dollars on weekly groceries at the local market.' },
+      { id: 'w_catch_up', word: 'catch up', pos: 'phrasal verb', ipa: '/kætʃ ʌp/', vn: 'Gặp gỡ hàn huyên, cập nhật tin tức sau thời gian dài không gặp', collocations: 'catch up with someone, catch up over coffee', example: 'Let’s grab lunch this Saturday to catch up on everything!' },
+      { id: 'w_convenient', word: 'convenient', pos: 'adjective', ipa: '/kənˈviːniənt/', vn: 'Tiện lợi, thuận tiện cho sinh hoạt', collocations: 'highly convenient, convenient location', example: 'Living near a subway station is extremely convenient for my schedule.' },
+      { id: 'w_exhausted', word: 'exhausted', pos: 'adjective', ipa: '/ɪɡˈzɔːstɪd/', vn: 'Kiệt sức hoàn toàn, mệt rã rời', collocations: 'physically exhausted, feel exhausted', example: 'After working 12 hours straight, he was completely exhausted.' }
     ]
   },
-  consonantsKey: [
-    { ipa: '/θ/', name: 'Voiceless Dental Fricative', example: 'think, thought, bath', vnMistake: 'Người Việt hay đọc thành âm "th" hoặc "t" tiếng Việt. Cách sửa: Cắn nhẹ đầu lưỡi giữa hai hàm răng và đẩy luồng hơi ra ngoài, không phát ra tiếng rung dây thanh.' },
-    { ipa: '/ð/', name: 'Voiced Dental Fricative', example: 'this, that, mother', vnMistake: 'Hay đọc thành "đ" hoặc "d". Cách sửa: Đặt lưỡi giữa hai răng như /θ/ nhưng làm rung cổ họng.' },
-    { ipa: '/ʃ/', name: 'Voiceless Postalveolar', example: 'she, ship, action', vnMistake: 'Hay đọc nhẹ như "s" tiếng Việt thay vì chu môi và đẩy luồng hơi mạnh.' },
-    { ipa: '/ʒ/', name: 'Voiced Postalveolar', example: 'vision, measure, pleasure', vnMistake: 'Âm rung hiếm gặp trong tiếng Việt, cần giữ khẩu hình như /ʃ/ và làm rung dây thanh.' },
-    { ipa: '/tʃ/', name: 'Voiceless Affricate', example: 'church, watch, match', vnMistake: 'Hay quên bật âm đuôi /tʃ/ ở cuối từ.' },
-    { ipa: '/dʒ/', name: 'Voiced Affricate', example: 'judge, joy, age', vnMistake: 'Hay đọc nhầm thành "d" hoặc "gi", thiếu độ bật nén hơi.' }
-  ],
-  connectedSpeechRules: [
-    {
-      title: 'Nối âm Phụ âm sang Nguyên âm (Consonant to Vowel Linking)',
-      rule: 'Khi một từ kết thúc bằng phụ âm và từ kế tiếp bắt đầu bằng nguyên âm, phụ âm tự động nối sang nguyên âm kế tiếp.',
-      example: 'Hold on ➔ /həʊld ɒn/ nghe như "Hol-don". Pick it up ➔ nghe như "Pi-ki-tup".'
-    },
-    {
-      title: 'Dạng âm yếu của Trợ động từ & Giới từ (Weak Forms)',
-      rule: 'Trong câu nói tự nhiên, các từ chức năng (to, for, can, and, of) hầu như không bao giờ được nhấn mạnh mà bị ép về âm schwa /ə/.',
-      example: '"I can do it" không đọc là /kæn/, mà đọc lướt thành /kən/: "I /kən/ do it".'
-    },
-    {
-      title: 'Nuốt âm (Elision)',
-      rule: 'Âm /t/ và /d/ ở giữa hai phụ âm thường biến mất hoàn toàn trong giao tiếp tự nhiên.',
-      example: '"Next door" đọc thành "Nex-door"; "Last night" đọc thành "Las-night".'
-    }
-  ]
-};
-
-// -------------------------------------------------------------------------
-// ENGINE 4: GRAMMAR AND SENTENCE LABORATORY (15 Trụ Cột Ngữ Pháp)
-// -------------------------------------------------------------------------
-window.GRAMMAR_15_PILLARS = [
   {
-    id: 1,
-    name: 'Parts of Speech (8 Từ Loại Cốt Lõi)',
-    formula: 'Noun + Pronoun + Verb + Adjective + Adverb + Preposition + Conjunction + Interjection',
-    summary: 'Mọi câu tiếng Anh được cấu thành từ 8 khối gạch nền tảng. Xác định đúng từ loại quyết định 80% độ chính xác ngữ pháp.',
-    coreInsight: 'Một từ có thể đổi từ loại tùy vào vị trí trong câu (VD: "water the plant" - verb vs "drink fresh water" - noun).'
+    id: 'pack_work_career',
+    name: 'Công Sở, Phỏng Vấn & Đàm Phán',
+    icon: 'briefcase',
+    badge: 'Sự Nghiệp • Đàm Phán • Chuyên Nghiệp',
+    color: 'from-blue-600 to-indigo-600',
+    words: [
+      { id: 'w_deadline', word: 'deadline', pos: 'noun', ipa: '/ˈdedlaɪn/', vn: 'Hạn chót hoàn thành nhiệm vụ', collocations: 'meet a deadline, miss a deadline, tight deadline', example: 'The whole engineering team worked overtime to meet the client’s deadline.' },
+      { id: 'w_collaborate', word: 'collaborate', pos: 'verb', ipa: '/kəˈlæbəreɪt/', vn: 'Hợp tác chặt chẽ cùng nhau thực hiện dự án', collocations: 'collaborate with sb, collaborate on a project', example: 'Designers and developers must collaborate closely to build seamless apps.' },
+      { id: 'w_negotiate', word: 'negotiate', pos: 'verb', ipa: '/nɪˈɡəʊʃieɪt/', vn: 'Thương lượng, đàm phán quyền lợi hoặc giá cả', collocations: 'negotiate a contract, negotiate a higher salary', example: 'She successfully negotiated a 20% salary increase during her annual review.' },
+      { id: 'w_delegate', word: 'delegate', pos: 'verb', ipa: '/ˈdelɪɡeɪt/', vn: 'Ủy quyền, giao việc cho cấp dưới', collocations: 'delegate tasks, delegate authority', example: 'An effective manager knows how to delegate routine tasks to focus on strategy.' },
+      { id: 'w_competence', word: 'competence', pos: 'noun', ipa: '/ˈkɒmpɪtəns/', vn: 'Năng lực chuyên môn vững vàng, khả năng hoàn thành công việc', collocations: 'core competence, professional competence', example: 'His technical competence was demonstrated during the live coding interview.' }
+    ]
   },
   {
-    id: 2,
-    name: 'Sentence Structure & Word Order (S-V-O Slot System)',
-    formula: 'Subject (S) + Verb (V) + Object (O) + [Manner] + [Place] + [Time]',
-    summary: 'Trật tự từ cố định là linh hồn của tiếng Anh. Không được đảo lộn tùy hứng như tiếng Việt.',
-    coreInsight: 'Người Việt hay dịch theo chữ ("Yesterday I at home ate rice") thay vì chuẩn trật tự: "I ate rice at home yesterday".'
+    id: 'pack_tech_ai',
+    name: 'Công Nghệ Thông Tin & Trí Tuệ Nhân Tạo (AI)',
+    icon: 'binary',
+    badge: 'Chuyên Ngành • AI • Kỷ Nguyên Số',
+    color: 'from-cyan-600 to-blue-700',
+    words: [
+      { id: 'w_algorithm', word: 'algorithm', pos: 'noun', ipa: '/ˈælɡərɪðəm/', vn: 'Thuật toán xử lý dữ liệu và bài toán tính toán', collocations: 'search algorithm, machine learning algorithm', example: 'Recommendation algorithms analyze your viewing habits to suggest videos.' },
+      { id: 'w_automate', word: 'automate', pos: 'verb', ipa: '/ˈɔːtəmeɪt/', vn: 'Tự động hóa quy trình bằng phần mềm hoặc máy móc', collocations: 'automate repetitive tasks, fully automated', example: 'We can automate invoice processing to save 20 hours each week.' },
+      { id: 'w_neural_network', word: 'neural network', pos: 'noun', ipa: '/ˈnjʊərəl ˈnetwɜːk/', vn: 'Mạng nơ-ron nhân tạo mô phỏng não bộ', collocations: 'deep neural network, train a neural network', example: 'Modern chatbots are powered by transformer-based neural networks.' },
+      { id: 'w_infrastructure', word: 'infrastructure', pos: 'noun', ipa: '/ˈɪnfrəstrʌktʃər/', vn: 'Cơ sở hạ tầng máy chủ và mạng lưới', collocations: 'cloud infrastructure, critical infrastructure', example: 'Migrating our infrastructure to cloud servers drastically reduced downtime.' },
+      { id: 'w_scalable', word: 'scalable', pos: 'adjective', ipa: '/ˈskeɪləbl/', vn: 'Có khả năng mở rộng quy mô linh hoạt khi người dùng tăng vọt', collocations: 'scalable architecture, scalable business model', example: 'The architecture must be scalable to handle millions of simultaneous users.' }
+    ]
   },
   {
-    id: 3,
-    name: 'Subject and Predicate (Chủ Ngữ & Vị Ngữ Độc Lập)',
-    formula: 'Complete Sentence = Complete Subject + Complete Finite Verb',
-    summary: 'Một câu hoàn chỉnh bắt buộc phải có chủ ngữ và động từ chia thì độc lập. Không được viết phân mảnh (Fragment).',
-    coreInsight: 'Tránh lỗi câu cụt: "Because he was tired." ➔ Phải nối: "Because he was tired, he went to bed early."'
-  },
-  {
-    id: 4,
-    name: 'Nouns & Determiners (Danh Từ Đếm Được & Mạo Từ a/an/the)',
-    formula: 'Singular Count Noun BẮT BUỘC có Determiner (a/an/the/my)',
-    summary: 'Quy tắc vàng: Danh từ đếm được số ít không bao giờ được đứng trơ trọi một mình.',
-    coreInsight: 'Không bao giờ nói: "I have car." Phải là: "I have a car" hoặc "I have cars".'
-  },
-  {
-    id: 5,
-    name: 'Verbs & Verb Forms (Động Từ Thường vs Động Từ Khiếm Khuyết)',
-    formula: 'Base (V0) ➔ Past (V2) ➔ Past Participle (V3) ➔ Present Participle (V-ing)',
-    summary: 'Nắm vững 3 dạng biến đổi của động từ bất quy tắc và sự phối hợp giữa Trợ động từ và Động từ chính.',
-    coreInsight: 'Trợ động từ gánh thì và phủ định; động từ chính giữ nguyên nghĩa cốt lõi.'
-  },
-  {
-    id: 6,
-    name: 'The 12 Tenses & Aspects (Thời & Thể Trong Tiếng Anh)',
-    formula: 'Time (Past, Present, Future) × Aspect (Simple, Continuous, Perfect, Perfect Continuous)',
-    summary: 'Thì không phải là mốc thời gian trừu tượng, mà phản ánh góc nhìn của người nói về tính trọn vẹn của hành động.',
-    coreInsight: 'Hiện tại hoàn thành (Present Perfect) nối quá khứ với hiện tại: "I have lived here for 5 years" (vẫn đang ở).'
-  },
-  {
-    id: 7,
-    name: 'Modal Verbs (Động Từ Tình Thái & Mức Độ Chắc Chắn)',
-    formula: 'Subject + Modal (can/could/may/might/must/should) + V_bare',
-    summary: 'Biểu thị khả năng, bổn phận, lời khuyên và mức độ suy đoán xác suất (Deduction).',
-    coreInsight: 'Suy đoán quá khứ: "He must have forgotten his keys" (Chắc chắn anh ấy đã quên chìa khóa).'
-  },
-  {
-    id: 8,
-    name: 'Passive Voice (Câu Bị Động & Trọng Tâm Chuyển Dịch)',
-    formula: 'Subject (Patient) + Be (chia theo thì) + Past Participle (V3) + [by Agent]',
-    summary: 'Dùng khi tác nhân gây ra hành động không quan trọng, không rõ, hoặc muốn nhấn mạnh vào đối tượng chịu tác động.',
-    coreInsight: 'Trong văn phong học thuật và báo chí, câu bị động tạo ra tính khách quan phi cảm tính.'
-  },
-  {
-    id: 9,
-    name: 'Conditionals (Câu Điều Kiện Loại 0, 1, 2, 3 & Mixed)',
-    formula: 'Type 1 (Real): If + Present, will + V | Type 2 (Unreal): If + Past, would + V',
-    summary: 'Thiết lập các kịch bản thực tế, giả định trái ngược hiện tại hoặc nuối tiếc trong quá khứ.',
-    coreInsight: 'Type 3 hối tiếc quá khứ: "If I had studied harder, I would have passed the exam."'
-  },
-  {
-    id: 10,
-    name: 'Relative Clauses (Mệnh Đề Quan Hệ Xác Định & Không Xác Định)',
-    formula: 'Main Clause + [who / which / that / where / whose] + Clause',
-    summary: 'Công cụ đắc lực nhất để ghép 2 câu đơn vụn vặt thành một câu phức sắc sảo, liền mạch.',
-    coreInsight: 'Dấu phẩy trong mệnh đề không xác định: "My brother, who lives in London, is a doctor."'
-  },
-  {
-    id: 11,
-    name: 'Gerunds vs Infinitives (Danh Động Từ V-ing vs Động Từ To-V)',
-    formula: 'Verb + V-ing (enjoy, avoid, suggest) vs Verb + To-V (decide, hope, plan)',
-    summary: 'Quy tắc phân định khi hai động từ đi liền nhau. Nhận diện các động từ đổi nghĩa khi đổi dạng (remember, stop, try).',
-    coreInsight: '"Stop smoking" (Dừng hút thuốc) vs "Stop to smoke" (Dừng lại để hút thuốc).'
-  },
-  {
-    id: 12,
-    name: 'Conjunctions & Transitions (Liên Từ & Từ Nối Mạch Lạc)',
-    formula: 'Coordinating (FANBOYS) + Subordinating (Although, Because) + Transitions (However, Therefore)',
-    summary: 'Chất keo dính kết nối tư duy logic giữa các mệnh đề và các đoạn văn học thuật.',
-    coreInsight: 'Không dùng cả "Although" lẫn "But" trong cùng một câu (Lỗi phổ biến nhất của người Việt).'
-  },
-  {
-    id: 13,
-    name: 'Complex Sentences (Cấu Trúc Câu Phức & Câu Ghép)',
-    formula: 'Independent Clause + Dependent Clause (Adverbial, Noun, Adjective clauses)',
-    summary: 'Nâng cấp tư duy từ viết câu đơn ngô nghê sang diễn đạt đa tầng tư duy học thuật.',
-    coreInsight: 'Cân bằng giữa các câu ngắn gọn dứt khoát và câu phức đòn bẩy để tạo nhịp điệu (Rhythm).'
-  },
-  {
-    id: 14,
-    name: 'Direct & Indirect Speech (Câu Trực Tiếp & Câu Tường Thuật)',
-    formula: 'Reported Speech = Lùi thì + Đổi đại từ + Đổi trạng từ thời gian/nơi chốn',
-    summary: 'Thuật lại lời nói, quan điểm của chuyên gia và thông điệp của người khác một cách chính xác.',
-    coreInsight: '"He said he was tired" thay vì giữ nguyên "He said I am tired".'
-  },
-  {
-    id: 15,
-    name: 'Paragraph Construction (Cấu Trúc Đoạn Văn Chuẩn Học Thuật)',
-    formula: 'Topic Sentence (Ý chủ đạo) ➔ Supporting Sentences (Giải thích & Bằng chứng) ➔ Concluding Sentence',
-    summary: 'Quy tắc một đoạn văn chỉ trình bày duy nhất một ý tưởng trung tâm (Unity, Coherence & Development).',
-    coreInsight: 'Một đoạn văn chuẩn không bao giờ nhảy cóc từ chủ đề này sang chủ đề khác mà không có từ nối chuyển ý.'
+    id: 'pack_finance_wealth',
+    name: 'Tài Chính, Đầu Tư & Kinh Doanh',
+    icon: 'coins',
+    badge: 'Chuyên Ngành • Dòng Tiền • Làm Giàu',
+    color: 'from-emerald-600 to-teal-700',
+    words: [
+      { id: 'w_asset', word: 'asset', pos: 'noun', ipa: '/ˈæset/', vn: 'Tài sản sinh ra dòng tiền hoặc gia tăng giá trị', collocations: 'income-generating asset, liquid assets', example: 'Real estate that produces positive cash flow is considered a valuable asset.' },
+      { id: 'w_liability', word: 'liability', pos: 'noun', ipa: '/ˌlaɪəˈbɪləti/', vn: 'Tiêu sản hoặc khoản nợ rút tiền ra khỏi túi hàng tháng', collocations: 'short-term liability, personal liabilities', example: 'Car payments and high-interest credit card debts are dangerous liabilities.' },
+      { id: 'w_compound_interest', word: 'compound interest', pos: 'noun', ipa: '/ˌkɒmpaʊnd ˈɪntrəst/', vn: 'Lãi suất kép (tiền lãi sinh ra tiền lãi theo thời gian)', collocations: 'power of compound interest, earn compound interest', example: 'Starting to invest at age twenty allows you to fully harness compound interest.' },
+      { id: 'w_diversify', word: 'diversify', pos: 'verb', ipa: '/daɪˈvɜːsɪfaɪ/', vn: 'Đa dạng hóa danh mục đầu tư để giảm thiểu rủi ro', collocations: 'diversify your portfolio, diversify investments', example: 'Do not put all your eggs in one basket; diversify across index funds and cash.' },
+      { id: 'w_dividend', word: 'dividend', pos: 'noun', ipa: '/ˈdɪvɪdend/', vn: 'Cổ tức (lợi nhuận doanh nghiệp chi trả cho cổ đông)', collocations: 'quarterly dividend, dividend yield', example: 'He reinvested all stock dividends to accelerate the growth of his portfolio.' }
+    ]
   }
 ];
 
 // -------------------------------------------------------------------------
-// ENGINE 5: LISTENING INTELLIGENCE (Hội Thoại & Âm Thanh Tự Nhiên)
+// ENGINE 3: PHONETIC AND PRONUNCIATION (Âm Vị Học 44 IPA)
+// -------------------------------------------------------------------------
+window.PHONETIC_IPA_DATA = {
+  consonantsKey: [
+    { ipa: '/θ/', name: 'Voiceless Dental Fricative', example: 'think, thought, bath', vnMistake: 'Người Việt hay đọc thành âm "th" hoặc "t" tiếng Việt. Cách sửa: Cắn nhẹ đầu lưỡi giữa hai hàm răng và đẩy luồng hơi ra ngoài, không rung cổ họng.' },
+    { ipa: '/ð/', name: 'Voiced Dental Fricative', example: 'this, that, mother', vnMistake: 'Hay đọc thành "đ" hoặc "d". Cách sửa: Đặt lưỡi giữa hai răng như /θ/ nhưng làm rung mạnh dây thanh quản.' },
+    { ipa: '/ʃ/', name: 'Voiceless Postalveolar', example: 'she, ship, action', vnMistake: 'Hay đọc nhẹ như "s" tiếng Việt thay vì chu môi tròn và đẩy luồng hơi mạnh.' },
+    { ipa: '/ʒ/', name: 'Voiced Postalveolar', example: 'vision, measure, pleasure', vnMistake: 'Âm rung hiếm gặp trong tiếng Việt, cần giữ khẩu hình chu môi như /ʃ/ và làm rung dây thanh.' },
+    { ipa: '/tʃ/', name: 'Voiceless Affricate', example: 'church, watch, match', vnMistake: 'Hay quên bật âm đuôi /tʃ/ ở cuối từ.' },
+    { ipa: '/dʒ/', name: 'Voiced Affricate', example: 'judge, joy, age', vnMistake: 'Hay đọc nhầm thành "d" hoặc "gi", thiếu độ bật nén hơi.' }
+  ]
+};
+
+// -------------------------------------------------------------------------
+// ENGINE 4: GRAMMAR AND SENTENCE LABORATORY (15 Trụ Cột Đầy Đủ Thực Tế)
+// -------------------------------------------------------------------------
+window.GRAMMAR_15_PILLARS = [
+  {
+    id: 1,
+    name: 'Hiện Tại Đơn vs Hiện Tại Tiếp Diễn (Routines vs Right Now)',
+    formula: 'Simple: S + V(s/es) | Continuous: S + am/is/are + V-ing',
+    summary: 'Phân định dứt khoát giữa Sự thật hiển nhiên / Thói quen lâu dài (Simple) với Hành động đang xảy ra tạm thời ngay lúc nói (Continuous).',
+    coreInsight: 'Người Việt hay dùng lẫn lộn: "I am living in Hanoi" (tạm thời) vs "I live in Hanoi" (quê hương ổn định lâu dài).',
+    realLifeContext: 'Dùng khi tự giới thiệu bản thân trong phỏng vấn xin việc hoặc giải thích công việc thường ngày của bạn.',
+    mnemonicHook: 'Thói quen lặp lại ➔ Dùng Đơn; Đang làm lúc này ➔ Dùng Tiếp Diễn.',
+    wrongVsRight: [
+      { wrong: 'I am work at a software company.', right: 'I work at a software company.', reason: 'Công việc ổn định lâu dài là sự thật, phải dùng Hiện tại đơn và không dùng động từ to-be thừa.' },
+      { wrong: 'Look! The bus comes.', right: 'Look! The bus is coming.', reason: 'Có từ chỉ dấu "Look!" báo hiệu hành động đang diễn ra trước mắt ➔ Bắt buộc dùng Tiếp diễn.' }
+    ],
+    practicalExamples: [
+      { en: 'I wake up at 6 AM every weekday, but today I am sleeping in because it is Sunday.', vn: 'Tôi thức dậy lúc 6 giờ sáng mỗi ngày trong tuần, nhưng hôm nay tôi ngủ nướng vì là Chủ nhật.' },
+      { en: 'Water boils at 100 degrees Celsius.', vn: 'Nước sôi ở 100 độ C (chân lý tự nhiên).' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Hiện Tại Hoàn Thành (The Bridge from Past to Now)',
+    formula: 'S + have/has + V3 (Past Participle) + [since / for / already / yet]',
+    summary: 'Cây cầu nối từ quá khứ kéo dài đến hiện tại, hoặc kinh nghiệm trải nghiệm cuộc đời tính đến thời điểm nói.',
+    coreInsight: 'Không bao giờ đi kèm mốc thời gian đã chấm dứt hoàn toàn trong quá khứ (như "yesterday", "in 2010").',
+    realLifeContext: 'Dùng để khoe kinh nghiệm làm việc: "I have worked as a developer for 5 years" (vẫn đang làm việc đó đến nay).',
+    mnemonicHook: 'Quá khứ bắt đầu ➔ Kéo đến bây giờ ➔ Dùng Have/Has + V3.',
+    wrongVsRight: [
+      { wrong: 'I lived in London for 3 years (nghĩa là bây giờ đã chuyển đi nơi khác).', right: 'I have lived in London for 3 years (nghĩa là bây giờ vẫn đang sống ở London).', reason: 'Hiện tại hoàn thành biểu thị hành động vẫn đang tiếp tục ở hiện tại.' },
+      { wrong: 'I have seen that movie yesterday.', right: 'I saw that movie yesterday.', reason: 'Có mốc thời gian quá khứ cụ thể "yesterday" ➔ Bắt buộc dùng Quá khứ đơn.' }
+    ],
+    practicalExamples: [
+      { en: 'Have you ever visited London?', vn: 'Bạn đã từng đến London bao giờ chưa (kinh nghiệm sống)?' },
+      { en: 'I have already finished my project report.', vn: 'Tôi đã hoàn thành xong bản báo cáo dự án rồi (kết quả còn giá trị ở hiện tại).' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Quá Khứ Đơn vs Quá Khứ Tiếp Diễn (Storytelling in Action)',
+    formula: 'Past Simple: S + V2/ed | Past Continuous: S + was/were + V-ing',
+    summary: 'Hành động đang diễn ra làm nền (Continuous) thì có một hành động khác bất ngờ xen vào cắt ngang (Simple).',
+    coreInsight: 'Cặp liên từ vàng: WHEN + Quá khứ đơn (hành động xen vào); WHILE + Quá khứ tiếp diễn (hành động nền đang chạy).',
+    realLifeContext: 'Dùng khi kể lại sự cố bất ngờ hoặc giải thích lý do đi muộn: "While I was driving, my car broke down."',
+    mnemonicHook: 'Đang làm việc êm đềm (V-ing) thì biến cố ập tới (V2/ed).',
+    wrongVsRight: [
+      { wrong: 'While I cooked, the phone was ringing.', right: 'While I was cooking, the phone rang.', reason: 'Nấu ăn là hành động nền kéo dài (was cooking), điện thoại reo là hành động ngắn cắt ngang (rang).' }
+    ],
+    practicalExamples: [
+      { en: 'I was walking to the train station when it suddenly started raining heavily.', vn: 'Tôi đang đi bộ đến nhà ga thì trời bỗng nhiên đổ mưa như trút nước.' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Câu Bị Động Tự Nhiên (Passive Voice in Professional Context)',
+    formula: 'Object (được đôn lên làm Chủ ngữ) + Be (chia theo thì) + V3 + [by Agent]',
+    summary: 'Dùng khi tác nhân gây ra hành động không quan trọng, hiển nhiên hoặc khi muốn nhấn mạnh kết quả khách quan.',
+    coreInsight: 'Văn phong báo chí và học thuật luôn ưu tiên bị động để tránh cảm tính cá nhân.',
+    realLifeContext: 'Dùng khi viết email công việc: "Your order has been dispatched" (Đơn hàng của bạn đã được gửi đi) thay vì "We dispatched your order".',
+    mnemonicHook: 'Vật chịu tác động đứng đầu ➔ BE + V3.',
+    wrongVsRight: [
+      { wrong: 'The window was break yesterday.', right: 'The window was broken yesterday.', reason: 'Động từ trong câu bị động bắt buộc phải ở dạng Quá khứ phân từ V3 (broken).' }
+    ],
+    practicalExamples: [
+      { en: 'All personal data is encrypted to protect user confidentiality.', vn: 'Tất cả dữ liệu cá nhân đều được mã hóa để bảo vệ tính bảo mật của người dùng.' }
+    ]
+  },
+  {
+    id: 5,
+    name: 'Câu Điều Kiện (Conditionals: Type 1, 2, 3)',
+    formula: 'Type 1: If + Hiện tại, Will + V | Type 2: If + Quá khứ, Would + V | Type 3: If + Had V3, Would have V3',
+    summary: 'Type 1: Có thể xảy ra ở tương lai. Type 2: Giả định trái ngược hiện tại (ước gì). Type 3: Hối tiếc quá khứ (giá như).',
+    coreInsight: 'Type 2 động từ to-be chia là "were" cho mọi ngôi (If I were you, I would take that offer).',
+    realLifeContext: 'Dùng khi đưa ra lời khuyên tế nhị hoặc phân tích rủi ro trong cuộc họp.',
+    mnemonicHook: 'Type 1: Có thật; Type 2: Ước hiện tại; Type 3: Hối tiếc quá khứ.',
+    wrongVsRight: [
+      { wrong: 'If I will have time, I will call you.', right: 'If I have time, I will call you.', reason: 'Mệnh đề If ở Type 1 không bao giờ dùng "will", chỉ dùng Hiện tại đơn.' }
+    ],
+    practicalExamples: [
+      { en: 'If you practice speaking 15 minutes a day, you will become fluent within six months.', vn: 'Nếu bạn luyện nói 15 phút mỗi ngày, bạn sẽ nói trôi chảy trong vòng 6 tháng (Type 1).' },
+      { en: 'If I had studied computer science earlier, I would have developed this app sooner.', vn: 'Nếu trước đây tôi học khoa học máy tính sớm hơn, tôi đã phát triển ứng dụng này sớm hơn rồi (Type 3 hối tiếc).' }
+    ]
+  },
+  {
+    id: 6,
+    name: 'Mệnh Đề Quan Hệ (Relative Clauses: Who, Which, That, Whose)',
+    formula: 'Main Clause + [Who (người) / Which (vật) / That (người hoặc vật) / Whose (sở hữu)] + Clause',
+    summary: 'Công cụ đắc lực nhất để ghép 2 câu đơn vụn vặt thành một câu ghép sắc sảo, tự nhiên.',
+    coreInsight: 'Mệnh đề có dấu phẩy (Non-defining) không được dùng "That", chỉ dùng "Who" hoặc "Which".',
+    realLifeContext: 'Dùng khi mô tả đồng nghiệp hoặc đối tác: "The manager who hired me has 15 years of experience."',
+    mnemonicHook: 'Người thì Who; Vật thì Which; Sở hữu thì Whose.',
+    wrongVsRight: [
+      { wrong: 'The car who was stolen was found.', right: 'The car which was stolen was found.', reason: 'Chiếc xe là vật, phải dùng which hoặc that, không dùng who.' }
+    ],
+    practicalExamples: [
+      { en: 'She is the doctor whose research transformed modern cardiology.', vn: 'Cô ấy là vị bác sĩ mà nghiên cứu của cô đã làm thay đổi ngành tim mạch học hiện đại.' }
+    ]
+  },
+  {
+    id: 7,
+    name: 'Động Từ Khuyết Thiếu & Suy Đoán (Modals of Deduction)',
+    formula: 'Must be (Chắc chắn là) / Might be (Có thể là) / Can’t be (Chắc chắn không thể là)',
+    summary: 'Diễn tả mức độ chắc chắn của bạn khi quan sát một hiện tượng thực tế.',
+    coreInsight: 'Suy đoán quá khứ: Must have + V3 (Chắc hẳn là đã): "She looks thrilled; she must have passed the exam."',
+    realLifeContext: 'Dùng khi phán đoán tình huống trong công việc khi chưa đủ 100% dữ liệu.',
+    mnemonicHook: 'Chắc chắn 99% ➔ Must; 50% mơ hồ ➔ Might/Could; Bất khả thi ➔ Can’t.',
+    wrongVsRight: [
+      { wrong: 'He doesn’t answer the phone. He must be sleep.', right: 'He must be sleeping (hoặc asleep).', reason: 'Sau must be là tính từ hoặc V-ing.' }
+    ],
+    practicalExamples: [
+      { en: 'The lights are off and the door is locked; they must have left the office already.', vn: 'Đèn đã tắt và cửa đã khóa; chắc chắn là họ đã rời văn phòng rồi.' }
+    ]
+  },
+  {
+    id: 8,
+    name: 'Gerunds vs Infinitives (V-ing vs To-V)',
+    formula: 'Enjoy / Mind / Suggest + V-ing vs Decide / Hope / Plan + To-V',
+    summary: 'Quy tắc vàng khi hai động từ đứng liền nhau. Một số động từ đổi nghĩa hoàn toàn khi đổi đuôi.',
+    coreInsight: 'Remember to lock (Nhớ phải khóa - tương lai) vs Remember locking (Nhớ là đã khóa rồi - quá khứ).',
+    realLifeContext: 'Dùng khi bày tỏ sở thích hoặc cam kết kế hoạch hành động.',
+    mnemonicHook: 'Hành động đã qua hoặc liên tục ➔ V-ing; Hành động hướng tới tương lai ➔ To-V.',
+    wrongVsRight: [
+      { wrong: 'I look forward to meet you.', right: 'I look forward to meeting you.', reason: '"To" ở đây là giới từ, sau giới từ bắt buộc là danh động từ V-ing.' }
+    ],
+    practicalExamples: [
+      { en: 'I stopped smoking 5 years ago, but on long drives I often stop to drink a coffee.', vn: 'Tôi đã bỏ hẳn hút thuốc 5 năm trước (stopped smoking), nhưng trên những chuyến đi xa tôi thường dừng xe lại để uống cà phê (stop to drink).' }
+    ]
+  },
+  {
+    id: 9,
+    name: 'Trật Tự Tính Từ Trong Tiếng Anh (OSASCOMP Formula)',
+    formula: 'Opinion ➔ Size ➔ Age ➔ Shape ➔ Color ➔ Origin ➔ Material ➔ Purpose + Noun',
+    summary: 'Khi có nhiều tính từ bổ nghĩa cho một danh từ, bắt buộc phải xếp theo trật tự chuẩn xác.',
+    coreInsight: 'Người bản xứ cảm nhận trật tự này bằng phản xạ tự nhiên. Xếp sai sẽ nghe rất chói tai.',
+    realLifeContext: 'Dùng khi miêu tả sản phẩm, quà tặng hoặc đồ vật trong mua bán đàm phán.',
+    mnemonicHook: 'Câu thần chú: Ông (Opinion) Sáu (Size) Ăn (Age) Súp (Shape) Cua (Color) Ở (Origin) Mới (Material) Phát (Purpose).',
+    wrongVsRight: [
+      { wrong: 'A leather Italian beautiful jacket.', right: 'A beautiful Italian leather jacket.', reason: 'Opinion (beautiful) ➔ Origin (Italian) ➔ Material (leather).' }
+    ],
+    practicalExamples: [
+      { en: 'She wore a stunning long vintage black silk evening dress.', vn: 'Cô ấy mặc một chiếc váy dạ hội lụa đen cổ điển, dài và lộng lẫy.' }
+    ]
+  },
+  {
+    id: 10,
+    name: 'Mạo Từ A, An, The & Zero Article (Quy Tắc Sinh Tử)',
+    formula: 'A/An (Một thứ chưa xác định) | The (Thứ cả người nói và nghe đều biết rõ) | Zero (Chung chung số nhiều)',
+    summary: 'Danh từ đếm được số ít KHÔNG BAO GIỜ được đứng trơ trọi một mình.',
+    coreInsight: 'Nói về loài chung chung: "Dogs are loyal" (Zero article) thay vì "The dogs are loyal" (những con chó cụ thể này).',
+    realLifeContext: 'Dùng trong mọi câu nói hàng ngày, phân biệt giữa một thứ bất kỳ và một thứ duy nhất.',
+    mnemonicHook: 'Lần đầu nhắc tới ➔ Dùng A/An; Lần thứ hai nhắc lại ➔ Dùng The.',
+    wrongVsRight: [
+      { wrong: 'I have cat. Cat is cute.', right: 'I have a cat. The cat is cute.', reason: 'Lần 1 dùng a cat, lần 2 nhắc lại con mèo đó đã xác định nên dùng The cat.' }
+    ],
+    practicalExamples: [
+      { en: 'Life is beautiful, but the life of a professional athlete requires extreme discipline.', vn: 'Cuộc sống nói chung thì tươi đẹp (Zero article), nhưng cuộc đời của một vận động viên cụ thể đòi hỏi kỷ luật sắt thép (The life).' }
+    ]
+  },
+  {
+    id: 11,
+    name: 'Câu Gián Tiếp & Tường Thuật (Reported Speech)',
+    formula: 'S + said (that) + Lùi một thì + Đổi đại từ + Đổi trạng từ thời gian',
+    summary: 'Thuật lại lời nói của người khác mà không dùng trích dẫn nguyên văn.',
+    coreInsight: 'Hiện tại đơn ➔ Lùi thành Quá khứ đơn; Can ➔ Lùi thành Could; Will ➔ Lùi thành Would.',
+    realLifeContext: 'Dùng trong cuộc họp khi báo cáo lại ý kiến của khách hàng hoặc sếp.',
+    mnemonicHook: 'Tường thuật lại chuyện cũ ➔ Luôn luôn lùi thì về quá khứ.',
+    wrongVsRight: [
+      { wrong: 'He said he will come tomorrow.', right: 'He said he would come the next day.', reason: 'Said ở quá khứ ➔ Will phải lùi thành would, tomorrow thành the next day.' }
+    ],
+    practicalExamples: [
+      { en: 'The client confirmed that they had received our proposal and would sign the contract on Monday.', vn: 'Khách hàng đã xác nhận rằng họ đã nhận được đề xuất và sẽ ký hợp đồng vào thứ Hai.' }
+    ]
+  },
+  {
+    id: 12,
+    name: 'Liên Từ & Từ Nối Mạch Lạc (Transitions & Cohesion)',
+    formula: 'Contrast: However, Although, Despite | Cause: Therefore, Because, Due to',
+    summary: 'Chất keo dính kết nối các mệnh đề và ý tưởng thành một mạch văn liền lạc, chặt chẽ.',
+    coreInsight: 'Tuyệt đối không dùng cả "Although" lẫn "But" trong cùng một câu (Lỗi phổ biến nhất của người Việt).',
+    realLifeContext: 'Dùng khi viết email xin việc, lập luận đàm phán hoặc trình bày thuyết trình.',
+    mnemonicHook: 'Có Although thì KHÔNG có But; Có Because thì KHÔNG có So.',
+    wrongVsRight: [
+      { wrong: 'Although it was raining, but we still went out.', right: 'Although it was raining, we still went out.', reason: 'Chỉ được dùng 1 liên từ nối giữa 2 mệnh đề.' }
+    ],
+    practicalExamples: [
+      { en: 'Despite facing fierce market competition, the startup achieved a 40% growth in revenue.', vn: 'Mặc dù đối mặt với sự cạnh tranh khốc liệt trên thị trường, công ty khởi nghiệp vẫn đạt mức tăng trưởng 40% doanh thu.' }
+    ]
+  },
+  {
+    id: 13,
+    name: 'Cấu Trúc Đảo Ngữ Để Nhấn Mạnh (Inversion for Dramatic Effect)',
+    formula: 'Negative Adverb (Never / Rarely / Seldom / Not only) + Trợ động từ + S + V',
+    summary: 'Đưa trạng từ phủ định lên đầu câu và đảo trợ động từ lên trước chủ ngữ để tạo điểm nhấn kịch tính.',
+    coreInsight: 'Biến câu văn bình thường thành câu văn đỉnh cao học thuật mang tầm vóc diễn giả.',
+    realLifeContext: 'Dùng trong các bài thuyết trình truyền cảm hứng hoặc bài viết luận C1.',
+    mnemonicHook: 'Trạng từ phủ định đứng đầu ➔ Lập tức đảo trợ động từ lên trước chủ ngữ.',
+    wrongVsRight: [
+      { wrong: 'Rarely I have seen such dedication.', right: 'Rarely have I seen such dedication.', reason: 'Rarely đứng đầu câu bắt buộc phải đảo trợ động từ "have" lên trước "I".' }
+    ],
+    practicalExamples: [
+      { en: 'Not only did she achieve top marks in her exams, but she also founded an educational non-profit.', vn: 'Cô ấy không những đạt điểm số cao nhất trong các kỳ thi, mà còn sáng lập một tổ chức phi lợi nhuận giáo dục.' }
+    ]
+  },
+  {
+    id: 14,
+    name: 'Phân Từ & Mệnh Đề Rút Gọn (Participle Clauses)',
+    formula: 'V-ing (Chủ động) hoặc V3/ed (Bị động) thay thế cho mệnh đề phụ',
+    summary: 'Công cụ rút gọn câu đỉnh cao của các nhà văn bản xứ: Biến câu dài dòng thành câu ngắn gọn, tinh tế.',
+    coreInsight: 'Hai hành động phải có CÙNG CHỦ NGỮ mới được phép rút gọn.',
+    realLifeContext: 'Dùng khi viết báo cáo tài chính hoặc bài báo khoa học súc tích.',
+    mnemonicHook: 'Chủ động làm ➔ Dùng V-ing; Bị tác động ➔ Dùng V3/ed.',
+    wrongVsRight: [
+      { wrong: 'Walking down the street, a car hit him (sai vì người đi dạo là he, không phải chiếc xe).', right: 'Walking down the street, he was hit by a car.', reason: 'Chủ ngữ sau dấu phẩy phải là chủ thể thực hiện hành động walking.' }
+    ],
+    practicalExamples: [
+      { en: 'Having finished the annual financial audit, the accounting team celebrated with a dinner.', vn: 'Sau khi đã hoàn thành cuộc kiểm toán tài chính hàng năm, đội ngũ kế toán đã ăn mừng bằng một bữa tối thịnh soạn.' }
+    ]
+  },
+  {
+    id: 15,
+    name: 'Câu Chẻ Nhấn Mạnh (Cleft Sentences: It was X that...)',
+    formula: 'It is/was + [Thành phần cần nhấn mạnh] + that/who + [Phần còn lại]',
+    summary: 'Chiếu đèn pha vào đúng đối tượng hoặc nguyên nhân mà bạn muốn người nghe chú ý tuyệt đối.',
+    coreInsight: '"John broke the window" ➔ Nhấn mạnh John: "It was John who broke the window!" (Chính John chứ không phải ai khác).',
+    realLifeContext: 'Dùng khi đính chính hiểu lầm hoặc bảo vệ quan điểm trong tranh luận.',
+    mnemonicHook: 'Muốn chiếu đèn vào ai ➔ Đặt người đó vào giữa: It is/was [AI ĐÓ] that...',
+    wrongVsRight: [
+      { wrong: 'It was yesterday when I called you.', right: 'It was yesterday that I called you.', reason: 'Trong cấu trúc câu chẻ, dùng "that" làm từ nối chuẩn mực.' }
+    ],
+    practicalExamples: [
+      { en: 'It is through deliberate daily practice that true mastery of the English language is attained.', vn: 'Chính thông qua việc luyện tập có chủ đích mỗi ngày mà sự tinh thông tiếng Anh đích thực mới đạt được.' }
+    ]
+  }
+];
+
+// -------------------------------------------------------------------------
+// ENGINE 5: LISTENING INTELLIGENCE (Kho Bài Nghe Đa Tầng Từ Cơ Bản Đến Nâng Cao)
 // -------------------------------------------------------------------------
 window.LISTENING_LIBRARY_DATA = [
+  // CẤP ĐỘ 1: CƠ BẢN (A1-A2) - GIAO TIẾP HÀNG NGÀY
   {
-    id: 'listen_routine_1',
-    title: 'Morning Routine of an Oxford Scholar',
-    level: 'A2 - B1',
-    duration: '1:15',
-    audioText: "Every morning, I wake up at precisely six o'clock before the city comes alive. I never check my smartphone first thing. Instead, I walk straight to the kitchen to prepare a pot of green tea. While the water is boiling, I sit by the window and review my active vocabulary cards for ten minutes. This simple habit clears my mind and prepares me for deep work throughout the day.",
+    id: 'listen_daily_coffee',
+    title: 'Ordering at a London Coffee Shop',
+    titleVn: 'Gọi Đồ Uống & Bánh Tại Quán Cà Phê London',
+    category: 'daily',
+    categoryName: 'Giao Tiếp Hàng Ngày',
+    level: 'A1 - A2',
+    duration: '1:10',
+    audioText: "Good morning! Can I get an oat milk latte to go, please? And could you add a shot of hazelnut syrup? Also, I would like to know if that blueberry muffin is fresh today. Great, I will take one of those as well. Can I pay by contactless card? Perfect, keep the change and have a wonderful day!",
     speedOptions: [0.75, 1.0, 1.25],
-    transcriptChunks: [
-      { start: 0, text: "Every morning, I wake up at precisely six o'clock before the city comes alive." },
-      { start: 5, text: "I never check my smartphone first thing." },
-      { start: 9, text: "Instead, I walk straight to the kitchen to prepare a pot of green tea." },
-      { start: 15, text: "While the water is boiling, I sit by the window and review my active vocabulary cards for ten minutes." },
-      { start: 22, text: "This simple habit clears my mind and prepares me for deep work throughout the day." }
-    ],
     dictationSentences: [
-      { text: "Every morning, I wake up at precisely six o'clock.", hint: "Chú ý trạng từ 'precisely'." },
-      { text: "I review my active vocabulary cards for ten minutes.", hint: "Cụm 'active vocabulary cards'." }
+      { text: "Can I get an oat milk latte to go, please?", hint: "Cụm gọi đồ: 'to go' (mang đi)." },
+      { text: "Can I pay by contactless card?", hint: "Thanh toán chạm: 'contactless card'." }
     ],
     questions: [
       {
-        question: "What is the very first thing the speaker does in the morning?",
-        options: ["Checks smartphone messages", "Prepares green tea", "Goes for a 5km run", "Reads news online"],
+        question: "What kind of milk does the customer request?",
+        options: ["Cow milk", "Oat milk", "Soy milk", "Almond milk"],
         correctIndex: 1
       },
       {
-        question: "How long does the speaker spend reviewing vocabulary cards?",
-        options: ["30 minutes", "5 minutes", "10 minutes", "1 hour"],
-        correctIndex: 2
+        question: "How does the customer prefer to pay?",
+        options: ["Cash in pounds", "Contactless card", "Bank transfer", "Cryptocurrency"],
+        correctIndex: 1
       }
     ]
   },
   {
-    id: 'listen_tech_2',
-    title: 'The AI Revolution in London Finance',
-    level: 'B2 - C1',
-    duration: '1:45',
-    audioText: "In the heart of the City of London, algorithmic trading platforms now process millions of market transactions in mere microseconds. Traditional stockbrokers are increasingly being replaced by quantitative developers who understand how to leverage machine learning models. However, experienced hedge fund managers argue that human intuition and ethical judgment can never be completely replicated by automated algorithms during sudden market shocks.",
+    id: 'listen_daily_airport',
+    title: 'Navigating Heathrow Airport & Boarding Gate',
+    titleVn: 'Làm Thủ Tục Check-in & Lên Máy Bay Tại Sân Bay',
+    category: 'daily',
+    categoryName: 'Giao Tiếp Hàng Ngày',
+    level: 'A1 - A2',
+    duration: '1:25',
+    audioText: "Good afternoon, here is my passport and boarding pass. I only have one carry-on backpack, so I do not need to check any luggage today. Could you please confirm if this flight is boarding at gate twenty-four? Also, is there any delay due to the weather? Thank you so much for your assistance, I appreciate your help.",
     speedOptions: [0.75, 1.0, 1.25],
     dictationSentences: [
-      { text: "Startups must leverage modern artificial intelligence to compete effectively.", hint: "Động từ 'leverage'." }
+      { text: "I only have one carry-on backpack today.", hint: "Hành lý xách tay: 'carry-on backpack'." },
+      { text: "Thank you so much for your assistance.", hint: "Cảm ơn lịch sự: 'assistance'." }
     ],
     questions: [
       {
-        question: "Who is replacing traditional stockbrokers in London finance?",
-        options: ["Junior interns", "Quantitative developers", "Government regulators", "Foreign diplomats"],
+        question: "How many pieces of checked luggage does the passenger have?",
+        options: ["Two large suitcases", "None, only a carry-on backpack", "One bag", "Three bags"],
+        correctIndex: 1
+      }
+    ]
+  },
+
+  // CẤP ĐỘ 2: TRUNG CẤP (B1-B2) - CÔNG SỞ & ĐÀM PHÁN
+  {
+    id: 'listen_work_interview',
+    title: 'Job Interview & Salary Negotiation',
+    titleVn: 'Phỏng Vấn Xin Việc & Đàm Phán Thu Nhập Tại Công Ty Tech',
+    category: 'career',
+    categoryName: 'Công Sở & Sự Nghiệp',
+    level: 'B1 - B2',
+    duration: '1:40',
+    audioText: "Thank you for this opportunity. Over the past four years, I have successfully led a cross-functional software team to deliver high-impact web applications. My core strength lies in bridging technical architecture with user experience. Regarding compensation, based on current industry benchmarks and the responsibilities of this leadership position, I am seeking an annual base salary in the range of ninety to one hundred thousand dollars, alongside performance incentives.",
+    speedOptions: [0.75, 1.0, 1.25],
+    dictationSentences: [
+      { text: "My core strength lies in bridging technical architecture with user experience.", hint: "Cụm 'core strength lies in'." },
+      { text: "I am seeking an annual base salary based on industry benchmarks.", hint: "Thu nhập hàng năm: 'annual base salary'." }
+    ],
+    questions: [
+      {
+        question: "What is the candidate's primary strength?",
+        options: ["Graphic illustration", "Bridging technical architecture with user experience", "Financial accounting", "Customer support calls"],
+        correctIndex: 1
+      }
+    ]
+  },
+
+  // CẤP ĐỘ 3: NÂNG CAO (B2-C1) - CHUYÊN NGÀNH CÔNG NGHỆ AI & TÀI CHÍNH
+  {
+    id: 'listen_spec_agi',
+    title: 'The Evolutionary Leap toward Artificial General Intelligence (AGI)',
+    titleVn: 'Bước Nhảy Vọt Hướng Tới Trí Tuệ Nhân Tạo Tổng Hợp (AGI)',
+    category: 'tech',
+    categoryName: 'Chuyên Ngành: AI & Công Nghệ',
+    level: 'B2 - C1',
+    duration: '1:50',
+    audioText: "The transition from narrow machine learning models to Artificial General Intelligence represents a profound inflection point in human civilization. Rather than merely optimizing discrete pattern recognition tasks, next-generation frontier models synthesize multi-modal reasoning, autonomous tool-use, and long-horizon strategic planning. However, computer scientists emphasize that robust alignment mechanisms must be rigorously verified to ensure these autonomous agents remain benevolent and accountable to human values.",
+    speedOptions: [0.75, 1.0, 1.25],
+    dictationSentences: [
+      { text: "Next-generation models synthesize multi-modal reasoning and strategic planning.", hint: "Cụm 'multi-modal reasoning'." },
+      { text: "Robust alignment mechanisms must be rigorously verified.", hint: "Cụm 'rigorously verified'." }
+    ],
+    questions: [
+      {
+        question: "What must be rigorously verified according to computer scientists?",
+        options: ["Cryptocurrency mining speeds", "Robust alignment mechanisms to human values", "Advertising click-through rates", "Hardware manufacturing costs"],
+        correctIndex: 1
+      }
+    ]
+  },
+  {
+    id: 'listen_spec_finance',
+    title: 'Behavioral Economics & High-Frequency Liquidity',
+    titleVn: 'Kinh Tế Học Hành Vi & Thanh Khoản Thị Trường Thuật Toán',
+    category: 'finance',
+    categoryName: 'Chuyên Ngành: Kinh Tế & Tài Chính',
+    level: 'B2 - C1',
+    duration: '1:45',
+    audioText: "Traditional macroeconomic equilibrium models assume rational market participants operating with symmetrical information. Yet, empirical evidence from modern financial crises reveals that asset prices are overwhelmingly dictated by behavioral heuristics, such as loss aversion and herd mentality. In microsecond algorithmic trading, an abrupt evaporation of liquidity can trigger cascading margin calls, turning a minor valuation discrepancy into systemic flash crashes.",
+    speedOptions: [0.75, 1.0, 1.25],
+    dictationSentences: [
+      { text: "Asset prices are overwhelmingly dictated by behavioral heuristics.", hint: "Thuật ngữ 'behavioral heuristics'." },
+      { text: "An abrupt evaporation of liquidity can trigger cascading margin calls.", hint: "Cụm 'evaporation of liquidity'." }
+    ],
+    questions: [
+      {
+        question: "What dictates asset prices during market crises according to empirical evidence?",
+        options: ["Perfect rational calculations", "Behavioral heuristics like loss aversion and herd mentality", "Government decrees alone", "Zero-sum lotteries"],
         correctIndex: 1
       }
     ]
@@ -599,7 +745,7 @@ window.SPEAKING_STUDIO_DATA = {
 };
 
 // -------------------------------------------------------------------------
-// ENGINE 7: READING INTELLIGENCE (Thư Viện Bài Đọc Chuẩn CEFR)
+// ENGINE 7: READING INTELLIGENCE (Thư Viện Bài Đọc & Điểm Danh Đọc Mỗi Ngày)
 // -------------------------------------------------------------------------
 window.READING_STUDIO_DATA = [
   {
@@ -628,11 +774,33 @@ Today, walking through the City of London reveals a fascinating juxtaposition. A
         correctIndex: 1
       }
     ]
+  },
+  {
+    id: 'read_2',
+    title: 'The Psychology of Deep Work in a Distracted World',
+    level: 'B2',
+    wordCount: 210,
+    genre: 'Psychology & Productivity',
+    text: `In an era dominated by instantaneous notifications and algorithmically driven algorithmic feeds, the ability to perform deep work is becoming increasingly rare and simultaneously exceedingly valuable. Deep work, as defined by cognitive scientists, refers to professional activities performed in a state of distraction-free concentration that push your cognitive capabilities to their limits.
+
+When you switch tasks rapidly—checking an email while attempting to write a complex analytical document—your attention does not immediately follow. A cognitive residue remains stuck thinking about the previous message. Over time, chronic multitasking severely degrades your working memory capacity and prevents the synthesis of original, high-value insights. True intellectual breakthroughs require deliberate, scheduled blocks of monastic solitude.`,
+    vocabularyPicks: [
+      { word: 'cognitive residue', ipa: '/ˈkɒɡnətɪv ˈrezɪdjuː/', meaning: 'Dư lượng nhận thức (sự phân tâm còn vương lại từ việc trước)' },
+      { word: 'solitude', ipa: '/ˈsɒlətjuːd/', meaning: 'Sự tĩnh lặng một mình để chiêm nghiệm' },
+      { word: 'exceedingly', ipa: '/ɪkˈsiːdɪŋli/', meaning: 'Cực kỳ, tột bậc' }
+    ],
+    questions: [
+      {
+        question: 'What is deep work?',
+        options: ['Working overtime late at night', 'Distraction-free concentration pushing cognitive limits', 'Checking emails constantly', 'Surfing scientific articles'],
+        correctIndex: 1
+      }
+    ]
   }
 ];
 
 // -------------------------------------------------------------------------
-// ENGINE 8: WRITING INTELLIGENCE (Lộ Trình Viết 10 Bước)
+// ENGINE 8: WRITING INTELLIGENCE (Lộ Trình Viết Thực Chiến & Sửa Câu)
 // -------------------------------------------------------------------------
 window.WRITING_STUDIO_DATA = {
   stages: [
@@ -659,10 +827,10 @@ window.WRITING_STUDIO_DATA = {
     {
       id: 'write_task_2',
       level: 'B1 - B2',
-      title: 'Viết đoạn văn nêu quan điểm (Opinion Paragraph)',
-      prompt: 'Viết một đoạn văn 4-5 câu trả lời câu hỏi: "Should students learn English through Memory Palaces?"',
-      hint: 'Cấu trúc: Topic sentence ➔ Lý do 1 ➔ Lý do 2 ➔ Concluding sentence.',
-      sampleModel: 'Learning English through Memory Palaces is dramatically more effective than traditional rote memorization. First, our brains are biologically wired to remember spatial locations and vivid visual imagery. Second, anchoring abstract vocabulary into familiar urban landmarks prevents the natural degradation of memory over time. Therefore, adopting spatial mnemonics is an essential strategy for serious language learners.'
+      title: 'Viết email công việc: Xin phép nghỉ ốm chuyên nghiệp',
+      prompt: 'Viết một email ngắn gửi cho người quản lý xin nghỉ 1 ngày vì bị cảm sốt và bàn giao công việc khẩn cấp cho đồng nghiệp.',
+      hint: 'Cần có: Lời chào lịch sự, lý do vắng mặt, người hỗ trợ thay thế, cam kết cập nhật tiến độ.',
+      sampleModel: 'Dear Mr. Davies,\n\nI am writing to let you know that I am feeling unwell with a high fever today and will not be able to attend the office. I have briefed Sarah to handle any urgent client inquiries in my absence. I will monitor my email periodically and expect to return tomorrow.\n\nBest regards,\nAlex Nguyen'
     }
   ]
 };
@@ -678,7 +846,7 @@ window.ENGLISH_DAILY_CURRICULUM = [
     focusDistrict: 'kings_cross',
     vocabTarget: ['commute', 'punctual', 'transit', 'destination'],
     grammarFocus: 'Present Simple vs Present Continuous for Routines',
-    listeningTarget: 'listen_routine_1',
+    listeningTarget: 'listen_daily_coffee',
     speakingPrompt: 'Describe how you travel to work or school every day.',
     writingTask: 'Write 3 compound sentences about public transportation in your city.'
   },
@@ -689,30 +857,30 @@ window.ENGLISH_DAILY_CURRICULUM = [
     focusDistrict: 'savoy_restaurant',
     vocabTarget: ['beverage', 'recipe', 'appetite', 'hospitality'],
     grammarFocus: 'Countable vs Uncountable Nouns with Determiners (a/an/some/any)',
-    listeningTarget: 'listen_routine_1',
+    listeningTarget: 'listen_daily_coffee',
     speakingPrompt: 'Explain how to make your favorite beverage or meal.',
     writingTask: 'Write a short restaurant review using 3 new food collocations.'
   },
   {
     dayNumber: 3,
     dayOfWeek: 'Thursday (Thứ Năm)',
-    theme: 'Health, Habits & Physical Resilience',
-    focusDistrict: 'st_thomas_hospital',
-    vocabTarget: ['symptom', 'prescription', 'vitality', 'remedy'],
-    grammarFocus: 'Modal Verbs for Health Advice (should, must, ought to)',
-    listeningTarget: 'listen_tech_2',
-    speakingPrompt: 'Give health advice to someone who often feels exhausted.',
-    writingTask: 'Draft a short health guide on preventing burnout.'
+    theme: 'Career, Job Interview & Professional Negotiation',
+    focusDistrict: 'the_city_london',
+    vocabTarget: ['deadline', 'negotiate', 'collaborate', 'competence'],
+    grammarFocus: 'Modal Verbs of Deduction & Professional Politeness',
+    listeningTarget: 'listen_work_interview',
+    speakingPrompt: 'Explain your greatest professional achievement during an interview.',
+    writingTask: 'Draft a short polite follow-up email after an interview.'
   },
   {
     dayNumber: 4,
     dayOfWeek: 'Saturday (Thứ Bảy)',
-    theme: 'Education, Science & Deep Thinking',
+    theme: 'Technology, AI & Future of Civilization',
     focusDistrict: 'ucl_university',
-    vocabTarget: ['hypothesis', 'comprehensive', 'empirical', 'methodology'],
-    grammarFocus: 'Cause and Effect Transitions (therefore, consequently, due to)',
-    listeningTarget: 'listen_tech_2',
-    speakingPrompt: 'Discuss why scientific thinking is critical in the age of misinformation.',
-    writingTask: 'Construct an academic paragraph explaining the benefits of spaced repetition.'
+    vocabTarget: ['algorithm', 'automate', 'infrastructure', 'scalable'],
+    grammarFocus: 'Conditionals Type 1, 2, 3 & Complex Transitions',
+    listeningTarget: 'listen_spec_agi',
+    speakingPrompt: 'Discuss whether artificial intelligence will empower or replace knowledge workers.',
+    writingTask: 'Construct an academic paragraph explaining the societal impact of automation.'
   }
 ];

@@ -1,26 +1,27 @@
 // =========================================================================
-// ENGLISH MASTERY OS - CORE SYSTEM ENGINE (10 ENGINES & 12 SUB-VIEWS)
-// Hệ điều hành học tập & phát triển năng lực tiếng Anh toàn diện
+// ENGLISH MASTERY OS - EXPANDED SYSTEM ENGINE (V2)
+// Hệ điều hành học tập & phát triển năng lực tiếng Anh toàn diện 10 Engine
+// Đầy đủ Ngữ pháp thực tế, Từ vựng theo chủ đề, Bài nghe phân cấp & Điểm danh đọc
 // =========================================================================
 
 const ENGLISH_STORAGE_KEY = 'supermind_english_os_v1';
 
-let currentEnglishSubView = 'dashboard'; // 'dashboard', 'palace', 'vocab', 'grammar', 'listening', 'speaking', 'reading', 'writing', 'lessons', 'reviews', 'analytics', 'settings'
+let currentEnglishSubView = 'dashboard';
 let currentSelectedDistrictId = 'kings_cross';
-let currentActiveLocusId = null;
 let currentGrammarPillarId = 1;
-let currentListeningLessonId = 'listen_routine_1';
+let currentListeningLessonId = 'listen_daily_coffee';
 let currentReadingLessonId = 'read_1';
 let currentDailyDayNumber = 1;
 
-// SRS State
-let englishReviewQueue = [];
-let currentReviewIndex = 0;
-let isReviewAnswerRevealed = false;
+// Vocabulary Thematic Filter & Status Filter State
+let currentVocabPackId = 'pack_daily_life';
+let currentVocabStatusFilter = 'all'; // 'all', 'mastered', 'learning'
+
+// Listening Filters
+let currentListeningCategoryFilter = 'all'; // 'all', 'daily', 'career', 'tech', 'finance'
 
 // Reading WPM Timer State
 let readingTimerStart = null;
-let readingTimerInterval = null;
 
 // Audio & Speech Synthesis
 let englishTtsSpeed = 1.0;
@@ -39,20 +40,21 @@ function getStoredEnglishData() {
   return {
     streakDays: 3,
     lastActiveDate: new Date().toISOString(),
-    cefrEstimate: 'A2',
+    dailyReadingCheckIn: {}, // { '2026-11-24': true }
+    cefrEstimate: 'A2 - Pre-intermediate',
     metrics: {
-      listening: 45, // 0 - 100
-      speaking: 30,
-      reading: 55,
+      listening: 65,
+      speaking: 42,
+      reading: 58,
       writing: 35,
-      vocabulary: 320,
-      grammar: 40
+      vocabulary: 480,
+      grammar: 60
     },
     weeklySchedule: {
       completedDays: [1],
       totalPlanned: 4
     },
-    masteredLoci: ['kx_platform'],
+    masteredWords: ['commute', 'groceries', 'deadline'],
     srsCards: [
       { id: 'commute', word: 'commute', interval: 3, repetitions: 2, easeFactor: 2.5, dueDate: new Date().toISOString(), status: 'learning' },
       { id: 'punctual', word: 'punctual', interval: 1, repetitions: 1, easeFactor: 2.5, dueDate: new Date().toISOString(), status: 'learning' },
@@ -69,6 +71,39 @@ function saveEnglishData(data) {
   } catch (e) {
     console.error('Failed to save English OS data:', e);
   }
+}
+
+// Toggle Mastered Word
+function toggleWordMastered(wordId) {
+  if (typeof playSound === 'function') playSound('click');
+  const data = getStoredEnglishData();
+  if (!data.masteredWords) data.masteredWords = [];
+
+  const index = data.masteredWords.indexOf(wordId);
+  if (index > -1) {
+    data.masteredWords.splice(index, 1);
+  } else {
+    data.masteredWords.push(wordId);
+    if (typeof playSound === 'function') playSound('correct');
+  }
+
+  saveEnglishData(data);
+  renderEnglishSubView(currentEnglishSubView);
+}
+
+// Check-in Daily Reading
+function checkInDailyReading(readId) {
+  if (typeof playSound === 'function') playSound('correct');
+  const data = getStoredEnglishData();
+  if (!data.dailyReadingCheckIn) data.dailyReadingCheckIn = {};
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  data.dailyReadingCheckIn[todayStr] = true;
+  data.streakDays = (data.streakDays || 0) + 1;
+
+  saveEnglishData(data);
+  alert('🎉 Chúc mừng bạn đã hoàn thành bài đọc hôm nay và điểm danh thành công! Chuỗi ngày học tăng lên: ' + data.streakDays + ' ngày!');
+  renderEnglishSubView('reading');
 }
 
 // --- 2. INITIALIZATION & NAVIGATION ---
@@ -138,18 +173,18 @@ function renderEnglishSubNav(activeView) {
   if (!navContainer) return;
 
   const views = [
-    { id: 'dashboard', name: 'Dashboard', icon: 'layout-dashboard', badge: 'Tổng Quan' },
-    { id: 'palace', name: 'London Palace', icon: 'castle', badge: 'Engine 1' },
-    { id: 'vocab', name: 'Vocabulary', icon: 'book-a', badge: 'Engine 2' },
-    { id: 'grammar', name: 'Grammar Lab', icon: 'binary', badge: 'Engine 4' },
-    { id: 'listening', name: 'Listening Studio', icon: 'headphones', badge: 'Engine 5' },
-    { id: 'speaking', name: 'Speaking Studio', icon: 'mic', badge: 'Engine 6' },
-    { id: 'reading', name: 'Reading Studio', icon: 'book-open', badge: 'Engine 7' },
-    { id: 'writing', name: 'Writing Lab', icon: 'pen-tool', badge: 'Engine 8' },
-    { id: 'lessons', name: 'Daily 35m', icon: 'calendar-check', badge: '4 Buổi/Tuần' },
-    { id: 'reviews', name: 'Review Center', icon: 'brain-circuit', badge: 'SRS' },
-    { id: 'analytics', name: 'Analytics', icon: 'line-chart', badge: '4 Kỹ Năng' },
-    { id: 'settings', name: 'Settings', icon: 'settings', badge: 'Cài Đặt' }
+    { id: 'dashboard', name: 'Dashboard', icon: 'layout-dashboard' },
+    { id: 'palace', name: 'London Palace', icon: 'castle' },
+    { id: 'vocab', name: 'Từ Vựng Chủ Đề', icon: 'book-a' },
+    { id: 'grammar', name: 'Ngữ Pháp Thực Chiến', icon: 'binary' },
+    { id: 'listening', name: 'Kho Bài Nghe', icon: 'headphones' },
+    { id: 'speaking', name: 'Luyện Nói Micro', icon: 'mic' },
+    { id: 'reading', name: 'Đọc & Điểm Danh', icon: 'book-open' },
+    { id: 'writing', name: 'Luyện Viết', icon: 'pen-tool' },
+    { id: 'lessons', name: 'Daily 35m', icon: 'calendar-check' },
+    { id: 'reviews', name: 'Review SRS', icon: 'brain-circuit' },
+    { id: 'analytics', name: 'Bản Đồ Năng Lực', icon: 'line-chart' },
+    { id: 'settings', name: 'Cài Đặt Giọng', icon: 'settings' }
   ];
 
   navContainer.innerHTML = views.map(v => {
@@ -159,7 +194,7 @@ function renderEnglishSubNav(activeView) {
       : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-800';
 
     return `
-      <button onclick="switchEnglishSubView('${v.id}')" class="px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${activeClass}">
+      <button onclick="switchEnglishSubView('${v.id}')" class="px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap min-h-[44px] ${activeClass}">
         <i data-lucide="${v.icon}" class="w-4 h-4 ${isActive ? 'text-white' : 'text-blue-400'}"></i>
         <span>${v.name}</span>
       </button>
@@ -167,7 +202,7 @@ function renderEnglishSubNav(activeView) {
   }).join('');
 }
 
-// --- 3. AUDIO TTS HELPER ---
+// --- 3. AUDIO TTS HELPER (MOBILE OPTIMIZED) ---
 function speakEnglish(text, rate = null) {
   if (!('speechSynthesis' in window)) {
     alert('Trình duyệt của bạn không hỗ trợ tính năng Web Speech Synthesis.');
@@ -175,11 +210,17 @@ function speakEnglish(text, rate = null) {
   }
 
   window.speechSynthesis.cancel(); // Stop prior speech
+
+  // Crucial for iOS Safari & Mobile Chrome audio unlock
+  if (window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+  }
+
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = englishTtsAccent || 'en-US';
   utterance.rate = rate || englishTtsSpeed || 1.0;
 
-  // Attempt to select an authentic US/UK voice
+  // Attempt to select an authentic US voice
   const voices = window.speechSynthesis.getVoices();
   const preferredVoice = voices.find(v => v.lang.includes('en-US') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha')));
   if (preferredVoice) utterance.voice = preferredVoice;
@@ -191,6 +232,8 @@ function speakEnglish(text, rate = null) {
 function renderEnglishDashboardHTML() {
   const data = getStoredEnglishData();
   const schedule = window.ENGLISH_OS_CONFIG.defaultSchedule;
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isCheckedInToday = data.dailyReadingCheckIn && data.dailyReadingCheckIn[todayStr];
 
   return `
     <div class="space-y-8 animate-in fade-in duration-200">
@@ -206,26 +249,26 @@ function renderEnglishDashboardHTML() {
               ENGLISH MASTERY OS
             </h1>
             <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Môi trường cá nhân hóa phát triển đồng thời <strong>Listening • Speaking • Reading • Writing • Vocabulary • Grammar • Pronunciation</strong> dựa trên Khoa Học Nhận Thức và Cung Điện Trí Nhớ London.
+              Môi trường cá nhân hóa phát triển đồng thời <strong>Listening • Speaking • Reading • Writing • Vocabulary • Grammar</strong> với giọng Mỹ tự nhiên chuẩn và Cung Điện Trí Nhớ London.
             </p>
           </div>
 
           <!-- Quick Metrics Cards -->
           <div class="flex flex-wrap sm:flex-nowrap gap-3 w-full lg:w-auto">
             <div class="p-4 rounded-2xl bg-slate-950/80 border border-blue-500/30 flex-1 sm:w-36 text-center space-y-1">
-              <div class="text-[11px] font-bold text-slate-400 uppercase">Ước Lượng Trình Độ</div>
-              <div class="text-2xl font-black text-cyan-400 font-mono">${data.cefrEstimate}</div>
-              <div class="text-[10px] text-slate-500">Chuẩn CEFR Châu Âu</div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase">Trình Độ CEFR</div>
+              <div class="text-xl font-black text-cyan-400 font-mono">${data.cefrEstimate}</div>
+              <div class="text-[10px] text-slate-500">Mục tiêu: B2 - C1</div>
             </div>
             <div class="p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex-1 sm:w-36 text-center space-y-1">
               <div class="text-[11px] font-bold text-slate-400 uppercase">Chuỗi Ngày Học</div>
               <div class="text-2xl font-black text-emerald-400 font-mono">${data.streakDays} Ngày 🔥</div>
-              <div class="text-[10px] text-slate-500">Kỷ luật liên tục</div>
+              <div class="text-[10px] text-emerald-400/80">${isCheckedInToday ? '✓ Đã điểm danh' : 'Chưa điểm danh đọc'}</div>
             </div>
             <div class="p-4 rounded-2xl bg-slate-950/80 border border-purple-500/30 flex-1 sm:w-36 text-center space-y-1">
-              <div class="text-[11px] font-bold text-slate-400 uppercase">Cần Ôn SRS</div>
-              <div class="text-2xl font-black text-purple-300 font-mono">${data.srsCards.length} Thẻ</div>
-              <div class="text-[10px] text-slate-500">Truy xuất chủ động</div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase">Từ Đã Thuộc</div>
+              <div class="text-2xl font-black text-purple-300 font-mono">${(data.masteredWords || []).length} Từ</div>
+              <div class="text-[10px] text-slate-500">Ký ức vĩnh viễn</div>
             </div>
           </div>
         </div>
@@ -238,10 +281,10 @@ function renderEnglishDashboardHTML() {
             <div class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <i data-lucide="bar-chart-2" class="w-4 h-4"></i> ĐO LƯỜNG NĂNG LỰC THỰC TẾ
             </div>
-            <h2 class="text-lg sm:text-xl font-bold text-white mt-0.5">Tiến Độ Phát Triển Đồng Thời 4 Kỹ Năng Cốt Lõi</h2>
+            <h2 class="text-lg sm:text-xl font-bold text-white mt-0.5">Tiến Độ 4 Kỹ Năng: Hướng Tới Sử Dụng Tiếng Anh Như Ngôn Ngữ Thứ 2</h2>
           </div>
           <div class="text-xs text-slate-400 italic">
-            * Không đánh giá bằng điểm số ảo, dựa trên dữ liệu thao tác thực tế.
+            * Dựa trên dữ liệu tương tác nghe, nói, đọc, viết thực tế.
           </div>
         </div>
 
@@ -258,7 +301,7 @@ function renderEnglishDashboardHTML() {
               <div class="bg-blue-500 h-full rounded-full transition-all" style="width: ${data.metrics.listening}%"></div>
             </div>
             <div class="text-[11px] text-slate-400 leading-relaxed">
-              Nhận diện âm nối, âm yếu và nghe hiểu không phụ đề trong các đoạn hội thoại tự nhiên.
+              Nghe hiểu giọng Mỹ đời thường và các chủ đề chuyên ngành AI, Tài chính.
             </div>
           </div>
 
@@ -274,7 +317,7 @@ function renderEnglishDashboardHTML() {
               <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: ${data.metrics.speaking}%"></div>
             </div>
             <div class="text-[11px] text-slate-400 leading-relaxed">
-              Khả năng phản xạ tạo câu, độ trôi chảy và độ chuẩn xác ngữ âm IPA.
+              Luyện nói micro tương tác, phản xạ Q&A trong 10 giây và Shadowing.
             </div>
           </div>
 
@@ -290,7 +333,7 @@ function renderEnglishDashboardHTML() {
               <div class="bg-amber-500 h-full rounded-full transition-all" style="width: ${data.metrics.reading}%"></div>
             </div>
             <div class="text-[11px] text-slate-400 leading-relaxed">
-              Tốc độ đọc (WPM), nhận diện từ vựng học thuật và suy luận ngữ cảnh sâu.
+              Thư viện đọc phân cấp CEFR, bộ đếm WPM và điểm danh đọc hàng ngày.
             </div>
           </div>
 
@@ -306,115 +349,40 @@ function renderEnglishDashboardHTML() {
               <div class="bg-purple-500 h-full rounded-full transition-all" style="width: ${data.metrics.writing}%"></div>
             </div>
             <div class="text-[11px] text-slate-400 leading-relaxed">
-              Độ chính xác ngữ pháp, mở rộng câu đơn thành câu phức và liên kết ý tưởng logic.
+              Mở rộng câu đơn thành câu phức và viết email, bài luận thực chiến.
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Daily Learning Session Plan (35 Minutes) -->
-      <div class="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-5 shadow-xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="clock" class="w-4 h-4"></i> CHẾ ĐỘ HỌC HÀNG NGÀY TIÊU CHUẨN
-            </div>
-            <h2 class="text-lg sm:text-xl font-bold text-white mt-0.5">Khung Giờ 12:15 - 12:50 • 35 Phút Tối Ưu Năng Lực</h2>
+      <!-- Quick Action Buttons -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button onclick="switchEnglishSubView('vocab')" class="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-left transition-all space-y-2 group">
+          <div class="flex items-center justify-between">
+            <i data-lucide="book-a" class="w-6 h-6 text-amber-400"></i>
+            <span class="text-xs text-amber-400 font-bold group-hover:translate-x-1 transition-transform">Khám phá ➔</span>
           </div>
-          <button onclick="switchEnglishSubView('lessons')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all self-start sm:self-auto">
-            <i data-lucide="play" class="w-4 h-4 fill-current"></i> Vào Buổi Học Hôm Nay
-          </button>
-        </div>
+          <h3 class="text-base font-bold text-white">Từ Vựng Theo Chủ Đề</h3>
+          <p class="text-xs text-slate-400">Đầy đủ chủ đề giao tiếp thường ngày, công sở, AI và tài chính có tính năng Đã Thuộc.</p>
+        </button>
 
-        <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
-          ${schedule.structure.map((step, idx) => `
-            <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
-              <div class="flex items-center justify-between text-[11px] font-mono text-cyan-400">
-                <span>GIAI ĐOẠN ${idx + 1}</span>
-                <span class="font-bold text-amber-300">${step.minute} Phút</span>
-              </div>
-              <div class="text-xs font-bold text-white leading-snug">${step.name}</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- 10 Engines Quick Grid -->
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-            <i data-lucide="cpu" class="w-5 h-5 text-cyan-400"></i> Khám Phá 10 Engine Nòng Cốt
-          </h3>
-          <span class="text-xs text-slate-400 font-mono">Bấm vào engine để kích hoạt</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div onclick="switchEnglishSubView('palace')" class="group p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-amber-500/50 hover:bg-slate-900 cursor-pointer transition-all shadow-md space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 group-hover:scale-105 transition-transform">
-                <i data-lucide="castle" class="w-5 h-5"></i>
-              </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Engine 1</span>
-            </div>
-            <h4 class="text-sm font-bold text-white group-hover:text-amber-300">London Memory Palace</h4>
-            <p class="text-xs text-slate-400 line-clamp-2">Khám phá thành phố London thu nhỏ để gắn từ vựng, hình ảnh và câu chuyện vào từng vị trí không gian.</p>
+        <button onclick="switchEnglishSubView('grammar')" class="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-left transition-all space-y-2 group">
+          <div class="flex items-center justify-between">
+            <i data-lucide="binary" class="w-6 h-6 text-purple-400"></i>
+            <span class="text-xs text-purple-400 font-bold group-hover:translate-x-1 transition-transform">Khám phá ➔</span>
           </div>
+          <h3 class="text-base font-bold text-white">Ngữ Pháp Thực Chiến</h3>
+          <p class="text-xs text-slate-400">15 Trụ cột dễ hiểu, có ví dụ thực tế đời sống và bảng đối chiếu Đúng vs Sai.</p>
+        </button>
 
-          <div onclick="switchEnglishSubView('vocab')" class="group p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900 cursor-pointer transition-all shadow-md space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/30 group-hover:scale-105 transition-transform">
-                <i data-lucide="network" class="w-5 h-5"></i>
-              </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Engine 2 & 3</span>
-            </div>
-            <h4 class="text-sm font-bold text-white group-hover:text-cyan-300">Vocabulary & Phonetics</h4>
-            <p class="text-xs text-slate-400 line-clamp-2">Mạng lưới gốc từ (Root Words), Word Families, Collocations và 44 âm vị IPA khắc phục triệt để lỗi người Việt.</p>
+        <button onclick="switchEnglishSubView('listening')" class="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-blue-500/40 text-left transition-all space-y-2 group">
+          <div class="flex items-center justify-between">
+            <i data-lucide="headphones" class="w-6 h-6 text-blue-400"></i>
+            <span class="text-xs text-blue-400 font-bold group-hover:translate-x-1 transition-transform">Khám phá ➔</span>
           </div>
-
-          <div onclick="switchEnglishSubView('grammar')" class="group p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-purple-500/50 hover:bg-slate-900 cursor-pointer transition-all shadow-md space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30 group-hover:scale-105 transition-transform">
-                <i data-lucide="binary" class="w-5 h-5"></i>
-              </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Engine 4</span>
-            </div>
-            <h4 class="text-sm font-bold text-white group-hover:text-purple-300">Grammar Laboratory</h4>
-            <p class="text-xs text-slate-400 line-clamp-2">15 Trụ cột ngữ pháp toàn diện với mô hình phân giải cú pháp S-V-O và cấu trúc câu đa tầng.</p>
-          </div>
-
-          <div onclick="switchEnglishSubView('listening')" class="group p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900 cursor-pointer transition-all shadow-md space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30 group-hover:scale-105 transition-transform">
-                <i data-lucide="headphones" class="w-5 h-5"></i>
-              </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Engine 5</span>
-            </div>
-            <h4 class="text-sm font-bold text-white group-hover:text-blue-300">Listening Studio</h4>
-            <p class="text-xs text-slate-400 line-clamp-2">Luyện nghe giọng Mỹ tự nhiên, tùy biến tốc độ 0.5x - 1.5x, nghe không phụ đề, Dictation và Shadowing.</p>
-          </div>
-
-          <div onclick="switchEnglishSubView('speaking')" class="group p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900 cursor-pointer transition-all shadow-md space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 group-hover:scale-105 transition-transform">
-                <i data-lucide="mic" class="w-5 h-5"></i>
-              </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Engine 6</span>
-            </div>
-            <h4 class="text-sm font-bold text-white group-hover:text-emerald-300">Speaking Studio</h4>
-            <p class="text-xs text-slate-400 line-clamp-2">Môi trường luyện nói tương tác: Repeat after me, Q&A phản xạ, Retelling và tự do diễn đạt ý tưởng.</p>
-          </div>
-
-          <div onclick="switchEnglishSubView('writing')" class="group p-5 rounded-2xl bg-cardBg border border-slate-800 hover:border-pink-500/50 hover:bg-slate-900 cursor-pointer transition-all shadow-md space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center border border-pink-500/30 group-hover:scale-105 transition-transform">
-                <i data-lucide="pen-tool" class="w-5 h-5"></i>
-              </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Engine 8</span>
-            </div>
-            <h4 class="text-sm font-bold text-white group-hover:text-pink-300">Writing Lab</h4>
-            <p class="text-xs text-slate-400 line-clamp-2">Lộ trình 10 bước viết từ mở rộng câu đơn đến đoạn văn học thuật, kiểm tra liên kết và yêu cầu viết lại.</p>
-          </div>
-        </div>
+          <h3 class="text-base font-bold text-white">Kho Bài Nghe Phân Cấp</h3>
+          <p class="text-xs text-slate-400">Từ cơ bản A1 đến nâng cao C1, giọng Mỹ tự nhiên, có bài tập Dictation chép chính tả.</p>
+        </button>
       </div>
 
     </div>
@@ -437,12 +405,9 @@ function renderEnglishPalaceHTML() {
           </div>
           <h2 class="text-xl sm:text-2xl font-black text-white">Thành Phố Trí Nhớ London (London Memory Palace)</h2>
           <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-            Mã hóa từ vựng, IPA, cấu trúc và ngữ cảnh vào 6 địa danh lịch sử của London. Đi bộ qua từng địa điểm để kích hoạt khả năng ghi nhớ không gian tuyệt đỉnh.
+            Mã hóa từ vựng, IPA, cấu trúc và ngữ cảnh vào 6 địa danh lịch sử của London. Đi bộ qua từng địa điểm để kích hoạt trí nhớ không gian.
           </p>
         </div>
-        <button onclick="promptAddNewLocus()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-500/40 text-xs font-bold flex items-center gap-2 transition-all shadow-md flex-shrink-0">
-          <i data-lucide="plus" class="w-4 h-4"></i> Tạo Thêm Locus Mới
-        </button>
       </div>
 
       <!-- District Selector Tabs -->
@@ -454,7 +419,7 @@ function renderEnglishPalaceHTML() {
             : 'bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800';
 
           return `
-            <button onclick="selectEnglishDistrict('${d.id}')" class="px-3.5 py-2 rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap ${cls}">
+            <button onclick="selectEnglishDistrict('${d.id}')" class="px-4 py-2.5 rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap min-h-[44px] ${cls}">
               <i data-lucide="${d.icon}" class="w-4 h-4"></i>
               <span>${d.name}</span>
             </button>
@@ -493,7 +458,7 @@ function renderEnglishPalaceHTML() {
         <div class="lg:col-span-2 space-y-4">
           <div class="flex items-center justify-between text-xs font-bold text-slate-300">
             <span>DANH SÁCH CÁC VỊ TRÍ NEO TRÍ NHỚ (LOCI)</span>
-            <span class="text-amber-400 font-mono">Bấm loa để nghe phát âm chuẩn</span>
+            <span class="text-amber-400 font-mono">Bấm loa để nghe giọng Mỹ</span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -508,7 +473,7 @@ function renderEnglishPalaceHTML() {
                       <h4 class="text-xl font-black text-white mt-1">${locus.word}</h4>
                       <span class="text-xs text-cyan-400 font-mono">${locus.ipa}</span>
                     </div>
-                    <button onclick="speakEnglish('${locus.word}')" title="Nghe phát âm" class="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 text-cyan-300 border border-blue-500/30 transition-all">
+                    <button onclick="speakEnglish('${locus.word}')" title="Nghe phát âm" class="p-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 text-cyan-300 border border-blue-500/30 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center">
                       <i data-lucide="volume-2" class="w-4 h-4"></i>
                     </button>
                   </div>
@@ -543,7 +508,7 @@ function renderEnglishPalaceHTML() {
                     <div class="text-slate-200 font-medium">"${locus.example}"</div>
                     <div class="text-slate-400 italic">${locus.exampleVn}</div>
                   </div>
-                  <button onclick="speakEnglish('${locus.example.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex-shrink-0">
+                  <button onclick="speakEnglish('${locus.example.replace(/'/g, "\\'")}')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex-shrink-0 min-h-[36px] min-w-[36px] flex items-center justify-center">
                     <i data-lucide="volume-1" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
@@ -564,145 +529,134 @@ function selectEnglishDistrict(districtId) {
   renderEnglishSubView('palace');
 }
 
-function promptAddNewLocus() {
-  const word = prompt('Nhập từ vựng tiếng Anh muốn thêm vào Cung Điện:');
-  if (!word || !word.trim()) return;
-
-  const meaning = prompt(`Nhập nghĩa tiếng Việt của "${word.trim()}":`);
-  const anchor = prompt(`Mô tả hình ảnh liên tưởng hoặc vị trí trong địa danh:`);
-
-  const palace = window.LONDON_MEMORY_PALACE;
-  const currentDistrict = palace.districts.find(d => d.id === currentSelectedDistrictId) || palace.districts[0];
-
-  currentDistrict.loci.push({
-    id: 'custom_' + Date.now(),
-    name: 'Custom Memory Locus',
-    nameVn: 'Vị Trí Tự Tạo',
-    anchor: anchor || 'Vị trí ghi nhớ cá nhân',
-    word: word.trim(),
-    ipa: '',
-    pos: 'vocabulary',
-    meaning: meaning || 'Từ vựng mới',
-    visualStory: anchor || 'Hình ảnh liên tưởng cá nhân của bạn.',
-    collocations: [],
-    example: `Practice using ${word.trim()} in everyday English conversation.`,
-    exampleVn: `Luyện tập sử dụng ${word.trim()} trong giao tiếp hàng ngày.`
-  });
-
-  alert(`Đã thêm thành công từ "${word.trim()}" vào khu vực ${currentDistrict.name}!`);
-  renderEnglishSubView('palace');
-}
-
-// --- 6. VIEW 3: VOCABULARY & PHONETICS HTML ---
+// --- 6. VIEW 3: VOCABULARY BY THEME & STATUS (CÓ TÍNH NĂNG ĐÃ THUỘC) ---
 function renderEnglishVocabHTML() {
-  const vocabData = window.VOCABULARY_INTELLIGENCE_DATA;
-  const ipaData = window.PHONETIC_IPA_DATA;
+  const packs = window.VOCABULARY_THEMATIC_PACKS || [];
+  const currentPack = packs.find(p => p.id === currentVocabPackId) || packs[0];
+  const data = getStoredEnglishData();
+  const masteredList = data.masteredWords || [];
+
+  // Filter words
+  let displayedWords = currentPack.words;
+  if (currentVocabStatusFilter === 'mastered') {
+    displayedWords = displayedWords.filter(w => masteredList.includes(w.id));
+  } else if (currentVocabStatusFilter === 'learning') {
+    displayedWords = displayedWords.filter(w => !masteredList.includes(w.id));
+  }
 
   return `
-    <div class="space-y-8 animate-in fade-in duration-200">
+    <div class="space-y-6 animate-in fade-in duration-200">
       
       <!-- Top Banner -->
       <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-2">
-        <div class="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="network" class="w-4 h-4"></i> ENGINE 2 & 3: MẠNG LƯỚI GỐC TỪ & ÂM VỊ HỌC
+        <div class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="book-a" class="w-4 h-4"></i> ENGINE 2: TỪ VỰNG TOÀN DIỆN THEO CHỦ ĐỀ
         </div>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Xây Dựng Vốn Từ Vựng Mở Rộng Bằng Gốc Từ (Root Words)</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-white">Kho Từ Vựng Giao Tiếp Đời Thường & Chuyên Ngành</h2>
         <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Không học từ đơn lẻ! Học 1 gốc từ giúp bạn suy luận và mở khóa hàng chục từ gia đình (Word Families), Collocations và Idioms tự nhiên.
+          Đầy đủ từ vựng then chốt, phiên âm IPA, cụm từ Collocations và ví dụ ứng dụng. Bạn có thể bấm nút <strong>"Đã Thuộc"</strong> để đưa từ vào kho ký ức vĩnh viễn.
         </p>
       </div>
 
-      <!-- Root Words Network Grid -->
-      <div class="space-y-4">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="git-fork" class="w-4 h-4 text-cyan-400"></i> Các Họ Gốc Từ (Word Families) Tiêu Biểu
-        </h3>
+      <!-- Theme Selector Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        ${packs.map(p => {
+          const isSelected = p.id === currentVocabPackId;
+          const cls = isSelected
+            ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold shadow-lg shadow-amber-500/20 border-amber-400'
+            : 'bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800';
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          ${vocabData.rootFamilies.map(rf => `
-            <div class="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-3.5 shadow-lg flex flex-col justify-between">
-              <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="text-lg font-black text-cyan-400 font-mono tracking-wider">ROOT: ${rf.root}</span>
-                  <span class="text-[10px] text-slate-500">${rf.origin}</span>
-                </div>
-                <div class="text-xs font-bold text-slate-200">
-                  Nghĩa gốc: ${rf.meaning}
-                </div>
-
-                <!-- Family Words List -->
-                <div class="space-y-1.5 pt-2 border-t border-slate-800">
-                  ${rf.family.map(fw => `
-                    <div class="flex items-center justify-between text-xs p-2 rounded-xl bg-slate-950 border border-slate-800/80">
-                      <div>
-                        <strong class="text-white">${fw.word}</strong>
-                        <span class="text-[10px] text-cyan-400 font-mono ml-1">${fw.ipa}</span>
-                        <div class="text-[11px] text-slate-400">${fw.def}</div>
-                      </div>
-                      <button onclick="speakEnglish('${fw.word}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300">
-                        <i data-lucide="volume-1" class="w-3.5 h-3.5"></i>
-                      </button>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-
-              <!-- Collocations & Sample -->
-              <div class="pt-2 border-t border-slate-800 text-xs text-slate-400 space-y-1">
-                <div class="text-amber-400 font-bold text-[11px]">Cụm từ hay gặp:</div>
-                <div class="flex flex-wrap gap-1">
-                  ${rf.collocations.map(c => `<span class="text-[10px] px-2 py-0.5 rounded bg-slate-950 text-slate-300 border border-slate-800">${c}</span>`).join('')}
-                </div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
+          return `
+            <button onclick="selectVocabPack('${p.id}')" class="px-4 py-2.5 rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap min-h-[44px] ${cls}">
+              <i data-lucide="${p.icon}" class="w-4 h-4"></i>
+              <span>${p.name}</span>
+            </button>
+          `;
+        }).join('')}
       </div>
 
-      <!-- 44 IPA Phonetics & Vietnamese Common Mistakes -->
-      <div class="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
-          <div>
-            <div class="text-xs font-bold text-pink-400 uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="volume-2" class="w-4 h-4"></i> BỘ GIẢI MÃ PHÁT ÂM 44 IPA
-            </div>
-            <h3 class="text-lg sm:text-xl font-bold text-white mt-0.5">Khắc Phục 100% Các Lỗi Phát Âm Kinh Điển Của Người Việt</h3>
-          </div>
-          <span class="text-xs px-2.5 py-1 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/40 font-mono font-bold">
-            Âm Chuẩn Bản Xứ
-          </span>
+      <!-- Status Filter Bar -->
+      <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs">
+        <div class="flex items-center gap-1.5">
+          <span class="text-slate-400 font-medium">Trạng thái:</span>
+          <button onclick="setVocabStatusFilter('all')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'all' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'text-slate-400'}">Tất Cả (${currentPack.words.length})</button>
+          <button onclick="setVocabStatusFilter('mastered')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'mastered' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'text-slate-400'}">Đã Thuộc (${currentPack.words.filter(w => masteredList.includes(w.id)).length})</button>
+          <button onclick="setVocabStatusFilter('learning')" class="px-3 py-1 rounded-lg ${currentVocabStatusFilter === 'learning' ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'text-slate-400'}">Đang Nạp</button>
         </div>
+        <span class="text-slate-500 font-mono hidden sm:inline">Bấm tích xanh để lưu vào ký ức vĩnh viễn</span>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          ${ipaData.consonantsKey.map(ck => `
-            <div class="p-4 rounded-2xl bg-slate-950 border border-pink-500/20 space-y-2">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="w-9 h-9 rounded-xl bg-pink-500/20 text-pink-300 border border-pink-500/40 font-black text-sm flex items-center justify-center font-mono">
-                    ${ck.ipa}
-                  </span>
+      <!-- Words Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${displayedWords.map(w => {
+          const isMastered = masteredList.includes(w.id);
+
+          return `
+            <div class="p-5 rounded-2xl bg-slate-900 border ${isMastered ? 'border-emerald-500/50 shadow-emerald-950/20' : 'border-slate-800'} space-y-3 shadow-lg flex flex-col justify-between transition-all">
+              <div class="space-y-2">
+                <div class="flex items-start justify-between gap-2">
                   <div>
-                    <h5 class="text-xs font-bold text-white">${ck.name}</h5>
-                    <div class="text-[11px] text-slate-400">Ví dụ: <strong class="text-slate-200">${ck.example}</strong></div>
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      ${w.pos}
+                    </span>
+                    <h4 class="text-xl font-black text-white mt-1">${w.word}</h4>
+                    <span class="text-xs text-cyan-400 font-mono">${w.ipa}</span>
+                  </div>
+
+                  <!-- Audio & Mastered Action -->
+                  <div class="flex items-center gap-1.5">
+                    <button onclick="speakEnglish('${w.word}')" title="Nghe phát âm" class="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 text-cyan-300 border border-blue-500/30 transition-all min-h-[40px] min-w-[40px] flex items-center justify-center">
+                      <i data-lucide="volume-2" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="toggleWordMastered('${w.id}')" title="${isMastered ? 'Đã thuộc' : 'Đánh dấu đã thuộc'}" class="p-2 rounded-xl border transition-all min-h-[40px] min-w-[40px] flex items-center justify-center ${
+                      isMastered ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'
+                    }">
+                      <i data-lucide="${isMastered ? 'check-check' : 'check'}" class="w-4 h-4"></i>
+                    </button>
                   </div>
                 </div>
-                <button onclick="speakEnglish('${ck.example.split(',')[0].trim()}')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-pink-300">
-                  <i data-lucide="volume-2" class="w-4 h-4"></i>
+
+                <div class="text-xs font-bold text-slate-200">
+                  ➔ ${w.vn}
+                </div>
+
+                <!-- Collocation -->
+                <div class="p-2 rounded-xl bg-slate-950 border border-slate-800/80 text-xs text-slate-300">
+                  <span class="text-[10px] font-bold text-amber-400">Collocations:</span> ${w.collocations}
+                </div>
+              </div>
+
+              <!-- Example -->
+              <div class="pt-2 border-t border-slate-800/80 flex items-start justify-between gap-2">
+                <p class="text-[11px] text-slate-400 italic font-serif">
+                  "${w.example}"
+                </p>
+                <button onclick="speakEnglish('${w.example.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex-shrink-0">
+                  <i data-lucide="volume-1" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
-              <div class="p-2.5 rounded-xl bg-rose-950/20 border border-rose-500/20 text-xs text-rose-200/90 leading-relaxed">
-                <strong class="text-rose-400">Cảnh báo lỗi:</strong> ${ck.vnMistake}
-              </div>
             </div>
-          `).join('')}
-        </div>
+          `;
+        }).join('')}
       </div>
 
     </div>
   `;
 }
 
-// --- 7. VIEW 4: GRAMMAR LABORATORY HTML ---
+function selectVocabPack(packId) {
+  if (typeof playSound === 'function') playSound('click');
+  currentVocabPackId = packId;
+  renderEnglishSubView('vocab');
+}
+
+function setVocabStatusFilter(filter) {
+  if (typeof playSound === 'function') playSound('click');
+  currentVocabStatusFilter = filter;
+  renderEnglishSubView('vocab');
+}
+
+// --- 7. VIEW 4: GRAMMAR LABORATORY (15 TRỤ CỘT THỰC CHIẾN ĐẦY ĐỦ) ---
 function renderEnglishGrammarHTML() {
   const pillars = window.GRAMMAR_15_PILLARS;
   const activePillar = pillars.find(p => p.id === currentGrammarPillarId) || pillars[0];
@@ -713,11 +667,11 @@ function renderEnglishGrammarHTML() {
       <!-- Top Banner -->
       <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-2">
         <div class="text-xs font-black text-purple-400 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="binary" class="w-4 h-4"></i> ENGINE 4: PHÒNG THÍ NGHIỆM CẤU TRÚC NGỮ PHÁP
+          <i data-lucide="binary" class="w-4 h-4"></i> ENGINE 4: PHÒNG THÍ NGHIỆM CẤU TRÚC NGỮ PHÁP THỰC CHIẾN
         </div>
-        <h2 class="text-xl sm:text-2xl font-black text-white">15 Trụ Cột Ngữ Pháp & Phân Tích Cú Pháp Câu (Slot System)</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-white">15 Trụ Cột Ngữ Pháp Dễ Hiểu, Dễ Nhớ & Ứng Dụng Đời Thực</h2>
         <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Ngữ pháp không phải là công thức khô khan để làm bài thi trắc nghiệm, mà là bộ khung kiến trúc tạo nên những câu văn sắc bén, rõ ràng và uyển chuyển.
+          Ngữ pháp không phải là công thức chết để thi cử! Mỗi trụ cột đều có <strong>Bối cảnh thực tế khi nào bắt buộc dùng</strong>, <strong>Câu thần chú nhớ nhanh</strong>, <strong>Bảng đối chiếu Đúng vs Sai</strong> và <strong>Ví dụ giao tiếp sinh động</strong>.
         </p>
       </div>
 
@@ -730,66 +684,91 @@ function renderEnglishGrammarHTML() {
             : 'bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800';
 
           return `
-            <button onclick="selectGrammarPillar(${p.id})" class="px-3 py-1.5 rounded-xl border text-xs transition-all whitespace-nowrap ${cls}">
-              Pillar ${p.id}: ${p.name.split('(')[0]}
+            <button onclick="selectGrammarPillar(${p.id})" class="px-3.5 py-2 rounded-xl border text-xs transition-all whitespace-nowrap min-h-[44px] ${cls}">
+              Trụ Cột ${p.id}: ${p.name.split('(')[0]}
             </button>
           `;
         }).join('')}
       </div>
 
       <!-- Active Pillar Breakdown Card -->
-      <div class="rounded-3xl bg-slate-900 border-2 border-purple-500/40 p-6 sm:p-8 space-y-5 shadow-2xl">
+      <div class="rounded-3xl bg-slate-900 border-2 border-purple-500/40 p-6 sm:p-8 space-y-6 shadow-2xl">
+        
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
           <div>
             <span class="text-xs font-black text-purple-400 font-mono uppercase">TRỤ CỘT ${activePillar.id} / 15</span>
             <h3 class="text-xl sm:text-2xl font-black text-white mt-1">${activePillar.name}</h3>
           </div>
-          <span class="text-xs px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono">
-            Chuẩn Ngữ Pháp Học Thuật
+          <span class="text-xs px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono font-bold">
+            Ứng Dụng Đời Thực 100%
           </span>
         </div>
 
-        <!-- Formula Box -->
-        <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-xs sm:text-sm font-mono text-purple-200">
-          <strong class="text-purple-400">Công Thức Cốt Lõi:</strong> ${activePillar.formula}
-        </div>
-
-        <!-- Explanation & Insight -->
+        <!-- 1. Formula & Mnemonic Hook -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
-            <div class="text-xs font-bold text-slate-400 uppercase">Nguyên Lý Vận Hành:</div>
-            <p class="text-xs text-slate-300 leading-relaxed">${activePillar.summary}</p>
+          <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-1">
+            <div class="text-xs font-bold text-purple-400 uppercase">Công Thức Cốt Lõi:</div>
+            <div class="font-mono text-xs sm:text-sm text-purple-200 font-bold">${activePillar.formula}</div>
           </div>
-          <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
-            <div class="text-xs font-bold text-cyan-400 uppercase">Điểm Đột Phá Nhận Thức:</div>
-            <p class="text-xs text-slate-300 leading-relaxed">${activePillar.coreInsight}</p>
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+            <div class="text-xs font-bold text-amber-400 uppercase flex items-center gap-1.5">
+              <i data-lucide="zap" class="w-3.5 h-3.5"></i> Câu Thần Chú Nhớ Nhanh (5 Giây):
+            </div>
+            <div class="text-xs sm:text-sm text-amber-200 font-bold font-serif">${activePillar.mnemonicHook}</div>
           </div>
         </div>
 
-        <!-- Interactive Sentence Slot Analyzer Demo -->
-        <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-          <div class="text-xs font-bold text-amber-400 uppercase flex items-center gap-2">
-            <i data-lucide="layers" class="w-4 h-4"></i> Giải Phẫu Khay Cú Pháp (Sentence Slot Analyzer)
+        <!-- 2. Real Life Context -->
+        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
+          <div class="text-xs font-bold text-cyan-400 uppercase flex items-center gap-1.5">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Khi Nào Ngoài Đời Thực BẮT BUỘC Phải Dùng?
           </div>
-          <p class="text-xs text-slate-400">Quan sát cách một câu học thuật phức tạp được chia thành các khay chức năng rõ ràng:</p>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${activePillar.realLifeContext}</p>
+        </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-xs text-center">
-            <div class="p-2.5 rounded-xl bg-blue-950/40 border border-blue-500/30 text-blue-300">
-              <div class="text-[10px] text-blue-400 font-bold mb-1">SUBJECT (S)</div>
-              <div>The diligent scholar</div>
+        <!-- 3. Wrong vs Right Table -->
+        ${activePillar.wrongVsRight ? `
+          <div class="space-y-3">
+            <div class="text-xs font-bold text-rose-400 uppercase flex items-center gap-1.5">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i> Bảng Đối Chiếu: Câu Sai Người Việt Hay Nói vs Câu Đúng Chuẩn Bản Xứ
             </div>
-            <div class="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300">
-              <div class="text-[10px] text-emerald-400 font-bold mb-1">VERB (V)</div>
-              <div>consistently reviews</div>
+            <div class="space-y-2">
+              ${activePillar.wrongVsRight.map(c => `
+                <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-1.5 text-xs">
+                  <div class="flex items-start gap-2 text-rose-400">
+                    <span class="font-bold">❌ SAI:</span>
+                    <span>"${c.wrong}"</span>
+                  </div>
+                  <div class="flex items-start gap-2 text-emerald-400 font-bold">
+                    <span>✓ ĐÚNG:</span>
+                    <span>"${c.right}"</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 italic pt-1 border-t border-slate-900">
+                    ➔ <em>Giải thích bản chất:</em> ${c.reason}
+                  </div>
+                </div>
+              `).join('')}
             </div>
-            <div class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/30 text-purple-300">
-              <div class="text-[10px] text-purple-400 font-bold mb-1">OBJECT (O)</div>
-              <div>vocabulary cards</div>
-            </div>
-            <div class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300">
-              <div class="text-[10px] text-amber-400 font-bold mb-1">TIME (T)</div>
-              <div>every single morning.</div>
-            </div>
+          </div>
+        ` : ''}
+
+        <!-- 4. Practical Real Examples with Audio -->
+        <div class="space-y-3 pt-2 border-t border-slate-800">
+          <div class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Các Ví Dụ Giao Tiếp Thực Chiến (Bấm loa để nghe giọng Mỹ):
+          </div>
+          <div class="space-y-2">
+            ${(activePillar.practicalExamples || []).map(ex => `
+              <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3 text-xs">
+                <div class="space-y-0.5">
+                  <div class="text-white font-serif text-xs sm:text-sm">"${ex.en}"</div>
+                  <div class="text-slate-400 text-[11px] italic">${ex.vn}</div>
+                </div>
+                <button onclick="speakEnglish('${ex.en.replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 text-cyan-300 border border-blue-500/30 flex-shrink-0 min-h-[36px] min-w-[36px] flex items-center justify-center">
+                  <i data-lucide="volume-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            `).join('')}
           </div>
         </div>
 
@@ -805,9 +784,13 @@ function selectGrammarPillar(pillarId) {
   renderEnglishSubView('grammar');
 }
 
-// --- 8. VIEW 5: LISTENING STUDIO HTML ---
+// --- 8. VIEW 5: LISTENING STUDIO (BÀI NGHE PHÂN CẤP TỪ CƠ BẢN ĐẾN NÂNG CAO) ---
 function renderEnglishListeningHTML() {
   const library = window.LISTENING_LIBRARY_DATA;
+  let filteredTracks = library;
+  if (currentListeningCategoryFilter !== 'all') {
+    filteredTracks = library.filter(t => t.category === currentListeningCategoryFilter);
+  }
   const currentLesson = library.find(l => l.id === currentListeningLessonId) || library[0];
 
   return `
@@ -816,20 +799,49 @@ function renderEnglishListeningHTML() {
       <!-- Top Banner -->
       <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-2">
         <div class="text-xs font-black text-blue-400 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="headphones" class="w-4 h-4"></i> ENGINE 5: PHÒNG THU ÂM & NGHE HIỂU TỰ NHIÊN
+          <i data-lucide="headphones" class="w-4 h-4"></i> ENGINE 5: KHO BÀI NGHE PHÂN CẤP GIỌNG MỸ ĐỜI THỰC
         </div>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Luyện Nghe Giọng Mỹ Tự Nhiên & Dictation Chép Chính Tả</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-white">Luyện Nghe Từ Cơ Bản A1 Đến Chuyên Ngành C1 (AI, Tài Chính)</h2>
         <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Phân biệt rõ 4 cấp độ: Không nghe được âm ➔ Nghe được âm nhưng không nhận diện từ ➔ Nhận diện từ nhưng không hiểu câu ➔ Hiểu câu nhưng không bắt kịp ý toàn đoạn.
+          Nghe hiểu tự nhiên như ngôn ngữ thứ hai với tốc độ tùy biến, thử thách chép chính tả (Dictation) và trắc nghiệm phản xạ hiểu sâu.
         </p>
       </div>
 
-      <!-- Lesson Player Card -->
-      <div class="rounded-3xl bg-slate-900 border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
+      <!-- Category Filter Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <button onclick="setListeningCategoryFilter('all')" class="px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap min-h-[44px] ${currentListeningCategoryFilter === 'all' ? 'bg-blue-600 text-white border-blue-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">Tất Cả (${library.length})</button>
+        <button onclick="setListeningCategoryFilter('daily')" class="px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap min-h-[44px] ${currentListeningCategoryFilter === 'daily' ? 'bg-amber-600 text-white border-amber-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">Giao Tiếp Thường Ngày (A1-A2)</button>
+        <button onclick="setListeningCategoryFilter('career')" class="px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap min-h-[44px] ${currentListeningCategoryFilter === 'career' ? 'bg-emerald-600 text-white border-emerald-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">Công Sở & Phỏng Vấn (B1-B2)</button>
+        <button onclick="setListeningCategoryFilter('tech')" class="px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap min-h-[44px] ${currentListeningCategoryFilter === 'tech' ? 'bg-cyan-600 text-white border-cyan-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">Chuyên Ngành: AI & Công Nghệ (C1)</button>
+        <button onclick="setListeningCategoryFilter('finance')" class="px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap min-h-[44px] ${currentListeningCategoryFilter === 'finance' ? 'bg-purple-600 text-white border-purple-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">Chuyên Ngành: Tài Chính & Đầu Tư (C1)</button>
+      </div>
+
+      <!-- Track Selector Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        ${filteredTracks.map(t => {
+          const isSelected = t.id === currentLesson.id;
+          return `
+            <div onclick="selectListeningTrack('${t.id}')" class="p-4 rounded-2xl border cursor-pointer transition-all space-y-1.5 ${
+              isSelected ? 'bg-slate-900 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+            }">
+              <div class="flex items-center justify-between text-[11px] font-mono">
+                <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold">${t.level}</span>
+                <span class="text-slate-500">${t.duration}</span>
+              </div>
+              <h4 class="text-xs sm:text-sm font-bold text-white line-clamp-1">${t.title}</h4>
+              <p class="text-[11px] text-slate-400 line-clamp-1">${t.titleVn}</p>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- Active Lesson Player Card -->
+      <div class="rounded-3xl bg-slate-900 border-2 border-blue-500/40 p-6 sm:p-8 space-y-6 shadow-2xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
           <div>
-            <span class="text-xs font-bold text-cyan-400 font-mono uppercase">${currentLesson.level} • Thời lượng: ${currentLesson.duration}</span>
-            <h3 class="text-xl font-bold text-white mt-0.5">${currentLesson.title}</h3>
+            <span class="text-xs font-bold text-cyan-400 font-mono uppercase">${currentLesson.categoryName} • ${currentLesson.level}</span>
+            <h3 class="text-xl sm:text-2xl font-black text-white mt-0.5">${currentLesson.title}</h3>
+            <div class="text-xs text-slate-400">${currentLesson.titleVn}</div>
           </div>
 
           <!-- Speed Controls -->
@@ -837,7 +849,7 @@ function renderEnglishListeningHTML() {
             <span class="text-xs text-slate-400 font-medium">Tốc độ:</span>
             <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
               ${(currentLesson.speedOptions || [0.75, 1.0, 1.25]).map(spd => `
-                <button onclick="setListeningSpeed(${spd})" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                <button onclick="setListeningSpeed(${spd})" class="px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all min-h-[36px] ${
                   englishTtsSpeed === spd ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
                 }">
                   ${spd}x
@@ -849,23 +861,21 @@ function renderEnglishListeningHTML() {
 
         <!-- Audio Action Bar -->
         <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <button onclick="speakEnglish('${currentLesson.audioText.replace(/'/g, "\\'")}', ${englishTtsSpeed})" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all">
-              <i data-lucide="play" class="w-4 h-4 fill-current"></i> Nghe Toàn Đoạn
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button onclick="speakEnglish('${currentLesson.audioText.replace(/'/g, "\\'")}', ${englishTtsSpeed})" class="flex-1 sm:flex-none px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all min-h-[44px]">
+              <i data-lucide="play" class="w-4 h-4 fill-current"></i> Nghe Toàn Đoạn (Giọng Mỹ)
             </button>
-            <button onclick="window.speechSynthesis.cancel()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
+            <button onclick="window.speechSynthesis.cancel()" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all min-h-[44px]">
               Dừng Lại
             </button>
           </div>
 
-          <div class="flex items-center gap-2">
-            <button onclick="toggleListeningTranscript()" id="toggleTranscriptBtn" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all">
-              <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Ẩn / Hiện Phụ Đề
-            </button>
-          </div>
+          <button onclick="toggleListeningTranscript()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all min-h-[44px]">
+            <i data-lucide="file-text" class="w-4 h-4"></i> Ẩn / Hiện Phụ Đề
+          </button>
         </div>
 
-        <!-- Transcript Content (Toggleable) -->
+        <!-- Transcript Content -->
         <div id="listeningTranscriptContainer" class="p-5 rounded-2xl bg-black/40 border border-slate-800 space-y-3">
           <div class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="align-left" class="w-3.5 h-3.5"></i> BẢN DỊCH PHỤ ĐỀ (TRANSCRIPT):
@@ -875,25 +885,25 @@ function renderEnglishListeningHTML() {
           </p>
         </div>
 
-        <!-- Dictation Practice Section -->
+        <!-- Dictation Challenge Section -->
         ${currentLesson.dictationSentences ? `
           <div class="p-5 rounded-2xl bg-slate-950 border border-blue-500/20 space-y-3">
             <div class="text-xs font-bold text-blue-400 uppercase flex items-center gap-2">
-              <i data-lucide="pencil" class="w-4 h-4"></i> Thử Thách Dictation (Nghe Chép Chính Tả)
+              <i data-lucide="pencil" class="w-4 h-4"></i> Thử Thách Dictation (Nghe Chép Chính Tả Từng Âm)
             </div>
-            <p class="text-xs text-slate-400">Bấm nút loa để nghe một câu và gõ lại chính xác từng từ:</p>
+            <p class="text-xs text-slate-400">Bấm nút loa để nghe câu dictation và gõ lại chính xác từng từ:</p>
 
-            <div class="flex items-center gap-3">
-              <button onclick="speakEnglish('${currentLesson.dictationSentences[0].text.replace(/'/g, "\\'")}', 0.85)" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold flex items-center gap-1.5">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <button onclick="speakEnglish('${currentLesson.dictationSentences[0].text.replace(/'/g, "\\'")}', 0.85)" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold flex items-center gap-2 min-h-[44px]">
                 <i data-lucide="volume-2" class="w-4 h-4"></i> Nghe Câu Dictation #1
               </button>
               <span class="text-xs text-slate-400 italic">${currentLesson.dictationSentences[0].hint}</span>
             </div>
 
-            <div class="pt-2">
-              <input type="text" id="dictationInput" placeholder="Gõ lại câu bạn vừa nghe được vào đây..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs sm:text-sm focus:outline-none focus:border-cyan-500 transition-all font-mono">
-              <div class="flex items-center justify-between pt-2">
-                <button onclick="checkDictationAnswer('${currentLesson.dictationSentences[0].text.replace(/'/g, "\\'")}')" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all">
+            <div class="pt-2 space-y-2">
+              <input type="text" id="dictationInput" placeholder="Gõ lại câu bạn vừa nghe được vào đây..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs sm:text-sm focus:outline-none focus:border-cyan-500 transition-all font-mono min-h-[44px]">
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <button onclick="checkDictationAnswer('${currentLesson.dictationSentences[0].text.replace(/'/g, "\\'")}')" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all min-h-[40px]">
                   Kiểm Tra Đáp Án
                 </button>
                 <span id="dictationResultMsg" class="text-xs font-bold"></span>
@@ -908,6 +918,18 @@ function renderEnglishListeningHTML() {
   `;
 }
 
+function selectListeningTrack(trackId) {
+  if (typeof playSound === 'function') playSound('click');
+  currentListeningLessonId = trackId;
+  renderEnglishSubView('listening');
+}
+
+function setListeningCategoryFilter(cat) {
+  if (typeof playSound === 'function') playSound('click');
+  currentListeningCategoryFilter = cat;
+  renderEnglishSubView('listening');
+}
+
 function setListeningSpeed(speed) {
   englishTtsSpeed = speed;
   renderEnglishSubView('listening');
@@ -915,9 +937,7 @@ function setListeningSpeed(speed) {
 
 function toggleListeningTranscript() {
   const el = document.getElementById('listeningTranscriptContainer');
-  if (el) {
-    el.classList.toggle('hidden');
-  }
+  if (el) el.classList.toggle('hidden');
 }
 
 function checkDictationAnswer(correctText) {
@@ -930,16 +950,16 @@ function checkDictationAnswer(correctText) {
 
   if (user === target) {
     resultEl.className = 'text-xs font-bold text-emerald-400';
-    resultEl.textContent = '✓ Chính xác 100%! Xuất sắc!';
+    resultEl.textContent = '✓ Chính xác 100%! Tai bạn nghe rất tốt!';
     if (typeof playSound === 'function') playSound('correct');
   } else {
     resultEl.className = 'text-xs font-bold text-amber-400';
-    resultEl.textContent = `Chưa đúng! Đáp án chuẩn: "${correctText}"`;
+    resultEl.textContent = `Chưa chuẩn! Đáp án: "${correctText}"`;
     if (typeof playSound === 'function') playSound('incorrect');
   }
 }
 
-// --- 9. VIEW 6: SPEAKING STUDIO HTML ---
+// --- 9. VIEW 6: SPEAKING STUDIO (LUYỆN NÓI MICRO TƯƠNG TÁC) ---
 function renderEnglishSpeakingHTML() {
   const studio = window.SPEAKING_STUDIO_DATA;
   const prompt = studio.prompts[0];
@@ -952,9 +972,9 @@ function renderEnglishSpeakingHTML() {
         <div class="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-2">
           <i data-lucide="mic" class="w-4 h-4"></i> ENGINE 6: PHÒNG LUYỆN NÓI & PHẢN XẠ TƯƠNG TÁC
         </div>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Chuyển Hóa Vốn Từ Bị Động Sang Năng Lực Tự Tạo Câu Chủ Động</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-white">Chuyển Hóa Vốn Từ Bị Động Sang Phản Xạ Nói Tự Nhiên</h2>
         <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Không chỉ lặp lại câu mẫu một cách sáo rỗng! Rèn luyện phản xạ đối thoại, mô tả hình ảnh và diễn đạt quan điểm cá nhân có cấu trúc.
+          Luyện nói qua Micro bằng công nghệ nhận diện giọng nói thực tế. Chấm điểm độ tin cậy và kiểm tra phản xạ tạo câu trong 10 giây.
         </p>
       </div>
 
@@ -983,7 +1003,7 @@ function renderEnglishSpeakingHTML() {
           <div class="text-xs font-bold text-slate-400 uppercase">Từ khóa gợi ý cần vận dụng vào câu trả lời:</div>
           <div class="flex flex-wrap gap-2">
             ${prompt.guideKeywords.map(k => `
-              <span class="px-3 py-1 rounded-xl bg-slate-950 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-bold">
+              <span class="px-3 py-1.5 rounded-xl bg-slate-950 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-bold">
                 ${k}
               </span>
             `).join('')}
@@ -996,7 +1016,7 @@ function renderEnglishSpeakingHTML() {
             <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
               <i data-lucide="sparkles" class="w-4 h-4"></i> Câu Trả Lời Mẫu Chuẩn Bản Xứ:
             </span>
-            <button onclick="speakEnglish('${prompt.sampleAnswer.replace(/'/g, "\\'")}')" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition-all">
+            <button onclick="speakEnglish('${prompt.sampleAnswer.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition-all min-h-[36px]">
               <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Nghe Mẫu
             </button>
           </div>
@@ -1016,12 +1036,12 @@ function renderEnglishSpeakingHTML() {
           </div>
 
           <div class="flex justify-center gap-3 pt-2">
-            <button onclick="startVoiceRecognition()" id="startRecordBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/30 transition-all">
+            <button onclick="startVoiceRecognition()" id="startRecordBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/30 transition-all min-h-[44px]">
               <i data-lucide="circle-dot" class="w-4 h-4 text-rose-300 animate-pulse"></i> Bắt Đầu Ghi Âm Nói
             </button>
           </div>
 
-          <div id="voiceRecognizedText" class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 min-h-[60px] text-left italic">
+          <div id="voiceRecognizedText" class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 min-h-[60px] text-left italic">
             Chưa có giọng nói được ghi nhận. Bấm nút phía trên để bắt đầu luyện tập...
           </div>
         </div>
@@ -1074,23 +1094,36 @@ function startVoiceRecognition() {
   recognition.start();
 }
 
-// --- 10. VIEW 7: READING STUDIO HTML ---
+// --- 10. VIEW 7: READING STUDIO (ĐỌC HIỂU & ĐIỂM DANH MỖI NGÀY) ---
 function renderEnglishReadingHTML() {
   const library = window.READING_STUDIO_DATA;
   const currentText = library.find(t => t.id === currentReadingLessonId) || library[0];
+  const data = getStoredEnglishData();
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isCheckedIn = data.dailyReadingCheckIn && data.dailyReadingCheckIn[todayStr];
 
   return `
     <div class="space-y-6 animate-in fade-in duration-200">
       
       <!-- Top Banner -->
-      <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-2">
-        <div class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="book-open" class="w-4 h-4"></i> ENGINE 7: THƯ VIỆN ĐỌC HIỂU & ĐO TỐC ĐỘ WPM
+      <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="book-open" class="w-4 h-4"></i> ENGINE 7: THƯ VIỆN ĐỌC & ĐIỂM DANH MỖI NGÀY
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white">Thử Thách Đọc Độc Lập & Tích Lũy Chuỗi Ngày</h2>
+          <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
+            Mỗi ngày đọc 1 bài báo hoặc câu chuyện học thuật, bấm giờ WPM và nhấn nút <strong>"Điểm Danh Đọc"</strong> để duy trì chuỗi kỷ luật.
+          </p>
         </div>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Thư Viện Bài Đọc Phân Cấp CEFR (A1 Đến C1)</h2>
-        <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Đọc hiểu sâu, bóc tách cấu trúc câu, phát hiện ý chính và đo lường tốc độ đọc hiểu thực tế (Words Per Minute).
-        </p>
+
+        <!-- Check-in Stamp Button -->
+        <button onclick="checkInDailyReading('${currentText.id}')" class="px-5 py-3 rounded-2xl font-black text-xs sm:text-sm flex items-center gap-2 transition-all shadow-xl min-h-[44px] ${
+          isCheckedIn ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50' : 'bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 shadow-amber-500/20'
+        }">
+          <i data-lucide="${isCheckedIn ? 'check-check' : 'calendar-check'}" class="w-4 h-4"></i>
+          <span>${isCheckedIn ? '✓ ĐÃ ĐIỂM DANH HÔM NAY' : 'ĐIỂM DANH ĐỌC HÔM NAY'}</span>
+        </button>
       </div>
 
       <!-- Reading Article Card -->
@@ -1108,7 +1141,7 @@ function renderEnglishReadingHTML() {
 
           <!-- WPM Reading Speed Timer -->
           <div class="flex items-center gap-2">
-            <button onclick="startReadingTimer()" id="readingTimerBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-bold flex items-center gap-2 transition-all">
+            <button onclick="startReadingTimer()" id="readingTimerBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-bold flex items-center gap-2 transition-all min-h-[44px]">
               <i data-lucide="timer" class="w-4 h-4"></i> Bắt Đầu Đếm Giờ Đọc
             </button>
             <span id="readingSpeedResult" class="text-xs font-mono font-bold text-cyan-400"></span>
@@ -1123,15 +1156,16 @@ function renderEnglishReadingHTML() {
         <!-- Vocabulary Highlighted Picks -->
         <div class="space-y-3 pt-2">
           <div class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="sparkles" class="w-4 h-4"></i> Từ Vựng Tinh Hoa Trong Bài:
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Từ Vựng Tinh Hoa Trong Bài (Bấm để nghe giọng Mỹ):
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             ${(currentText.vocabularyPicks || []).map(vp => `
-              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+              <div onclick="speakEnglish('${vp.word}')" class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/40 cursor-pointer space-y-1 transition-all">
                 <div class="flex items-center justify-between">
                   <strong class="text-white text-xs font-mono">${vp.word}</strong>
-                  <span class="text-[10px] text-cyan-400 font-mono">${vp.ipa}</span>
+                  <i data-lucide="volume-1" class="w-3.5 h-3.5 text-cyan-400"></i>
                 </div>
+                <div class="text-[10px] text-cyan-400 font-mono">${vp.ipa}</div>
                 <div class="text-[11px] text-slate-400">${vp.meaning}</div>
               </div>
             `).join('')}
@@ -1152,7 +1186,7 @@ function startReadingTimer() {
   if (!readingTimerStart) {
     readingTimerStart = Date.now();
     btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Bấm Khi Đọc Xong';
-    btn.className = 'px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-2 transition-all animate-pulse';
+    btn.className = 'px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-2 transition-all animate-pulse min-h-[44px]';
     if (result) result.textContent = 'Đang tính thời gian...';
   } else {
     const elapsedMinutes = (Date.now() - readingTimerStart) / 60000;
@@ -1161,7 +1195,7 @@ function startReadingTimer() {
 
     readingTimerStart = null;
     btn.innerHTML = '<i data-lucide="rotate-ccw" class="w-4 h-4"></i> Đọc Lại';
-    btn.className = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-bold flex items-center gap-2 transition-all';
+    btn.className = 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-bold flex items-center gap-2 transition-all min-h-[44px]';
     if (result) result.textContent = `Tốc độ: ${wpm} WPM (Từ/Phút)`;
     if (typeof playSound === 'function') playSound('correct');
   }
@@ -1182,17 +1216,17 @@ function renderEnglishWritingHTML() {
         <div class="text-xs font-black text-pink-400 uppercase tracking-wider flex items-center gap-2">
           <i data-lucide="pen-tool" class="w-4 h-4"></i> ENGINE 8: PHÒNG LUYỆN VIẾT & SỬA LỖI HỌC THUẬT
         </div>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Lộ Trình 10 Bước Viết Từ Câu Đơn Đến Bài Luận Chuyên Nghiệp</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-white">Lộ Trình 10 Bước Viết Từ Câu Đơn Đến Email Chuyên Nghiệp</h2>
         <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Kiểm tra toàn diện ngữ pháp, từ vựng, trật tự cú pháp, tính liên kết (cohesion) và bắt buộc viết lại sau khi nhận phản hồi sửa lỗi.
+          Kiểm tra toàn diện ngữ pháp, từ vựng, trật tự cú pháp, tính liên kết và đối chiếu với phiên bản chuẩn học thuật.
         </p>
       </div>
 
       <!-- Writing Stages Carousel / Bar -->
       <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         ${studio.stages.map(st => `
-          <div class="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono whitespace-nowrap text-slate-300">
-            <span class="text-pink-400 font-bold">${st.step}.</span> ${st.name}
+          <div class="px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono whitespace-nowrap text-slate-300 min-h-[40px] flex items-center">
+            <span class="text-pink-400 font-bold mr-1">${st.step}.</span> ${st.name}
           </div>
         `).join('')}
       </div>
@@ -1213,7 +1247,7 @@ function renderEnglishWritingHTML() {
           <textarea id="writingPracticeInput" rows="4" placeholder="Nhập câu hoặc đoạn văn mở rộng của bạn vào đây..." class="w-full p-4 rounded-2xl bg-slate-950 border border-slate-800 text-white text-xs sm:text-sm focus:outline-none focus:border-pink-500 transition-all font-mono leading-relaxed"></textarea>
 
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
-            <button onclick="evaluateWritingSubmission('${task.sampleModel.replace(/'/g, "\\'")}')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-pink-500/20 transition-all">
+            <button onclick="evaluateWritingSubmission('${task.sampleModel.replace(/'/g, "\\'")}')" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-pink-500/20 transition-all min-h-[44px]">
               <i data-lucide="check-circle" class="w-4 h-4"></i> Nộp Bài & Phân Tích Cú Pháp
             </button>
             <div id="writingFeedbackStatus" class="text-xs font-bold"></div>
@@ -1268,7 +1302,7 @@ function renderEnglishLessonsHTML() {
         </div>
         <h2 class="text-xl sm:text-2xl font-black text-white">Chương Trình Học Tích Hợp 35 Phút (Thứ 2, 3, 5, 7)</h2>
         <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-          Mỗi chủ đề liên kết cả 4 kỹ năng theo chuỗi 10 bước: Từ vựng ➔ Nghe ➔ Đọc ➔ Ngữ pháp ➔ Ghi nhớ Loci ➔ Trả lời nói ➔ Tự thuật ➔ Viết ➔ Sửa lỗi ➔ Lên lịch SRS.
+          Mỗi chủ đề liên kết cả 4 kỹ năng: Từ vựng ➔ Nghe ➔ Đọc ➔ Ngữ pháp ➔ Luyện nói ➔ Viết ➔ Lên lịch SRS.
         </p>
       </div>
 
@@ -1281,7 +1315,7 @@ function renderEnglishLessonsHTML() {
             : 'bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border-slate-800';
 
           return `
-            <button onclick="selectDailyDay(${d.dayNumber})" class="p-4 rounded-2xl border text-left transition-all ${cls}">
+            <button onclick="selectDailyDay(${d.dayNumber})" class="p-4 rounded-2xl border text-left transition-all min-h-[44px] ${cls}">
               <div class="text-[10px] font-mono opacity-80">BUỔI ${d.dayNumber}</div>
               <div class="text-sm font-bold mt-0.5">${d.dayOfWeek.split('(')[0]}</div>
               <div class="text-[11px] truncate mt-1 opacity-90">${d.theme}</div>
@@ -1386,8 +1420,8 @@ function renderEnglishReviewsHTML() {
             </h3>
 
             <div class="flex justify-center gap-2">
-              <button onclick="speakEnglish('${queue[0].word}')" class="px-4 py-1.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-cyan-300 text-xs font-bold flex items-center gap-1.5 border border-blue-500/30">
-                <i data-lucide="volume-2" class="w-4 h-4"></i> Nghe Phát Âm
+              <button onclick="speakEnglish('${queue[0].word}')" class="px-4 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-cyan-300 text-xs font-bold flex items-center gap-1.5 border border-blue-500/30 min-h-[40px]">
+                <i data-lucide="volume-2" class="w-4 h-4"></i> Nghe Phát Âm (Giọng Mỹ)
               </button>
             </div>
 
@@ -1398,7 +1432,7 @@ function renderEnglishReviewsHTML() {
             </div>
 
             <div class="pt-4 flex justify-center gap-3">
-              <button onclick="revealSrsAnswer()" id="srsRevealBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm transition-all shadow-lg shadow-purple-500/30">
+              <button onclick="revealSrsAnswer()" id="srsRevealBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm transition-all shadow-lg shadow-purple-500/30 min-h-[44px]">
                 Hiển Thị Đáp Án & Đánh Giá
               </button>
             </div>
@@ -1456,7 +1490,7 @@ function renderEnglishAnalyticsHTML() {
             </div>
             <div class="p-3.5 rounded-2xl bg-slate-950 border border-amber-500/30 text-xs space-y-1">
               <div class="font-bold text-amber-400">2. Mở rộng câu đơn trong Viết (Writing: ${data.metrics.writing}%)</div>
-              <p class="text-slate-300 leading-relaxed">Hay mắc lỗi câu cụt (fragments) khi dùng liên từ phụ thuộc. Khuyến nghị: Luyện tập khay cú pháp SVO ở Grammar Lab.</p>
+              <p class="text-slate-300 leading-relaxed">Hay mắc lỗi câu cụt khi dùng liên từ phụ thuộc. Khuyến nghị: Luyện tập khay cú pháp SVO ở Grammar Lab.</p>
             </div>
           </div>
         </div>
@@ -1471,8 +1505,8 @@ function renderEnglishAnalyticsHTML() {
               <p class="text-slate-300 leading-relaxed">Nắm bắt ý chính và từ vựng học thuật tốt trên các văn bản CEFR B1.</p>
             </div>
             <div class="p-3.5 rounded-2xl bg-slate-950 border border-emerald-500/30 text-xs space-y-1">
-              <div class="font-bold text-emerald-400">2. Độ bền Trí nhớ Không gian (London Palace)</div>
-              <p class="text-slate-300 leading-relaxed">Tỷ lệ nhớ đúng từ vựng gắn với Loci đạt trên 88% sau 7 ngày.</p>
+              <div class="font-bold text-emerald-400">2. Số từ vựng đã đưa vào Ký ức vĩnh viễn</div>
+              <p class="text-slate-300 leading-relaxed">${(data.masteredWords || []).length} Từ vựng cốt lõi đã làm chủ 100%.</p>
             </div>
           </div>
         </div>
@@ -1498,25 +1532,25 @@ function renderEnglishSettingsHTML() {
       <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-5 shadow-xl">
         <div class="space-y-2">
           <label class="text-xs font-bold text-slate-300">Giọng Bản Xứ Ưu Tiên:</label>
-          <select id="ttsAccentSelect" onchange="updateAccentSetting(this.value)" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs sm:text-sm font-semibold">
-            <option value="en-US" ${englishTtsAccent === 'en-US' ? 'selected' : ''}>English (American - US Accent)</option>
+          <select id="ttsAccentSelect" onchange="updateAccentSetting(this.value)" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs sm:text-sm font-semibold min-h-[44px]">
+            <option value="en-US" ${englishTtsAccent === 'en-US' ? 'selected' : ''}>English (American - US Accent Chuẩn)</option>
             <option value="en-GB" ${englishTtsAccent === 'en-GB' ? 'selected' : ''}>English (British - UK RP Accent)</option>
           </select>
         </div>
 
         <div class="space-y-2">
           <label class="text-xs font-bold text-slate-300">Tốc Độ Đọc Mặc Định:</label>
-          <input type="range" min="0.7" max="1.3" step="0.1" value="${englishTtsSpeed}" onchange="updateSpeedSetting(this.value)" class="w-full accent-cyan-500">
+          <input type="range" min="0.7" max="1.3" step="0.1" value="${englishTtsSpeed}" onchange="updateSpeedSetting(this.value)" class="w-full accent-cyan-500 py-2">
           <div class="flex justify-between text-xs text-slate-400 font-mono">
-            <span>0.7x (Chậm)</span>
+            <span>0.7x (Chậm rõ)</span>
             <span class="text-cyan-400 font-bold" id="speedDisplayVal">${englishTtsSpeed}x</span>
-            <span>1.3x (Nhanh)</span>
+            <span>1.3x (Nhanh tự nhiên)</span>
           </div>
         </div>
 
         <div class="pt-4 border-t border-slate-800">
-          <button onclick="testSettingsVoice()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold transition-all flex items-center justify-center gap-2">
-            <i data-lucide="volume-2" class="w-4 h-4"></i> Thử Nghe Giọng Đọc Hiện Tại
+          <button onclick="testSettingsVoice()" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold transition-all flex items-center justify-center gap-2 min-h-[44px]">
+            <i data-lucide="volume-2" class="w-4 h-4"></i> Thử Nghe Giọng Đọc Mỹ Hiện Tại
           </button>
         </div>
       </div>
