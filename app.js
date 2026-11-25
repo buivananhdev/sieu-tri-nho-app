@@ -2043,6 +2043,169 @@ function migrateAndSanitizeBibleStorage() {
   }
 }
 
+
+// ==========================================
+// FULL BIBLE ENGINE (31.102 CÂU KINH THÁNH 66 SÁCH)
+// ==========================================
+function extractAnchorKeyword(text) {
+  if (!text) return 'Lời Chúa';
+  const clean = text.replace(/^[0-9]+[\s.:-]*|[“”,;.:!?()—"]/g, ' ').trim();
+  const words = clean.split(/\s+/).filter(Boolean);
+  const stopWords = new Set(['và', 'nhưng', 'thì', 'rằng', 'các', 'những', 'người', 'ở', 'trong', 'trên', 'cho', 'của', 'bởi', 'đặng', 'vả', 'nầy', 'đó', 'có', 'là', 'được', 'ra', 'vào', 'lại', 'với', 'khi', 'sẽ', 'đã', 'mình', 'ấy', 'nào', 'cũng', 'đều']);
+  const filtered = words.filter(w => !stopWords.has(w.toLowerCase()));
+  if (filtered.length >= 2) {
+    return filtered.slice(0, 3).join(' ');
+  }
+  return words.slice(0, 3).join(' ');
+}
+
+function getBibleVerseById(verseId) {
+  if (!verseId) return null;
+
+  // 1. Check custom verses
+  try {
+    const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    if (raw) {
+      const custom = JSON.parse(raw);
+      const found = custom.find(v => v.id === verseId);
+      if (found) return sanitizeVerseObject(found);
+    }
+  } catch (e) {}
+
+  // 2. Check initial curated verses
+  if (typeof INITIAL_SCRIPTURE_VERSES !== 'undefined') {
+    const foundInit = INITIAL_SCRIPTURE_VERSES.find(v => v.id === verseId);
+    if (foundInit) return sanitizeVerseObject(foundInit);
+  }
+
+  // 3. Parse coordinates: v_floor_chapter_verse
+  const match = verseId.match(/^v_(\d+)_(\d+)_(\d+)$/);
+  if (match) {
+    const floor = parseInt(match[1], 10);
+    const chapter = parseInt(match[2], 10);
+    const verse = parseInt(match[3], 10);
+
+    const bookMeta = (typeof BIBLE_66_BOOKS !== 'undefined' ? BIBLE_66_BOOKS : []).find(b => b.floor === floor);
+    const fullData = (typeof FULL_BIBLE_DATA !== 'undefined' && Array.isArray(FULL_BIBLE_DATA)) ? FULL_BIBLE_DATA : (typeof window !== 'undefined' ? window.FULL_BIBLE_DATA : null);
+    if (bookMeta && fullData && fullData[floor - 1]) {
+      const text = fullData[floor - 1].chapters[chapter - 1]?.[verse - 1];
+      if (text) {
+        return {
+          id: verseId,
+          bookFloor: floor,
+          bookCode: bookMeta.code,
+          bookName: bookMeta.name,
+          chapter: chapter,
+          verse: verse,
+          keyword: extractAnchorKeyword(text),
+          secondaryKeyword: `${bookMeta.code} ${chapter}:${verse}`,
+          category: bookMeta.testament === 'new' ? 'Tân Ước' : 'Cựu Ước',
+          text: text
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+function getVersesForRoom(floor, room) {
+  // 1. Custom verses from localStorage
+  let customVersesInRoom = [];
+  try {
+    const rawCustom = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
+    if (rawCustom) {
+      const customList = JSON.parse(rawCustom);
+      if (Array.isArray(customList)) {
+        customVersesInRoom = customList.filter(v => Number(v.bookFloor) === floor && Number(v.chapter) === room);
+      }
+    }
+  } catch (e) {}
+
+  // 2. Deleted verse IDs
+  let deletedIds = new Set();
+  try {
+    const rawDel = localStorage.getItem(SCRIPTURE_DELETED_KEY);
+    if (rawDel) deletedIds = new Set(JSON.parse(rawDel));
+  } catch (e) {}
+
+  const customMap = new Map();
+  customVersesInRoom.forEach(v => {
+    customMap.set(Number(v.verse), v);
+  });
+
+  const bookMeta = (typeof BIBLE_66_BOOKS !== 'undefined' ? BIBLE_66_BOOKS : []).find(b => b.floor === floor) || { floor, name: 'Sách ' + floor, code: 'B' + floor, testament: 'old' };
+
+  // 3. Initial curated verses for this room
+  const initialMap = new Map();
+  if (typeof INITIAL_SCRIPTURE_VERSES !== 'undefined') {
+    INITIAL_SCRIPTURE_VERSES.forEach(iv => {
+      if (iv.bookFloor === floor && iv.chapter === room && !deletedIds.has(iv.id)) {
+        initialMap.set(Number(iv.verse), iv);
+      }
+    });
+  }
+
+  // 4. Full Bible Data
+  const fullData = (typeof FULL_BIBLE_DATA !== 'undefined' && Array.isArray(FULL_BIBLE_DATA)) ? FULL_BIBLE_DATA : (typeof window !== 'undefined' ? window.FULL_BIBLE_DATA : null);
+  const fullBook = fullData ? fullData[floor - 1] : null;
+  const rawChapterVerses = (fullBook && fullBook.chapters && fullBook.chapters[room - 1]) ? fullBook.chapters[room - 1] : [];
+
+  const result = [];
+  const maxVerseCount = Math.max(rawChapterVerses.length, customVersesInRoom.length);
+
+  for (let vNum = 1; vNum <= maxVerseCount; vNum++) {
+    const verseId = `v_${floor}_${room}_${vNum}`;
+    if (deletedIds.has(verseId)) continue;
+
+    // Ưu tiên 1: Câu do người dùng sửa/thêm
+    if (customMap.has(vNum)) {
+      result.push(sanitizeVerseObject(customMap.get(vNum)));
+      continue;
+    }
+
+    // Ưu tiên 2: Câu mẫu trong INITIAL_SCRIPTURE_VERSES
+    if (initialMap.has(vNum)) {
+      const iv = initialMap.get(vNum);
+      if (!deletedIds.has(iv.id)) {
+        result.push(sanitizeVerseObject(iv));
+        continue;
+      }
+    }
+
+    // Ưu tiên 3: Toàn văn từ FULL_BIBLE_DATA
+    const verseText = rawChapterVerses[vNum - 1];
+    if (verseText) {
+      result.push({
+        id: verseId,
+        bookFloor: floor,
+        bookCode: bookMeta.code,
+        bookName: bookMeta.name,
+        chapter: room,
+        verse: vNum,
+        keyword: extractAnchorKeyword(verseText),
+        secondaryKeyword: `${bookMeta.code} ${room}:${vNum}`,
+        category: bookMeta.testament === 'new' ? 'Tân Ước' : 'Cựu Ước',
+        text: verseText
+      });
+    }
+  }
+
+  return result.sort((a, b) => (Number(a.verse) || 0) - (Number(b.verse) || 0));
+}
+
+function getAllMasteredScriptureVerses() {
+  const progressMap = getBibleProgressMap();
+  const masteredList = [];
+  Object.keys(progressMap).forEach(verseId => {
+    if (isBibleVerseMastered(verseId)) {
+      const vObj = getBibleVerseById(verseId);
+      if (vObj) masteredList.push(vObj);
+    }
+  });
+  return masteredList.sort(sortVersesAscending);
+}
+
 function getAllScriptureVerses() {
   try {
     const rawDeleted = localStorage.getItem(SCRIPTURE_DELETED_KEY);
@@ -2213,8 +2376,7 @@ function getBibleMasteryRank(masteredCount) {
 }
 
 function getChapterStatus(floor, room) {
-  const allVerses = getAllScriptureVerses();
-  const verses = allVerses.filter(v => v.bookFloor === floor && v.chapter === room);
+  const verses = getVersesForRoom(floor, room);
   if (verses.length === 0) return { total: 0, mastered: 0, isComplete: false };
   const mastered = verses.filter(v => isBibleVerseMastered(v.id)).length;
   return {
@@ -2359,22 +2521,25 @@ function renderCompletedChaptersList() {
 }
 
 function updateBibleStatsDashboard() {
-  const allVerses = getAllScriptureVerses();
-  const total = allVerses.length;
+  const total = TOTAL_BIBLE_VERSES; // 31102
+  const progressMap = getBibleProgressMap();
   let masteredCount = 0;
   let learningCount = 0;
   let otMastered = 0;
   let ntMastered = 0;
   const masteredBooksSet = new Set();
 
-  allVerses.forEach(v => {
-    const p = getBibleVerseProgress(v.id);
-    if (p.mastered) {
+  Object.entries(progressMap).forEach(([verseId, p]) => {
+    const isM = p && (p.mastered || p === true);
+    if (isM) {
       masteredCount++;
-      masteredBooksSet.add(v.bookFloor);
-      if (v.bookFloor <= 39) otMastered++;
-      else ntMastered++;
-    } else if (p.status === 'learning' || p.reviewCount > 0) {
+      const v = getBibleVerseById(verseId);
+      if (v) {
+        masteredBooksSet.add(v.bookFloor);
+        if (v.bookFloor <= 39) otMastered++;
+        else ntMastered++;
+      }
+    } else if (p && (p.status === 'learning' || p.reviewCount > 0)) {
       learningCount++;
     }
   });
@@ -2492,8 +2657,7 @@ function renderMasteredModalList() {
   const countBadge = document.getElementById('masteredModalCountBadge');
   if (!container) return;
 
-  const allVerses = getAllScriptureVerses();
-  const masteredVerses = allVerses.filter(v => isBibleVerseMastered(v.id)).sort(sortVersesAscending);
+  const masteredVerses = getAllMasteredScriptureVerses();
 
   if (countBadge) countBadge.textContent = `${masteredVerses.length} Câu Đã Thuộc`;
 
@@ -2708,8 +2872,7 @@ function renderVersesInRoom() {
   const container = document.getElementById('versesInRoomList');
   if (!container) return;
 
-  const allVerses = getAllScriptureVerses();
-  const roomVerses = allVerses.filter(v => v.bookFloor === currentSelectedFloor && v.chapter === currentSelectedRoom);
+  const roomVerses = getVersesForRoom(currentSelectedFloor, currentSelectedRoom);
   const chapterStatus = getChapterStatus(currentSelectedFloor, currentSelectedRoom);
   const currentBook = BIBLE_66_BOOKS.find(b => b.floor === currentSelectedFloor);
 
