@@ -2047,16 +2047,74 @@ function migrateAndSanitizeBibleStorage() {
 // ==========================================
 // FULL BIBLE ENGINE (31.102 CÂU KINH THÁNH 66 SÁCH)
 // ==========================================
+const SCRIPTURE_PREFIXES_REGEX = [
+  /^Đức Chúa Trời phán\s*:\s*/i,
+  /^Đức Chúa Trời lại phán\s*:\s*/i,
+  /^Đức Chúa Trời lại phán rằng\s*:\s*/i,
+  /^Đức Chúa Trời phán cùng\s+[^\s,:]+[\s,:]*/i,
+  /^Đức Chúa Trời thấy\s*/i,
+  /^Đức Chúa Trời gọi\s*/i,
+  /^Đức Chúa Trời làm nên\s*/i,
+  /^Đức Giê-hô-va phán\s*:\s*/i,
+  /^Đức Giê-hô-va phán cùng\s+[^\s,:]+[\s,:]*/i,
+  /^Đức Giê-hô-va lại phán\s*:\s*/i,
+  /^Đức Chúa Jêsus phán\s*:\s*/i,
+  /^Đức Chúa Jêsus đáp\s*:\s*/i,
+  /^Đức Chúa Jêsus lại phán\s*:\s*/i,
+  /^Chúa Giê-xu phán\s*:\s*/i,
+  /^Chúa Giê-xu đáp\s*:\s*/i,
+  /^Chúa phán\s*:\s*/i,
+  /^Ngài phán\s*:\s*/i,
+  /^Ngài đáp\s*:\s*/i,
+  /^Bấy giờ,\s*/i,
+  /^Kế đó,\s*/i,
+  /^Sau đó,\s*/i,
+  /^Sau những việc ấy,\s*/i,
+  /^Vả,\s*/i,
+  /^Lại nữa,\s*/i
+];
+
+const SCRIPTURE_STOPWORDS = new Set([
+  'và', 'nhưng', 'thì', 'rằng', 'các', 'những', 'người', 'ở', 'trong', 'trên',
+  'cho', 'của', 'bởi', 'đặng', 'vả', 'nầy', 'này', 'đó', 'có', 'là', 'được',
+  'ra', 'vào', 'lại', 'với', 'khi', 'sẽ', 'đã', 'mình', 'ấy', 'nào', 'cũng',
+  'đều', 'nó', 'chúng', 'họ', 'ngươi', 'ngài', 'hãy', 'chớ', 'vì', 'thế',
+  'qua', 'đến', 'lại', 'một', 'hai', 'ba', 'vậy'
+]);
+
 function extractAnchorKeyword(text) {
   if (!text) return 'Lời Chúa';
-  const clean = text.replace(/^[0-9]+[\s.:-]*|[“”,;.:!?()—"]/g, ' ').trim();
+  let t = text.trim();
+
+  // 1. Loại bỏ các tiền tố hội thoại lặp lại để tìm trọng tâm câu
+  for (const p of SCRIPTURE_PREFIXES_REGEX) {
+    if (p.test(t)) {
+      t = t.replace(p, '');
+      break;
+    }
+  }
+
+  // 2. Nếu câu bắt đầu bằng lời trích dẫn trong ngoặc kép (trọng tâm phát ngôn)
+  const quoteMatch = t.match(/^[“"']([^“”"']{4,40})[“”"']/);
+  if (quoteMatch) {
+    const qClean = quoteMatch[1].replace(/[,;.:!?]/g, '').trim();
+    if (qClean.length > 3) {
+      return qClean.slice(0, 30);
+    }
+  }
+
+  // 3. Loại bỏ dấu câu và trích xuất các từ mang ý nghĩa nội dung cốt lõi
+  const clean = t.replace(/^[0-9]+[\s.:-]*|[“”,;.:!?()—"''`]/g, ' ').trim();
   const words = clean.split(/\s+/).filter(Boolean);
-  const stopWords = new Set(['và', 'nhưng', 'thì', 'rằng', 'các', 'những', 'người', 'ở', 'trong', 'trên', 'cho', 'của', 'bởi', 'đặng', 'vả', 'nầy', 'đó', 'có', 'là', 'được', 'ra', 'vào', 'lại', 'với', 'khi', 'sẽ', 'đã', 'mình', 'ấy', 'nào', 'cũng', 'đều']);
-  const filtered = words.filter(w => !stopWords.has(w.toLowerCase()));
-  if (filtered.length >= 2) {
+  const filtered = words.filter(w => !SCRIPTURE_STOPWORDS.has(w.toLowerCase()));
+
+  if (filtered.length >= 3) {
     return filtered.slice(0, 3).join(' ');
   }
-  return words.slice(0, 3).join(' ');
+  if (filtered.length > 0) {
+    return filtered.join(' ');
+  }
+  return words.slice(0, 3).join(' ') || 'Lời Chúa';
 }
 
 function getBibleVerseById(verseId) {
@@ -2164,18 +2222,25 @@ function getVersesForRoom(floor, room) {
       continue;
     }
 
+    // Lấy văn bản chuẩn 2010 từ FULL_BIBLE_DATA
+    const officialText = rawChapterVerses[vNum - 1];
+
     // Ưu tiên 2: Câu mẫu trong INITIAL_SCRIPTURE_VERSES
     if (initialMap.has(vNum)) {
       const iv = initialMap.get(vNum);
       if (!deletedIds.has(iv.id)) {
-        result.push(sanitizeVerseObject(iv));
+        result.push(sanitizeVerseObject({
+          ...iv,
+          text: officialText || iv.text, // Luôn đồng bộ văn bản chuẩn 2010 RVV11
+          keyword: iv.keyword || extractAnchorKeyword(officialText || iv.text),
+          secondaryKeyword: iv.secondaryKeyword || `${bookMeta.code} ${room}:${vNum}`
+        }));
         continue;
       }
     }
 
-    // Ưu tiên 3: Toàn văn từ FULL_BIBLE_DATA
-    const verseText = rawChapterVerses[vNum - 1];
-    if (verseText) {
+    // Ưu tiên 3: Toàn văn từ FULL_BIBLE_DATA (Bản dịch 2010)
+    if (officialText) {
       result.push({
         id: verseId,
         bookFloor: floor,
@@ -2183,10 +2248,10 @@ function getVersesForRoom(floor, room) {
         bookName: bookMeta.name,
         chapter: room,
         verse: vNum,
-        keyword: extractAnchorKeyword(verseText),
+        keyword: extractAnchorKeyword(officialText),
         secondaryKeyword: `${bookMeta.code} ${room}:${vNum}`,
         category: bookMeta.testament === 'new' ? 'Tân Ước' : 'Cựu Ước',
-        text: verseText
+        text: officialText
       });
     }
   }
