@@ -2969,18 +2969,18 @@ function renderVersesInRoom() {
               </span>
             ` : ''}
             <div class="flex items-center gap-1.5 ml-2">
-              <button onclick="toggleBibleVerseMastered('${v.id}')" class="px-2.5 py-1 rounded-lg ${isMastered ? 'bg-amber-500 text-slate-950 font-black shadow' : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700'} text-xs font-bold flex items-center gap-1 transition-all" title="${isMastered ? 'Đã thuộc lòng câu này' : 'Đánh dấu đã thuộc lòng'}">
-                <i data-lucide="${isMastered ? 'check-circle-2' : 'award'}" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">${isMastered ? 'Đã Thuộc' : 'Đánh Dấu Thuộc'}</span>
+              <button onclick="toggleBibleVerseMastered('${v.id}')" class="px-3 py-1.5 rounded-xl ${isMastered ? 'bg-amber-500 text-slate-950 font-black shadow-md' : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700'} text-xs font-bold flex items-center gap-1.5 transition-all min-h-[38px]" title="${isMastered ? 'Đã thuộc lòng câu này' : 'Đánh dấu đã thuộc lòng'}">
+                <i data-lucide="${isMastered ? 'check-circle-2' : 'award'}" class="w-4 h-4"></i>
+                <span>${isMastered ? 'Đã Thuộc' : 'Đánh Dấu Thuộc'}</span>
               </button>
-              <button onclick="speakVerseText('${v.text.replace(/'/g, "\\'")}')" title="Nghe đọc câu này" class="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs transition-all">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+              <button onclick="speakVerseText('${v.text.replace(/'/g, "\\'")}')" title="Nghe đọc câu này" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs transition-all min-h-[38px] min-w-[38px] flex items-center justify-center">
+                <i data-lucide="volume-2" class="w-4 h-4"></i>
               </button>
-              <button onclick="editScriptureVerse('${v.id}')" title="Sửa câu này" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-300 border border-slate-700 hover:border-amber-400 text-xs font-bold flex items-center gap-1 transition-all shadow-sm">
-                <i data-lucide="edit-3" class="w-3 h-3"></i> Sửa
+              <button onclick="editScriptureVerse('${v.id}')" title="Sửa câu này" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-300 border border-slate-700 hover:border-amber-400 text-xs font-bold flex items-center gap-1 transition-all shadow-sm min-h-[38px]">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Sửa</span>
               </button>
-              <button onclick="deleteScriptureVerse('${v.id}')" title="Xóa câu này" class="p-1 rounded-lg bg-slate-800 hover:bg-rose-900/60 hover:text-rose-300 text-slate-400 border border-slate-700 text-xs transition-all">
-                <i data-lucide="trash-2" class="w-3 h-3"></i>
+              <button onclick="deleteScriptureVerse('${v.id}')" title="Xóa câu này" class="p-2 rounded-xl bg-slate-800 hover:bg-rose-900/60 hover:text-rose-300 text-slate-400 border border-slate-700 text-xs transition-all min-h-[38px] min-w-[38px] flex items-center justify-center">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
               </button>
             </div>
           </div>
