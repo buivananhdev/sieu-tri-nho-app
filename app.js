@@ -2000,16 +2000,26 @@ function cleanVietnameseScriptureText(str) {
 
 function sanitizeVerseObject(v) {
   if (!v) return v;
+  const floor = Number(v.bookFloor) || 1;
+  const chapter = Number(v.chapter) || 1;
+  const verse = Number(v.verse) || 1;
+  const bookMeta = (typeof BIBLE_66_BOOKS !== 'undefined' ? BIBLE_66_BOOKS : []).find(b => b.floor === floor);
+  const code = (v.bookCode || (bookMeta ? bookMeta.code : 'S')).trim();
+  const name = cleanVietnameseScriptureText(v.bookName || (bookMeta ? bookMeta.name : ''));
+  const rawSec = cleanVietnameseScriptureText(v.secondaryKeyword || '');
+  const sec = rawSec || `${code} ${chapter}:${verse}`;
+  const kw = cleanVietnameseScriptureText(v.keyword || (typeof extractAnchorKeyword === 'function' ? extractAnchorKeyword(v.text) : 'Lời Chúa'));
+
   return {
     ...v,
-    bookFloor: Number(v.bookFloor) || 1,
-    chapter: Number(v.chapter) || 1,
-    verse: Number(v.verse) || 1,
-    bookName: cleanVietnameseScriptureText(v.bookName || ''),
-    bookCode: (v.bookCode || '').trim(),
-    keyword: cleanVietnameseScriptureText(v.keyword || ''),
-    secondaryKeyword: cleanVietnameseScriptureText(v.secondaryKeyword || ''),
-    category: cleanVietnameseScriptureText(v.category || ''),
+    bookFloor: floor,
+    chapter: chapter,
+    verse: verse,
+    bookName: name,
+    bookCode: code,
+    keyword: kw,
+    secondaryKeyword: sec,
+    category: cleanVietnameseScriptureText(v.category || (bookMeta && bookMeta.testament === 'new' ? 'Tân Ước' : 'Cựu Ước')),
     text: cleanVietnameseScriptureText(v.text || '')
   };
 }
@@ -2032,8 +2042,23 @@ function migrateAndSanitizeBibleStorage() {
   try {
     const raw = localStorage.getItem(SCRIPTURE_STORAGE_KEY);
     if (!raw) return;
-    const custom = JSON.parse(raw);
+    let custom = JSON.parse(raw);
     if (Array.isArray(custom)) {
+      const fullData = (typeof FULL_BIBLE_DATA !== 'undefined' && Array.isArray(FULL_BIBLE_DATA)) ? FULL_BIBLE_DATA : (typeof window !== 'undefined' ? window.FULL_BIBLE_DATA : null);
+      custom = custom.filter(v => {
+        if (!v || !v.bookFloor || !v.chapter || !v.verse) return false;
+        if (fullData && fullData[v.bookFloor - 1]) {
+          const ch = fullData[v.bookFloor - 1].chapters[v.chapter - 1];
+          if (ch) {
+            const officialText = ch[v.verse - 1];
+            // Nếu bị lưu nhầm text của một câu khác trong chương (lỗi test cũ), tự động loại bỏ để lấy văn bản chuẩn 2010
+            if (officialText && v.text && ch.some((otherT, idx) => idx !== (v.verse - 1) && otherT === v.text)) {
+              return false;
+            }
+          }
+        }
+        return true;
+      });
       const sanitized = custom.map(v => sanitizeVerseObject(v));
       sanitized.sort(sortVersesAscending);
       localStorage.setItem(SCRIPTURE_STORAGE_KEY, JSON.stringify(sanitized));
@@ -2216,14 +2241,24 @@ function getVersesForRoom(floor, room) {
     const verseId = `v_${floor}_${room}_${vNum}`;
     if (deletedIds.has(verseId)) continue;
 
-    // Ưu tiên 1: Câu do người dùng sửa/thêm
-    if (customMap.has(vNum)) {
-      result.push(sanitizeVerseObject(customMap.get(vNum)));
-      continue;
-    }
-
     // Lấy văn bản chuẩn 2010 từ FULL_BIBLE_DATA
     const officialText = rawChapterVerses[vNum - 1];
+
+    // Ưu tiên 1: Câu do người dùng sửa/thêm
+    if (customMap.has(vNum)) {
+      const cv = customMap.get(vNum);
+      // Nếu câu tự thêm có nội dung trùng với câu khác trong chương (lỗi dán nhầm hoặc test cũ), tự phục hồi bản chuẩn 2010
+      if (officialText && cv.text && rawChapterVerses.some((otherT, oIdx) => oIdx !== (vNum - 1) && otherT === cv.text)) {
+        cv.text = officialText;
+        cv.keyword = extractAnchorKeyword(officialText);
+      }
+      result.push(sanitizeVerseObject({
+        ...cv,
+        text: cv.text || officialText,
+        secondaryKeyword: cv.secondaryKeyword || `${bookMeta.code} ${room}:${vNum}`
+      }));
+      continue;
+    }
 
     // Ưu tiên 2: Câu mẫu trong INITIAL_SCRIPTURE_VERSES
     if (initialMap.has(vNum)) {
