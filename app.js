@@ -2306,6 +2306,8 @@ function getAllMasteredScriptureVerses() {
   return masteredList.sort(sortVersesAscending);
 }
 
+const getMasteredBibleVersesList = getAllMasteredScriptureVerses;
+
 function getAllScriptureVerses() {
   try {
     const rawDeleted = localStorage.getItem(SCRIPTURE_DELETED_KEY);
@@ -3495,7 +3497,7 @@ function openBibleReviewDeckModal(forceAllMastered = false) {
   let due = getDueBibleVerses();
 
   if (due.length === 0 || forceAllMastered) {
-    const allMastered = getMasteredBibleVersesList();
+    const allMastered = getAllMasteredScriptureVerses();
     if (allMastered.length === 0) {
       alert('Bạn chưa đánh dấu thuộc câu nào! Hãy chọn một chương và bấm "Đánh Dấu Thuộc" để đưa câu đó vào lịch ôn tập.');
       return;
@@ -3768,7 +3770,7 @@ function renderAssessmentSetupScreen() {
   if (badge) badge.textContent = 'Thiết Lập';
 
   const currentBook = BIBLE_66_BOOKS.find(b => b.floor === currentSelectedFloor) || { name: 'Sáng Thế Ký' };
-  const masteredCount = getMasteredBibleVersesList().length;
+  const masteredCount = getAllMasteredScriptureVerses().length;
 
   container.innerHTML = `
     <div class="space-y-5">
@@ -3851,7 +3853,7 @@ function startMemoryAssessment() {
   if (currentAssessment.scope === 'room') {
     pool = getVersesForRoom(currentSelectedFloor, currentSelectedRoom);
   } else if (currentAssessment.scope === 'mastered') {
-    pool = getMasteredBibleVersesList();
+    pool = getAllMasteredScriptureVerses();
     if (pool.length === 0) {
       // Nếu chưa có câu nào thuộc, fallback sang phòng hiện tại
       pool = getVersesForRoom(currentSelectedFloor, currentSelectedRoom);
