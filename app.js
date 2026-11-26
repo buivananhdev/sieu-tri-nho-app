@@ -2467,7 +2467,7 @@ function getBibleMasteryRank(masteredCount) {
   if (masteredCount >= 15000) return { title: '⚡ Siêu Trí Nhớ Thánh Kinh', desc: 'Đã thuộc hơn 15.000 câu' };
   if (masteredCount >= 7958) return { title: '📜 Đại Trí Giả Lời Chúa', desc: 'Đã vượt qua quy mô Tân Ước' };
   if (masteredCount >= 3000) return { title: '🌟 Tinh Hoa Trí Tuệ', desc: 'Đã thuộc hơn 3.000 câu' };
-  if (masteredCount >= 1000) return { title: '👑 Bậc Thầy Ghi Nhớ', desc: 'Đã thuộc hơn 1.000 câu' };
+  if (masteredCount >= 1000) return { title: 'Bậc Thầy Ghi Nhớ', desc: 'Đã thuộc hơn 1.000 câu' };
   if (masteredCount >= 500) return { title: '🏛️ Trụ Cột Đền Thờ', desc: 'Đã thuộc hơn 500 câu' };
   if (masteredCount >= 100) return { title: '⚔️ Chiến Binh Lời Sự Sống', desc: 'Đã thuộc hơn 100 câu' };
   if (masteredCount >= 50) return { title: '🛡️ Thành Lũy Lời Chúa', desc: 'Đã thuộc hơn 50 câu' };
@@ -2581,7 +2581,7 @@ function renderCompletedChaptersList() {
     container.innerHTML = `
       <div class="py-12 text-center space-y-3">
         <div class="w-14 h-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-2xl text-slate-500">
-          👑
+          
         </div>
         <p class="text-slate-300 text-sm font-semibold">Chưa có chương nào thuộc trọn vẹn 100%</p>
         <p class="text-slate-500 text-xs max-w-sm mx-auto">
@@ -2596,7 +2596,7 @@ function renderCompletedChaptersList() {
     <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 hover:border-amber-400 transition-all flex items-center justify-between gap-3 group">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center font-black text-sm">
-          👑
+          
         </div>
         <div>
           <div class="flex items-center gap-2">
@@ -2933,7 +2933,7 @@ function renderRooms(chapterCount) {
       chipClass = isActive 
         ? 'bg-amber-500 text-slate-950 font-black shadow-md border-amber-400' 
         : 'bg-amber-500/15 text-amber-300 border-amber-500/50 hover:bg-amber-500/25 font-bold';
-      chipContent = `👑 Phòng ${ch} (${st.mastered}/${st.total})`;
+      chipContent = `<i data-lucide="check" class="w-3 h-3 text-emerald-400 inline-block mr-1"></i>Phòng ${ch} (${st.mastered}/${st.total})`;
     } else if (st.total > 0 && st.mastered > 0) {
       chipClass = isActive
         ? 'bg-amber-500 text-slate-950 font-bold shadow'
@@ -3018,7 +3018,7 @@ function renderVersesInRoom() {
     celebrationBannerHtml = `
       <div class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/10 border border-amber-400/50 flex flex-wrap items-center justify-between gap-3 text-amber-200 shadow-lg animate-in fade-in duration-300 mb-3">
         <div class="flex items-center gap-3">
-          <span class="text-2xl sm:text-3xl">👑</span>
+          <span class="text-2xl sm:text-3xl"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 inline-block"></i></span>
           <div>
             <div class="text-xs sm:text-sm font-black text-amber-300 uppercase tracking-wider flex items-center gap-2">
               <span>CHƯƠNG ĐÃ THUỘC TRỌN VẸN 100%!</span>
@@ -3051,7 +3051,7 @@ function renderVersesInRoom() {
             <span class="text-xs text-slate-400 font-medium">Câu ${v.verse}</span>
             ${isMastered ? `
               <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/50 text-[10px] font-bold flex items-center gap-1">
-                <span>👑</span> ĐÃ THUỘC LÒNG
+                <span><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 inline-block"></i></span> ĐÃ THUỘC LÒNG
               </span>
             ` : (progress.reviewCount > 0 ? `
               <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[10px] font-bold flex items-center gap-1">
@@ -4451,7 +4451,7 @@ function updateMasterclassModalStatusUI(lessonId) {
   if (statusTag) {
     if (status === 'mastered') {
       statusTag.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/50 flex items-center gap-1';
-      statusTag.innerHTML = '<span>👑</span> ĐÃ TINH THÔNG';
+      statusTag.innerHTML = '<span><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 inline-block"></i></span> ĐÃ TINH THÔNG';
     } else if (status === 'memorized') {
       statusTag.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/50 flex items-center gap-1';
       statusTag.innerHTML = '<span>🧠</span> ĐÃ THUỘC LOCI';
@@ -4743,7 +4743,7 @@ function renderPhilosophyView() {
     const status = prog.status || 'none';
     let progressBadge = '';
     if (status === 'mastered') {
-      progressBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/50 text-[10px] font-bold flex items-center gap-1"><span>👑</span> TINH THÔNG</span>`;
+      progressBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/50 text-[10px] font-bold flex items-center gap-1"><span><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 inline-block"></i></span> TINH THÔNG</span>`;
     } else if (status === 'memorized') {
       progressBadge = `<span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/50 text-[10px] font-bold flex items-center gap-1"><span>🧠</span> ĐÃ NHỚ LOCI</span>`;
     } else if (status === 'read') {
@@ -4892,7 +4892,7 @@ function renderPhilosophyView() {
               🧠 Đã nhớ
             </button>
             <button onclick="setLessonProgress('${lesson.id}', 'mastered')" title="Đánh dấu Tinh thông" class="px-2.5 py-1 rounded-lg transition-all ${status === 'mastered' ? 'bg-amber-500 text-slate-950 font-black shadow' : 'text-slate-400 hover:text-amber-300'}">
-              👑 Tinh thông
+              Tinh thông
             </button>
           </div>
 
