@@ -2702,6 +2702,7 @@ function updateBibleStatsDashboard() {
 
   const completedList = getAllCompletedChapters();
   if (elCompCount) elCompCount.textContent = completedList.length;
+  if (typeof updateBibleReviewBadge === 'function') updateBibleReviewBadge();
 }
 
 function filterBibleProgressStatus(status) {
@@ -3030,13 +3031,32 @@ function renderVersesInRoom() {
           </div>
         </div>
         <button onclick="playSound('success')" class="text-xs font-bold px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl shadow-md transition-all whitespace-nowrap">
-          🌟 Xuất Sắc!
+          <i data-lucide="award" class="w-3.5 h-3.5 inline-block mr-1"></i>Xuất Sắc!
         </button>
       </div>
     `;
   }
 
-  container.innerHTML = celebrationBannerHtml + filtered.map(v => {
+  const roomActionBarHtml = `
+    <div class="p-3 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-wrap items-center justify-between gap-2.5 mb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+          <i data-lucide="book-open" class="w-4 h-4 text-amber-400"></i>
+          <span>${currentBook?.name || ''} · Chương ${currentSelectedRoom} (${chapterStatus.mastered}/${chapterStatus.total} câu đã thuộc)</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openBibleReviewDeckForRoom(currentSelectedFloor, currentSelectedRoom)" class="px-2.5 py-1 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold flex items-center gap-1 transition-all" title="Ôn tập các câu trong chương này">
+          <i data-lucide="calendar-check" class="w-3 h-3 text-emerald-400"></i> Ôn Tập Chương Này
+        </button>
+        <button onclick="openMemoryAssessmentModal('room')" class="px-2.5 py-1 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 text-[11px] font-bold flex items-center gap-1 transition-all" title="Kiểm tra các câu trong chương này">
+          <i data-lucide="check-square" class="w-3 h-3 text-indigo-400"></i> Kiểm Tra Chương Này
+        </button>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = celebrationBannerHtml + roomActionBarHtml + filtered.map(v => {
     const firstLetters = generateFirstLetters(v.text);
     const progress = getBibleVerseProgress(v.id);
     const isMastered = progress.mastered;
@@ -3412,6 +3432,911 @@ function revealQuizAnswer() {
   playSound('success');
   quizRevealed = true;
   renderQuizCard();
+}
+
+
+// ==========================================
+// 15C. LỊCH ÔN TẬP KHOA HỌC (SPACED REPETITION ENGINE - SRS)
+// ==========================================
+var reviewDeckQueue = [];
+var reviewDeckIndex = 0;
+var reviewDeckRevealed = false;
+
+function getNextSpacedInterval(currentInterval) {
+  const cur = Number(currentInterval) || 1;
+  if (cur < 3) return 3;
+  if (cur < 7) return 7;
+  if (cur < 14) return 14;
+  if (cur < 30) return 30;
+  return 60;
+}
+
+function getDueBibleVerses() {
+  const map = getBibleProgressMap();
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const dueList = [];
+
+  for (const [verseId, data] of Object.entries(map)) {
+    if (data && (data.mastered || data === true)) {
+      const nextDate = data.nextReviewDate || '';
+      // Chưa có ngày hẹn hoặc ngày hẹn <= hôm nay là đến hạn ôn tập
+      if (!nextDate || nextDate <= todayStr) {
+        const verseObj = getBibleVerseById(verseId);
+        if (verseObj) {
+          dueList.push({
+            ...verseObj,
+            interval: data.interval || 1,
+            reviewCount: data.reviewCount || 0,
+            lastReviewed: data.lastReviewed || null,
+            nextReviewDate: nextDate
+          });
+        }
+      }
+    }
+  }
+  return dueList;
+}
+
+function updateBibleReviewBadge() {
+  const due = getDueBibleVerses();
+  const badge = document.getElementById('bibleTodayReviewBadge');
+  if (badge) {
+    badge.textContent = due.length;
+    if (due.length > 0) {
+      badge.className = 'font-bold text-emerald-300';
+    } else {
+      badge.className = 'text-slate-400';
+    }
+  }
+}
+
+function openBibleReviewDeckModal(forceAllMastered = false) {
+  playSound('click');
+  let due = getDueBibleVerses();
+
+  if (due.length === 0 || forceAllMastered) {
+    const allMastered = getMasteredBibleVersesList();
+    if (allMastered.length === 0) {
+      alert('Bạn chưa đánh dấu thuộc câu nào! Hãy chọn một chương và bấm "Đánh Dấu Thuộc" để đưa câu đó vào lịch ôn tập.');
+      return;
+    }
+    due = allMastered.map(v => {
+      const p = getBibleVerseProgress(v.id);
+      return {
+        ...v,
+        interval: p.interval || 1,
+        reviewCount: p.reviewCount || 0,
+        lastReviewed: p.lastReviewed || null,
+        nextReviewDate: p.nextReviewDate || ''
+      };
+    });
+  }
+
+  reviewDeckQueue = due;
+  reviewDeckIndex = 0;
+  reviewDeckRevealed = false;
+
+  renderReviewDeckCard();
+
+  const modal = document.getElementById('bibleReviewDeckModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function openBibleReviewDeckForRoom(floor, room) {
+  playSound('click');
+  const versesInRoom = getVersesForRoom(floor, room);
+  const masteredInRoom = versesInRoom.filter(v => isBibleVerseMastered(v.id));
+  if (masteredInRoom.length === 0) {
+    alert(`Phòng ${room} chưa có câu nào được đánh dấu thuộc lòng! Hãy học và đánh dấu thuộc một số câu trước.`);
+    return;
+  }
+  reviewDeckQueue = masteredInRoom.map(v => {
+    const p = getBibleVerseProgress(v.id);
+    return {
+      ...v,
+      interval: p.interval || 1,
+      reviewCount: p.reviewCount || 0,
+      lastReviewed: p.lastReviewed || null,
+      nextReviewDate: p.nextReviewDate || ''
+    };
+  });
+  reviewDeckIndex = 0;
+  reviewDeckRevealed = false;
+  renderReviewDeckCard();
+
+  const modal = document.getElementById('bibleReviewDeckModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function closeBibleReviewDeckModal() {
+  playSound('click');
+  const modal = document.getElementById('bibleReviewDeckModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+  updateBibleStatsDashboard();
+  updateBibleReviewBadge();
+}
+
+function renderReviewDeckCard() {
+  const container = document.getElementById('reviewDeckCardContainer');
+  const badge = document.getElementById('reviewDeckProgressBadge');
+  const bar = document.getElementById('reviewDeckProgressBar');
+  if (!container) return;
+
+  if (reviewDeckIndex >= reviewDeckQueue.length) {
+    if (badge) badge.textContent = `${reviewDeckQueue.length}/${reviewDeckQueue.length}`;
+    if (bar) bar.style.width = '100%';
+
+    container.innerHTML = `
+      <div class="text-center py-8 space-y-4">
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+          <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+        </div>
+        <h4 class="text-lg font-bold text-white">Hoàn Thành Phiên Ôn Tập Hôm Nay!</h4>
+        <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+          Bạn đã ôn tập và củng cố thành công <strong>${reviewDeckQueue.length} câu Kinh Thánh</strong>. Thuật toán đã tự động tính toán và dời lịch ôn tối ưu cho các ngày tiếp theo.
+        </p>
+        <div class="pt-4 flex flex-wrap justify-center gap-3">
+          <button onclick="closeBibleReviewDeckModal()" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all shadow-md">
+            Đóng Lại & Tiếp Tục Học
+          </button>
+          <button onclick="openBibleReviewDeckModal(true)" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-all border border-slate-700">
+            Ôn Toàn Bộ Các Câu Đã Thuộc
+          </button>
+        </div>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  const v = reviewDeckQueue[reviewDeckIndex];
+  if (badge) badge.textContent = `${reviewDeckIndex + 1}/${reviewDeckQueue.length}`;
+  if (bar) bar.style.width = `${((reviewDeckIndex) / reviewDeckQueue.length) * 100}%`;
+
+  const firstLetters = generateFirstLetters(v.text);
+
+  container.innerHTML = `
+    <div class="space-y-4">
+      <!-- Coordinate & Meta -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-mono font-bold">
+            ${v.bookCode} ${v.chapter}:${v.verse}
+          </span>
+          <span class="text-xs text-slate-300 font-semibold">${v.bookName} · Phòng ${v.chapter} - Câu ${v.verse}</span>
+        </div>
+        <span class="text-[11px] text-slate-400 font-mono">Chu kỳ hiện tại: ${v.interval || 1} ngày</span>
+      </div>
+
+      <!-- Keyword Anchor Box -->
+      <div class="p-4 rounded-2xl bg-slate-900 border border-emerald-500/30 flex items-center justify-between gap-3">
+        <div>
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Từ khóa mỏ neo kích hoạt:</div>
+          <div class="text-base font-bold text-emerald-300">"${v.keyword || 'Lời Chúa'}"</div>
+        </div>
+        ${v.secondaryKeyword ? `
+          <div class="text-right">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Phân biệt:</div>
+            <div class="text-xs font-mono text-cyan-300">"${v.secondaryKeyword}"</div>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Flashcard Body -->
+      ${!reviewDeckRevealed ? `
+        <div class="p-8 rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 text-center space-y-4">
+          <p class="text-xs text-slate-400">
+            Hãy nhẩm lại toàn văn câu Kinh Thánh này trong tâm trí dựa vào từ khóa mỏ neo và tọa độ ở trên.
+          </p>
+          <button onclick="revealReviewDeckAnswer()" class="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition-all shadow-lg flex items-center gap-2 mx-auto">
+            <i data-lucide="eye" class="w-4 h-4"></i> Lật Thẻ Xem Câu Kinh Thánh
+          </button>
+        </div>
+      ` : `
+        <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700 space-y-4 animate-in fade-in duration-150">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <span>Toàn văn Bản Hiệu Đính 2010 (RVV11):</span>
+            <button onclick="speakVerseText('${v.text.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs flex items-center gap-1 border border-slate-700" title="Nghe đọc">
+              <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Nghe đọc
+            </button>
+          </div>
+          <p class="text-sm sm:text-base font-medium text-slate-100 leading-relaxed border-l-2 border-emerald-400 pl-3">
+            "${v.text}"
+          </p>
+          <div class="pt-2 border-t border-slate-800">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Chuỗi chữ cái đầu:</div>
+            <div class="text-xs font-mono font-bold text-amber-300 tracking-wider">${firstLetters}</div>
+          </div>
+        </div>
+
+        <!-- Feedback Actions -->
+        <div class="space-y-2 pt-2">
+          <div class="text-center text-[11px] text-slate-400">Bạn nhớ câu này thế nào?</div>
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="submitReviewDeckAnswer('again')" class="p-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs transition-all flex flex-col items-center gap-1">
+              <span class="flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Cần Ôn Thêm / Quên</span>
+              <span class="text-[10px] font-normal text-amber-400/80">Hẹn ngày mai ôn lại</span>
+            </button>
+            <button onclick="submitReviewDeckAnswer('good')" class="p-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition-all flex flex-col items-center gap-1 shadow-sm">
+              <span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Đã Thuộc Tốt / Rõ Ràng</span>
+              <span class="text-[10px] font-normal text-emerald-400/80">Kéo dài chu kỳ lên ${getNextSpacedInterval(v.interval)} ngày</span>
+            </button>
+          </div>
+        </div>
+      `}
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+function revealReviewDeckAnswer() {
+  playSound('click');
+  reviewDeckRevealed = true;
+  renderReviewDeckCard();
+}
+
+function submitReviewDeckAnswer(quality) {
+  if (reviewDeckIndex >= reviewDeckQueue.length) return;
+  const v = reviewDeckQueue[reviewDeckIndex];
+  const map = getBibleProgressMap();
+  const current = map[v.id] || { status: 'mastered', mastered: true, reviewCount: 0 };
+
+  let nextInterval = 1;
+  if (quality === 'good') {
+    playSound('success');
+    nextInterval = getNextSpacedInterval(current.interval || 1);
+  } else {
+    playSound('click');
+    nextInterval = 1;
+  }
+
+  const nextDate = new Date(Date.now() + nextInterval * 86400000).toISOString().slice(0, 10);
+
+  map[v.id] = {
+    ...current,
+    status: 'mastered',
+    mastered: true,
+    reviewCount: (current.reviewCount || 0) + 1,
+    interval: nextInterval,
+    lastReviewed: Date.now(),
+    nextReviewDate: nextDate
+  };
+
+  localStorage.setItem(BIBLE_PROGRESS_KEY, JSON.stringify(map));
+  dispatchRealtimeAutoSync();
+
+  reviewDeckIndex++;
+  reviewDeckRevealed = false;
+  renderReviewDeckCard();
+}
+
+
+// ==========================================
+// 15D. BÀI KIỂM TRA TRÍ NHỚ HỌC THUẬT (MEMORY ASSESSMENT SUITE)
+// ==========================================
+var currentAssessment = {
+  type: 'cloze',      // 'cloze' | 'verbatim' | 'coordinate'
+  scope: 'room',      // 'room' | 'mastered' | 'book'
+  questions: [],
+  currentIndex: 0,
+  score: 0,
+  isSubmitted: false,
+  results: []
+};
+
+function openMemoryAssessmentModal(presetScope = null, presetType = null) {
+  playSound('click');
+  if (presetScope) currentAssessment.scope = presetScope;
+  if (presetType) currentAssessment.type = presetType;
+  currentAssessment.questions = [];
+  currentAssessment.currentIndex = 0;
+  currentAssessment.score = 0;
+  currentAssessment.isSubmitted = false;
+  currentAssessment.results = [];
+
+  renderAssessmentSetupScreen();
+
+  const modal = document.getElementById('memoryAssessmentModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function closeMemoryAssessmentModal() {
+  playSound('click');
+  const modal = document.getElementById('memoryAssessmentModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function renderAssessmentSetupScreen() {
+  const container = document.getElementById('memoryAssessmentBody');
+  const badge = document.getElementById('assessmentStepBadge');
+  if (!container) return;
+  if (badge) badge.textContent = 'Thiết Lập';
+
+  const currentBook = BIBLE_66_BOOKS.find(b => b.floor === currentSelectedFloor) || { name: 'Sáng Thế Ký' };
+  const masteredCount = getMasteredBibleVersesList().length;
+
+  container.innerHTML = `
+    <div class="space-y-5">
+      <!-- 1. Assessment Mode Selection -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">1. Chọn hình thức kiểm tra:</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button type="button" onclick="setAssessmentType('cloze')" class="p-3.5 rounded-2xl border text-left transition-all ${currentAssessment.type === 'cloze' ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-md' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'}">
+            <div class="flex items-center gap-2 mb-1">
+              <i data-lucide="edit" class="w-4 h-4 text-indigo-400"></i>
+              <span class="font-bold text-xs text-slate-200">Điền Từ Khuyết</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-normal">Ẩn các từ khóa quan trọng trong câu, chọn hoặc điền đáp án chuẩn xác.</p>
+          </button>
+
+          <button type="button" onclick="setAssessmentType('verbatim')" class="p-3.5 rounded-2xl border text-left transition-all ${currentAssessment.type === 'verbatim' ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-md' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'}">
+            <div class="flex items-center gap-2 mb-1">
+              <i data-lucide="file-check-2" class="w-4 h-4 text-indigo-400"></i>
+              <span class="font-bold text-xs text-slate-200">Tái Hiện Nguyên Văn</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-normal">Tự gõ lại toàn văn từ trí nhớ. Máy so khớp từng từ và tính % chuẩn xác.</p>
+          </button>
+
+          <button type="button" onclick="setAssessmentType('coordinate')" class="p-3.5 rounded-2xl border text-left transition-all ${currentAssessment.type === 'coordinate' ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-md' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'}">
+            <div class="flex items-center gap-2 mb-1">
+              <i data-lucide="compass" class="w-4 h-4 text-indigo-400"></i>
+              <span class="font-bold text-xs text-slate-200">Truy Xuất Tọa Độ</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-normal">Đưa ra câu Kinh Thánh, kiểm tra khả năng nhớ chính xác Sách, Chương, Câu.</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Assessment Scope Selection -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">2. Chọn phạm vi kiểm tra:</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button type="button" onclick="setAssessmentScope('room')" class="p-3 rounded-2xl border text-left transition-all ${currentAssessment.scope === 'room' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'}">
+            <div class="font-bold text-xs text-slate-200 mb-0.5">Phòng Hiện Tại</div>
+            <div class="text-[11px] text-slate-400">${currentBook.name} · Phòng ${currentSelectedRoom}</div>
+          </button>
+
+          <button type="button" onclick="setAssessmentScope('mastered')" class="p-3 rounded-2xl border text-left transition-all ${currentAssessment.scope === 'mastered' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'}">
+            <div class="font-bold text-xs text-slate-200 mb-0.5">Các Câu Đã Thuộc</div>
+            <div class="text-[11px] text-slate-400">${masteredCount} câu trong sổ tay</div>
+          </button>
+
+          <button type="button" onclick="setAssessmentScope('book')" class="p-3 rounded-2xl border text-left transition-all ${currentAssessment.scope === 'book' ? 'bg-indigo-600/20 border-indigo-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'}">
+            <div class="font-bold text-xs text-slate-200 mb-0.5">Toàn Bộ Sách Này</div>
+            <div class="text-[11px] text-slate-400">${currentBook.name} (66 Tầng)</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Start Button -->
+      <div class="pt-3 border-t border-slate-800 flex justify-end">
+        <button onclick="startMemoryAssessment()" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-lg flex items-center gap-2">
+          <i data-lucide="play" class="w-4 h-4"></i> Bắt Đầu Bài Kiểm Tra
+        </button>
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+function setAssessmentType(type) {
+  currentAssessment.type = type;
+  renderAssessmentSetupScreen();
+}
+
+function setAssessmentScope(scope) {
+  currentAssessment.scope = scope;
+  renderAssessmentSetupScreen();
+}
+
+function startMemoryAssessment() {
+  playSound('click');
+  let pool = [];
+
+  if (currentAssessment.scope === 'room') {
+    pool = getVersesForRoom(currentSelectedFloor, currentSelectedRoom);
+  } else if (currentAssessment.scope === 'mastered') {
+    pool = getMasteredBibleVersesList();
+    if (pool.length === 0) {
+      // Nếu chưa có câu nào thuộc, fallback sang phòng hiện tại
+      pool = getVersesForRoom(currentSelectedFloor, currentSelectedRoom);
+    }
+  } else {
+    // book scope: lấy các câu trong sách hiện tại
+    const fullData = (typeof FULL_BIBLE_DATA !== 'undefined' && Array.isArray(FULL_BIBLE_DATA)) ? FULL_BIBLE_DATA : null;
+    if (fullData && fullData[currentSelectedFloor - 1]) {
+      const b = fullData[currentSelectedFloor - 1];
+      b.chapters.forEach((ch, chIdx) => {
+        ch.forEach((txt, vIdx) => {
+          pool.push({
+            id: `v_${currentSelectedFloor}_${chIdx + 1}_${vIdx + 1}`,
+            bookFloor: currentSelectedFloor,
+            bookCode: b.code,
+            bookName: b.name,
+            chapter: chIdx + 1,
+            verse: vIdx + 1,
+            keyword: extractAnchorKeyword(txt),
+            secondaryKeyword: `${b.code} ${chIdx + 1}:${vIdx + 1}`,
+            text: txt
+          });
+        });
+      });
+    }
+  }
+
+  if (pool.length === 0) {
+    alert('Không tìm thấy câu Kinh Thánh nào trong phạm vi đã chọn!');
+    return;
+  }
+
+  // Shuffle and pick 5 to 10 questions
+  const shuffled = [...pool].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, Math.min(10, shuffled.length));
+
+  // Build question objects depending on assessment type
+  currentAssessment.questions = selected.map(v => buildAssessmentQuestion(v, pool));
+  currentAssessment.currentIndex = 0;
+  currentAssessment.score = 0;
+  currentAssessment.results = [];
+  currentAssessment.isSubmitted = false;
+
+  renderAssessmentQuestion();
+}
+
+function buildAssessmentQuestion(verse, pool) {
+  const q = {
+    verse: verse,
+    type: currentAssessment.type,
+    userAnswer: '',
+    isCorrect: false,
+    score: 0
+  };
+
+  if (currentAssessment.type === 'cloze') {
+    // Pick 2 meaningful words to blank out
+    const words = verse.text.replace(/^[0-9]+[\s.:-]*|[“”,;.:!?()—"]/g, ' ').trim().split(/\s+/).filter(Boolean);
+    const contentWords = words.filter(w => !SCRIPTURE_STOPWORDS.has(w.toLowerCase()) && w.length >= 2);
+    
+    let target1 = contentWords[0] || words[0] || 'Chúa';
+    let target2 = contentWords[1] || words[Math.min(2, words.length - 1)] || 'sáng';
+
+    // Create masked text
+    let masked = verse.text;
+    const re1 = new RegExp(`\\b${target1}\\b`, 'i');
+    const re2 = new RegExp(`\\b${target2}\\b`, 'i');
+    masked = masked.replace(re1, '【 . (1) . 】');
+    masked = masked.replace(re2, '【 . (2) . 】');
+
+    // Create 4 choices for (1) and (2)
+    const correctPair = `${target1} — ${target2}`;
+    const choices = [correctPair];
+
+    // Pick distractors from other verses
+    const otherVerses = pool.filter(ov => ov.id !== verse.id);
+    for (let i = 0; i < otherVerses.length && choices.length < 4; i++) {
+      const ow = otherVerses[i].text.replace(/^[0-9]+[\s.:-]*|[“”,;.:!?()—"]/g, ' ').trim().split(/\s+/).filter(Boolean);
+      const oc = ow.filter(w => !SCRIPTURE_STOPWORDS.has(w.toLowerCase()) && w.length >= 2);
+      if (oc.length >= 2) {
+        const candidate = `${oc[0]} — ${oc[1]}`;
+        if (!choices.includes(candidate)) choices.push(candidate);
+      }
+    }
+    // Fill remaining if needed
+    while (choices.length < 4) {
+      choices.push(`lời phán — ánh sáng ${choices.length}`);
+    }
+
+    q.maskedText = masked;
+    q.correctPair = correctPair;
+    q.choices = choices.sort(() => 0.5 - Math.random());
+  } else if (currentAssessment.type === 'coordinate') {
+    const correctCoord = `${verse.bookName} ${verse.chapter}:${verse.verse}`;
+    const choices = [correctCoord];
+    
+    // Distractors
+    choices.push(`${verse.bookName} ${Math.max(1, verse.chapter + 1)}:${verse.verse}`);
+    choices.push(`${verse.bookName} ${verse.chapter}:${Math.max(1, verse.verse + 3)}`);
+    const otherBook = BIBLE_66_BOOKS[(verse.bookFloor + 2) % 66] || BIBLE_66_BOOKS[0];
+    choices.push(`${otherBook.name} ${verse.chapter}:${verse.verse}`);
+
+    q.correctCoord = correctCoord;
+    q.choices = choices.sort(() => 0.5 - Math.random());
+  }
+
+  return q;
+}
+
+function renderAssessmentQuestion() {
+  const container = document.getElementById('memoryAssessmentBody');
+  const badge = document.getElementById('assessmentStepBadge');
+  if (!container) return;
+
+  const q = currentAssessment.questions[currentAssessment.currentIndex];
+  if (!q) {
+    renderAssessmentFinalReport();
+    return;
+  }
+
+  if (badge) badge.textContent = `Câu ${currentAssessment.currentIndex + 1} / ${currentAssessment.questions.length}`;
+
+  const v = q.verse;
+
+  if (currentAssessment.type === 'cloze') {
+    container.innerHTML = `
+      <div class="space-y-5">
+        <!-- Coordinate & Progress -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-xs font-mono font-bold">
+              ${v.bookCode} ${v.chapter}:${v.verse}
+            </span>
+            <span class="text-xs text-slate-300 font-semibold">${v.bookName} · Phòng ${v.chapter} - Câu ${v.verse}</span>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Tiến trình: ${currentAssessment.currentIndex + 1}/${currentAssessment.questions.length}</span>
+        </div>
+
+        <!-- Question Prompt -->
+        <div class="p-5 rounded-2xl bg-slate-900 border border-indigo-500/30 space-y-3">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Chọn cặp từ thích hợp điền vào chỗ trống:</div>
+          <p class="text-sm sm:text-base text-slate-100 font-medium leading-relaxed">
+            "${q.maskedText}"
+          </p>
+        </div>
+
+        <!-- Multiple Choice Options -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="clozeChoicesContainer">
+          ${q.choices.map((choice, idx) => `
+            <button onclick="submitClozeChoice(${idx})" id="clozeChoiceBtn_${idx}" class="p-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-indigo-400 text-left font-semibold text-xs text-slate-200 transition-all flex items-center justify-between">
+              <span>${choice}</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 text-slate-500"></i>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- Feedback Area -->
+        <div id="assessmentFeedbackArea" class="hidden"></div>
+      </div>
+    `;
+  } else if (currentAssessment.type === 'verbatim') {
+    container.innerHTML = `
+      <div class="space-y-5">
+        <!-- Coordinate & Meta -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-xs font-mono font-bold">
+              ${v.bookCode} ${v.chapter}:${v.verse}
+            </span>
+            <span class="text-xs text-slate-300 font-semibold">${v.bookName} · Phòng ${v.chapter} - Câu ${v.verse}</span>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Tiến trình: ${currentAssessment.currentIndex + 1}/${currentAssessment.questions.length}</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900 border border-indigo-500/30 space-y-1">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Từ khóa gợi nhớ:</div>
+          <div class="text-sm font-bold text-indigo-300">"${v.keyword}" ${v.secondaryKeyword ? `· <span class="font-normal text-cyan-300 font-mono text-xs">${v.secondaryKeyword}</span>` : ''}</div>
+        </div>
+
+        <!-- Typing Input -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-slate-300">Gõ lại nguyên văn câu Kinh Thánh (Bản 2010):</label>
+          <textarea id="verbatimInputArea" rows="4" placeholder="Nhập câu Kinh Thánh từ trí nhớ của bạn vào đây..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 transition-all"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <button onclick="revealFirstLettersHint()" id="btnRevealLettersHint" class="text-xs text-slate-400 hover:text-amber-400 font-medium flex items-center gap-1">
+            <i data-lucide="key" class="w-3.5 h-3.5"></i> Xem gợi ý chuỗi chữ cái đầu
+          </button>
+          <button onclick="submitVerbatimAnswer()" id="btnSubmitVerbatim" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-md">
+            Chấm Điểm Đối Chiếu
+          </button>
+        </div>
+
+        <div id="verbatimLettersHintBox" class="hidden p-3 rounded-xl bg-slate-900 border border-amber-500/30 text-xs font-mono font-bold text-amber-300">
+          ${generateFirstLetters(v.text)}
+        </div>
+
+        <!-- Feedback & Diff Area -->
+        <div id="assessmentFeedbackArea" class="hidden"></div>
+      </div>
+    `;
+  } else if (currentAssessment.type === 'coordinate') {
+    container.innerHTML = `
+      <div class="space-y-5">
+        <!-- Meta -->
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-indigo-400 font-bold uppercase tracking-wider">Đoán Tọa Độ Kinh Thánh</span>
+          <span class="text-xs text-slate-400 font-mono">Tiến trình: ${currentAssessment.currentIndex + 1}/${currentAssessment.questions.length}</span>
+        </div>
+
+        <!-- Verse Text Box -->
+        <div class="p-5 rounded-2xl bg-slate-900 border border-indigo-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Câu Kinh Thánh:</div>
+          <p class="text-sm sm:text-base text-slate-100 font-medium leading-relaxed italic">
+            "${v.text}"
+          </p>
+        </div>
+
+        <div class="text-xs font-bold text-slate-300">Câu trên nằm ở Sách nào, Chương mấy, Câu mấy?</div>
+
+        <!-- 4 Coordinate Choices -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="coordinateChoicesContainer">
+          ${q.choices.map((choice, idx) => `
+            <button onclick="submitCoordinateChoice(${idx})" id="coordChoiceBtn_${idx}" class="p-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-indigo-400 text-left font-semibold text-xs text-slate-200 transition-all flex items-center justify-between">
+              <span>${choice}</span>
+              <i data-lucide="compass" class="w-4 h-4 text-slate-500"></i>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- Feedback Area -->
+        <div id="assessmentFeedbackArea" class="hidden"></div>
+      </div>
+    `;
+  }
+
+  lucide.createIcons();
+}
+
+function submitClozeChoice(selectedIdx) {
+  const q = currentAssessment.questions[currentAssessment.currentIndex];
+  if (currentAssessment.isSubmitted) return;
+  currentAssessment.isSubmitted = true;
+
+  const selectedText = q.choices[selectedIdx];
+  const isCorrect = selectedText === q.correctPair;
+  q.userAnswer = selectedText;
+  q.isCorrect = isCorrect;
+  q.score = isCorrect ? 100 : 0;
+  if (isCorrect) currentAssessment.score += 100;
+
+  // Visual highlights
+  q.choices.forEach((c, idx) => {
+    const btn = document.getElementById(`clozeChoiceBtn_${idx}`);
+    if (!btn) return;
+    if (c === q.correctPair) {
+      btn.className = 'p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500 text-left font-bold text-xs text-emerald-300 transition-all flex items-center justify-between';
+    } else if (idx === selectedIdx && !isCorrect) {
+      btn.className = 'p-4 rounded-2xl bg-rose-500/20 border border-rose-500 text-left font-bold text-xs text-rose-300 transition-all flex items-center justify-between line-through';
+    }
+  });
+
+  playSound(isCorrect ? 'success' : 'click');
+
+  const fb = document.getElementById('assessmentFeedbackArea');
+  if (fb) {
+    fb.className = `p-4 rounded-2xl border ${isCorrect ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'} space-y-3 animate-in fade-in duration-200`;
+    fb.innerHTML = `
+      <div class="flex items-center gap-2 font-bold text-xs">
+        <i data-lucide="${isCorrect ? 'check-circle-2' : 'alert-circle'}" class="w-4 h-4"></i>
+        <span>${isCorrect ? 'Chính Xác Tuyệt Đối!' : 'Chưa Chính Xác!'}</span>
+      </div>
+      <p class="text-xs text-slate-200">
+        Câu hoàn chỉnh: <strong>"${q.verse.text}"</strong>
+      </p>
+      <div class="pt-2 flex justify-end">
+        <button onclick="nextAssessmentQuestion()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md">
+          <span>Câu Tiếp Theo</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    `;
+    lucide.createIcons();
+  }
+}
+
+function revealFirstLettersHint() {
+  const box = document.getElementById('verbatimLettersHintBox');
+  if (box) box.classList.remove('hidden');
+}
+
+function submitVerbatimAnswer() {
+  const q = currentAssessment.questions[currentAssessment.currentIndex];
+  if (currentAssessment.isSubmitted) return;
+  currentAssessment.isSubmitted = true;
+
+  const inputArea = document.getElementById('verbatimInputArea');
+  const userText = (inputArea ? inputArea.value : '').trim();
+  const officialText = q.verse.text.trim();
+
+  // Word tokenization
+  const cleanTokens = t => t.replace(/^[0-9]+[\s.:-]*|[“”,;.:!?()—"]/g, ' ').toLowerCase().split(/\s+/).filter(Boolean);
+  const userTokens = cleanTokens(userText);
+  const officialTokens = cleanTokens(officialText);
+
+  let matchCount = 0;
+  officialTokens.forEach(ot => {
+    if (userTokens.includes(ot)) matchCount++;
+  });
+
+  const accuracy = officialTokens.length > 0 ? Math.round((matchCount / officialTokens.length) * 100) : 0;
+  q.userAnswer = userText;
+  q.score = accuracy;
+  q.isCorrect = accuracy >= 85;
+  currentAssessment.score += accuracy;
+
+  playSound(accuracy >= 80 ? 'success' : 'click');
+
+  // Disable button
+  const submitBtn = document.getElementById('btnSubmitVerbatim');
+  if (submitBtn) submitBtn.classList.add('hidden');
+
+  const fb = document.getElementById('assessmentFeedbackArea');
+  if (fb) {
+    fb.className = 'p-5 rounded-2xl bg-slate-900 border border-slate-700 space-y-4 animate-in fade-in duration-200';
+    fb.innerHTML = `
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2 font-bold text-xs ${accuracy >= 85 ? 'text-emerald-400' : 'text-amber-400'}">
+          <i data-lucide="${accuracy >= 85 ? 'badge-check' : 'alert-circle'}" class="w-4 h-4"></i>
+          <span>Độ Chính Xác: ${accuracy}%</span>
+        </div>
+        <span class="text-xs text-slate-400 font-mono">${matchCount}/${officialTokens.length} từ đúng</span>
+      </div>
+
+      <div class="space-y-1">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Văn bản chuẩn 2010 (RVV11):</div>
+        <p class="text-xs sm:text-sm text-emerald-300 font-medium leading-relaxed bg-slate-950 p-3 rounded-xl border border-emerald-500/30">
+          "${officialText}"
+        </p>
+      </div>
+
+      <div class="space-y-1">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Văn bản bạn đã tái hiện:</div>
+        <p class="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed bg-slate-950 p-3 rounded-xl border border-slate-800">
+          "${userText || '(Để trống)'}"
+        </p>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button onclick="nextAssessmentQuestion()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md">
+          <span>Câu Tiếp Theo</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    `;
+    lucide.createIcons();
+  }
+}
+
+function submitCoordinateChoice(selectedIdx) {
+  const q = currentAssessment.questions[currentAssessment.currentIndex];
+  if (currentAssessment.isSubmitted) return;
+  currentAssessment.isSubmitted = true;
+
+  const selectedText = q.choices[selectedIdx];
+  const isCorrect = selectedText === q.correctCoord;
+  q.userAnswer = selectedText;
+  q.isCorrect = isCorrect;
+  q.score = isCorrect ? 100 : 0;
+  if (isCorrect) currentAssessment.score += 100;
+
+  // Visual highlights
+  q.choices.forEach((c, idx) => {
+    const btn = document.getElementById(`coordChoiceBtn_${idx}`);
+    if (!btn) return;
+    if (c === q.correctCoord) {
+      btn.className = 'p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500 text-left font-bold text-xs text-emerald-300 transition-all flex items-center justify-between';
+    } else if (idx === selectedIdx && !isCorrect) {
+      btn.className = 'p-4 rounded-2xl bg-rose-500/20 border border-rose-500 text-left font-bold text-xs text-rose-300 transition-all flex items-center justify-between line-through';
+    }
+  });
+
+  playSound(isCorrect ? 'success' : 'click');
+
+  const fb = document.getElementById('assessmentFeedbackArea');
+  if (fb) {
+    fb.className = `p-4 rounded-2xl border ${isCorrect ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'} space-y-3 animate-in fade-in duration-200`;
+    fb.innerHTML = `
+      <div class="flex items-center gap-2 font-bold text-xs">
+        <i data-lucide="${isCorrect ? 'check-circle-2' : 'alert-circle'}" class="w-4 h-4"></i>
+        <span>${isCorrect ? 'Chính Xác Tọa Độ!' : 'Tọa Độ Chưa Đúng!'}</span>
+      </div>
+      <p class="text-xs text-slate-200">
+        Tọa độ chuẩn xác: <strong class="text-indigo-300">${q.correctCoord}</strong>
+      </p>
+      <div class="pt-2 flex justify-end">
+        <button onclick="nextAssessmentQuestion()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md">
+          <span>Câu Tiếp Theo</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    `;
+    lucide.createIcons();
+  }
+}
+
+function nextAssessmentQuestion() {
+  currentAssessment.isSubmitted = false;
+  currentAssessment.currentIndex++;
+  if (currentAssessment.currentIndex < currentAssessment.questions.length) {
+    renderAssessmentQuestion();
+  } else {
+    renderAssessmentFinalReport();
+  }
+}
+
+function renderAssessmentFinalReport() {
+  const container = document.getElementById('memoryAssessmentBody');
+  const badge = document.getElementById('assessmentStepBadge');
+  if (!container) return;
+
+  if (badge) badge.textContent = 'Kết Quả';
+
+  const total = currentAssessment.questions.length;
+  const avgScore = total > 0 ? Math.round(currentAssessment.score / total) : 0;
+
+  let gradeText = '';
+  let gradeClass = '';
+  if (avgScore >= 90) {
+    gradeText = 'Xuất Sắc · Tinh Thông Toàn Diện';
+    gradeClass = 'text-emerald-400 bg-emerald-500/20 border-emerald-500/40';
+  } else if (avgScore >= 70) {
+    gradeText = 'Đạt Yêu Cầu · Trí Nhớ Vững Vàng';
+    gradeClass = 'text-indigo-400 bg-indigo-500/20 border-indigo-500/40';
+  } else {
+    gradeText = 'Cần Củng Cố · Tiếp Tục Rèn Luyện';
+    gradeClass = 'text-amber-400 bg-amber-500/20 border-amber-500/40';
+  }
+
+  container.innerHTML = `
+    <div class="space-y-6 py-2">
+      <!-- Grand Score Card -->
+      <div class="p-6 rounded-3xl bg-slate-900 border border-indigo-500/40 text-center space-y-3 shadow-xl">
+        <div class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${gradeClass} border mb-1">
+          ${gradeText}
+        </div>
+        <div class="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight">
+          ${avgScore}<span class="text-xl text-slate-400 font-normal"> / 100 Điểm</span>
+        </div>
+        <p class="text-xs text-slate-300 max-w-sm mx-auto">
+          Hoàn thành bài kiểm tra <strong>${total} câu hỏi</strong> theo hình thức <strong>${currentAssessment.type === 'cloze' ? 'Điền từ khuyết' : (currentAssessment.type === 'verbatim' ? 'Tái hiện nguyên văn' : 'Truy xuất tọa độ')}</strong>.
+        </p>
+      </div>
+
+      <!-- Question-by-Question Breakdown -->
+      <div class="space-y-2">
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Chi tiết kết quả từng câu:</div>
+        <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+          ${currentAssessment.questions.map((q, idx) => `
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${q.score >= 80 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                  ${idx + 1}
+                </span>
+                <span class="font-bold text-white">${q.verse.bookCode} ${q.verse.chapter}:${q.verse.verse}</span>
+                <span class="text-slate-400 truncate max-w-[200px] sm:max-w-xs">"${q.verse.text}"</span>
+              </div>
+              <span class="font-mono font-bold ${q.score >= 80 ? 'text-emerald-400' : 'text-amber-400'}">
+                ${q.score}%
+              </span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-end gap-3">
+        <button onclick="renderAssessmentSetupScreen()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all">
+          Làm Bài Khác
+        </button>
+        <button onclick="closeMemoryAssessmentModal()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md">
+          Đóng Lại
+        </button>
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
 }
 
 

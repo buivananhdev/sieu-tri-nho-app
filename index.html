@@ -501,6 +501,14 @@
                 </div>
               </div>
               <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openBibleReviewDeckModal()" class="px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold transition-all flex items-center gap-1.5 border border-emerald-500/40 shadow-sm" title="Ôn tập các câu đến hạn theo phương pháp lặp lại ngắt quãng">
+                  <i data-lucide="calendar-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Lịch Ôn Hôm Nay (<span id="bibleTodayReviewBadge">0</span>)</span>
+                </button>
+                <button onclick="openMemoryAssessmentModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-bold transition-all flex items-center gap-1.5 border border-indigo-500/40 shadow-sm" title="Khảo sát và kiểm tra độ chính xác của trí nhớ">
+                  <i data-lucide="check-square" class="w-3.5 h-3.5 text-indigo-400"></i>
+                  <span>Kiểm Tra Trí Nhớ</span>
+                </button>
                 <button onclick="openSyncModal('bible')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md border border-cyan-400/40" title="Đồng bộ tiến độ học sang điện thoại trong 3 giây">
                   <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
                   <span>📲 Đồng Bộ Điện Thoại</span>
@@ -1092,6 +1100,69 @@
         <!-- Mastered Verses List -->
         <div id="masteredVersesListContainer" class="p-4 space-y-3 overflow-y-auto flex-grow max-h-[60vh]">
           <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: LỊCH ÔN TẬP KHOA HỌC (SPACED REPETITION REVIEW DECK) -->
+    <div id="bibleReviewDeckModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">
+      <div class="bg-cardBg border border-emerald-500/40 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="p-5 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-slate-950 font-bold text-lg shadow-lg">
+              <i data-lucide="calendar-check" class="w-5 h-5 text-slate-950"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>Lịch Ôn Tập Khoa Học Hôm Nay</span>
+                <span id="reviewDeckProgressBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-bold">0/0</span>
+              </h3>
+              <p class="text-xs text-slate-400">Phương pháp lặp lại ngắt quãng (Spaced Repetition) củng cố trí nhớ dài hạn</p>
+            </div>
+          </div>
+          <button onclick="closeBibleReviewDeckModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-800 h-1.5">
+          <div id="reviewDeckProgressBar" class="bg-emerald-400 h-1.5 transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <!-- Review Card Content Container -->
+        <div id="reviewDeckCardContainer" class="p-5 sm:p-6 overflow-y-auto flex-grow space-y-5">
+          <!-- Rendered dynamically by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: BÀI KIỂM TRA TRÍ NHỚ HỌC THUẬT (MEMORY ASSESSMENT SUITE) -->
+    <div id="memoryAssessmentModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4">
+      <div class="bg-cardBg border border-indigo-500/40 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="p-5 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+              <i data-lucide="check-square" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>Khảo Sát & Kiểm Tra Năng Lực Trí Nhớ</span>
+                <span id="assessmentStepBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-mono font-bold">Khảo Sát</span>
+              </h3>
+              <p class="text-xs text-slate-400">Đo lường độ chính xác nguyên văn và năng lực tái hiện khách quan</p>
+            </div>
+          </div>
+          <button onclick="closeMemoryAssessmentModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Assessment Body -->
+        <div id="memoryAssessmentBody" class="p-5 sm:p-6 overflow-y-auto flex-grow space-y-5">
+          <!-- Rendered dynamically by JS -->
         </div>
       </div>
     </div>
