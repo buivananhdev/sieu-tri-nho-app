@@ -432,6 +432,10 @@ function switchTab(tabId) {
     initEnglishOS();
   }
 
+  if (targetTabId === 'chess' && typeof initChessModule === 'function') {
+    initChessModule();
+  }
+
   if (targetTabId === 'books' && typeof initBooksLibrary === 'function') {
     initBooksLibrary();
   }
